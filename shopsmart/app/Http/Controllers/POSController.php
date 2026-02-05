@@ -73,10 +73,13 @@ class POSController extends Controller
             ]);
         }
 
+        $sale->load(['customer', 'user', 'items.product']);
+        
         return response()->json([
             'success' => true,
             'sale' => $sale,
             'invoice_number' => $sale->invoice_number,
+            'message' => 'Sale completed successfully',
         ]);
     }
 }

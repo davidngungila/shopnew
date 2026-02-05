@@ -54,6 +54,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'notifications_email' => 'boolean',
+            'notifications_sms' => 'boolean',
         ];
+    }
+
+    /**
+     * Get the employee record associated with the user.
+     */
+    public function employee()
+    {
+        return $this->hasOne(Employee::class);
     }
 }

@@ -57,7 +57,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Currency</label>
                         <select name="currency" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="USD" {{ ($settings['currency'] ?? 'USD') == 'USD' ? 'selected' : '' }}>USD ($)</option>
+                            <option value="TZS" {{ ($settings['currency'] ?? 'TZS') == 'TZS' ? 'selected' : '' }}>TZS (TSh)</option>
+                            <option value="USD" {{ ($settings['currency'] ?? '') == 'USD' ? 'selected' : '' }}>USD ($)</option>
                             <option value="EUR" {{ ($settings['currency'] ?? '') == 'EUR' ? 'selected' : '' }}>EUR (€)</option>
                             <option value="GBP" {{ ($settings['currency'] ?? '') == 'GBP' ? 'selected' : '' }}>GBP (£)</option>
                             <option value="KES" {{ ($settings['currency'] ?? '') == 'KES' ? 'selected' : '' }}>KES (KSh)</option>
@@ -74,7 +75,8 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Timezone</label>
                         <select name="timezone" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="UTC" {{ ($settings['timezone'] ?? 'UTC') == 'UTC' ? 'selected' : '' }}>UTC</option>
+                            <option value="Africa/Dar_es_Salaam" {{ ($settings['timezone'] ?? 'Africa/Dar_es_Salaam') == 'Africa/Dar_es_Salaam' ? 'selected' : '' }}>Dar es Salaam (EAT)</option>
+                            <option value="UTC" {{ ($settings['timezone'] ?? '') == 'UTC' ? 'selected' : '' }}>UTC</option>
                             <option value="America/New_York" {{ ($settings['timezone'] ?? '') == 'America/New_York' ? 'selected' : '' }}>Eastern Time</option>
                             <option value="Europe/London" {{ ($settings['timezone'] ?? '') == 'Europe/London' ? 'selected' : '' }}>London</option>
                             <option value="Africa/Nairobi" {{ ($settings['timezone'] ?? '') == 'Africa/Nairobi' ? 'selected' : '' }}>Nairobi</option>

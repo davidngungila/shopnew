@@ -40,15 +40,15 @@
             <div class="border-t border-gray-200 pt-4 space-y-3">
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Subtotal:</span>
-                    <span class="font-semibold" id="subtotal">$0.00</span>
+                    <span class="font-semibold" id="subtotal">TZS 0</span>
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-600">Tax:</span>
-                    <span class="font-semibold" id="tax">$0.00</span>
+                    <span class="font-semibold" id="tax">TZS 0</span>
                 </div>
                 <div class="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
                     <span>Total:</span>
-                    <span id="total">$0.00</span>
+                    <span id="total">TZS 0</span>
                 </div>
 
                 <div class="space-y-2 mt-4">
@@ -83,7 +83,7 @@
                 <div class="border border-gray-200 rounded-lg p-3 hover:shadow-md cursor-pointer" onclick="addToCart(${JSON.stringify(product).replace(/"/g, '&quot;')})">
                     <div class="text-sm font-medium text-gray-900">${product.name}</div>
                     <div class="text-xs text-gray-500 mt-1">Stock: ${product.stock_quantity}</div>
-                    <div class="text-sm font-semibold text-purple-600 mt-2">$${parseFloat(product.selling_price).toFixed(2)}</div>
+                    <div class="text-sm font-semibold text-purple-600 mt-2">TZS ${parseFloat(product.selling_price).toLocaleString('en-US', {maximumFractionDigits: 0})}</div>
                 </div>
             `).join('');
         });
@@ -98,27 +98,31 @@
         updateCart();
     }
 
+    function formatCurrency(amount) {
+        return 'TZS ' + parseFloat(amount).toLocaleString('en-US', {maximumFractionDigits: 0});
+    }
+
     function updateCart() {
         const cartItems = document.getElementById('cartItems');
         const subtotal = cart.reduce((sum, item) => sum + (item.selling_price * item.quantity), 0);
         const tax = subtotal * taxRate;
         const total = subtotal + tax;
 
-        document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-        document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
-        document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('subtotal').textContent = formatCurrency(subtotal);
+        document.getElementById('tax').textContent = formatCurrency(tax);
+        document.getElementById('total').textContent = formatCurrency(total);
 
         cartItems.innerHTML = cart.length ? cart.map((item, index) => `
             <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
                 <div class="flex-1">
                     <div class="text-sm font-medium">${item.name}</div>
-                    <div class="text-xs text-gray-500">$${parseFloat(item.selling_price).toFixed(2)} x ${item.quantity}</div>
+                    <div class="text-xs text-gray-500">${formatCurrency(item.selling_price)} x ${item.quantity}</div>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <button onclick="updateQuantity(${index}, -1)" class="px-2 py-1 bg-gray-200 rounded">-</button>
-                    <span class="text-sm font-medium">${item.quantity}</span>
-                    <button onclick="updateQuantity(${index}, 1)" class="px-2 py-1 bg-gray-200 rounded">+</button>
-                    <button onclick="removeFromCart(${index})" class="ml-2 text-red-600">×</button>
+                    <button onclick="updateQuantity(${index}, -1)" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">-</button>
+                    <span class="text-sm font-medium w-8 text-center">${item.quantity}</span>
+                    <button onclick="updateQuantity(${index}, 1)" class="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300">+</button>
+                    <button onclick="removeFromCart(${index})" class="ml-2 text-red-600 hover:text-red-800 font-bold">×</button>
                 </div>
             </div>
         `).join('') : '<p class="text-sm text-gray-500 text-center py-4">Cart is empty</p>';
@@ -155,16 +159,24 @@
         })
         .then(res => res.json())
         .then(data => {
-            alert('Sale completed successfully!');
-            cart = [];
-            updateCart();
+            if (data.success && data.sale) {
+                // Redirect to print receipt
+                const saleId = data.sale.id;
+                window.open(`/sales/${saleId}/print`, '_blank');
+                // Clear cart
+                cart = [];
+                updateCart();
+                // Show success message
+                alert('Sale completed successfully! Receipt will open in a new window.');
+            } else {
+                alert('Sale completed but receipt could not be generated.');
+            }
         })
         .catch(err => {
-            alert('Error completing sale');
+            alert('Error completing sale: ' + err.message);
             console.error(err);
         });
     });
 </script>
-@endsection
 @endsection
 

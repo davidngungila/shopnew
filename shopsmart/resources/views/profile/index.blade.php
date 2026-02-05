@@ -17,18 +17,27 @@
         <div class="lg:col-span-1">
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div class="text-center">
+                    @if($user && $user->name)
                     <div class="w-24 h-24 bg-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
-                        {{ strtoupper(substr($user->name, 0, 1)) }}
+                        {{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}
                     </div>
-                    <h2 class="text-xl font-bold text-gray-900">{{ $user->name }}</h2>
-                    <p class="text-gray-500 mt-1">{{ $user->email }}</p>
-                    @if($user->role)
+                    <h2 class="text-xl font-bold text-gray-900">{{ $user->name ?? 'User' }}</h2>
+                    <p class="text-gray-500 mt-1">{{ $user->email ?? 'No email' }}</p>
+                    @if($user->role ?? null)
                     <span class="inline-block mt-2 px-3 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
                         {{ ucfirst($user->role) }}
                     </span>
                     @endif
+                    @else
+                    <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-white text-3xl font-bold mx-auto mb-4">
+                        ?
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900">No User Found</h2>
+                    <p class="text-gray-500 mt-1">Please log in or create a user account</p>
+                    @endif
                 </div>
                 
+                @if($user)
                 <div class="mt-6 space-y-3">
                     <div class="flex items-center space-x-3 text-sm">
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,9 +56,10 @@
                         <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        <span class="text-gray-600">Joined {{ $user->created_at->format('M Y') }}</span>
+                        <span class="text-gray-600">Joined {{ $user->created_at ? $user->created_at->format('M Y') : 'N/A' }}</span>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
 
@@ -58,14 +68,15 @@
             <!-- Personal Information -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                @if($user)
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Full Name</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $user->name }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->name ?? 'Not set' }}</dd>
                     </div>
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Email Address</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ $user->email }}</dd>
+                        <dd class="mt-1 text-sm text-gray-900">{{ $user->email ?? 'Not set' }}</dd>
                     </div>
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Phone Number</dt>
@@ -75,18 +86,22 @@
                         <dt class="text-sm font-medium text-gray-500">Address</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $user->address ?? 'Not set' }}</dd>
                     </div>
-                    @if($user->bio)
+                    @if($user->bio ?? null)
                     <div class="sm:col-span-2">
                         <dt class="text-sm font-medium text-gray-500">Bio</dt>
                         <dd class="mt-1 text-sm text-gray-900">{{ $user->bio }}</dd>
                     </div>
                     @endif
                 </dl>
+                @else
+                <p class="text-gray-500">No user information available.</p>
+                @endif
             </div>
 
             <!-- Preferences -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Preferences</h3>
+                @if($user)
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <dt class="text-sm font-medium text-gray-500">Language</dt>
@@ -113,6 +128,9 @@
                         <dd class="mt-1 text-sm text-gray-900">{{ ($user->notifications_sms ?? false) ? 'Enabled' : 'Disabled' }}</dd>
                     </div>
                 </dl>
+                @else
+                <p class="text-gray-500">No preferences available.</p>
+                @endif
             </div>
 
             <!-- Quick Actions -->

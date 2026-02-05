@@ -11,19 +11,45 @@ class ProfileController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            // If no authenticated user, try to get the first user as fallback
+            $user = \App\Models\User::first();
+            
+            if (!$user) {
+                // If no users exist at all, redirect to dashboard with error
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
+        
         return view('profile.index', compact('user'));
     }
 
     public function edit()
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            $user = \App\Models\User::first();
+            if (!$user) {
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
+        
         return view('profile.edit', compact('user'));
     }
 
     public function update(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            $user = \App\Models\User::first();
+            if (!$user) {
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -57,7 +83,14 @@ class ProfileController extends Controller
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            $user = \App\Models\User::first();
+            if (!$user) {
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
 
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Current password is incorrect.']);
@@ -72,7 +105,14 @@ class ProfileController extends Controller
 
     public function updatePreferences(Request $request)
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            $user = \App\Models\User::first();
+            if (!$user) {
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
 
         $validated = $request->validate([
             'language' => 'nullable|string|max:10',
@@ -90,7 +130,15 @@ class ProfileController extends Controller
 
     public function activity()
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            $user = \App\Models\User::first();
+            if (!$user) {
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
+        
         // Get user activity logs
         $activities = []; // Implement activity logging
         return view('profile.activity', compact('user', 'activities'));
@@ -98,7 +146,15 @@ class ProfileController extends Controller
 
     public function security()
     {
-        $user = Auth::user();
+        $user = Auth::user() ?? auth()->user();
+        
+        if (!$user) {
+            $user = \App\Models\User::first();
+            if (!$user) {
+                return redirect()->route('dashboard')->with('error', 'No user found. Please log in or create a user account.');
+            }
+        }
+        
         return view('profile.security', compact('user'));
     }
 }

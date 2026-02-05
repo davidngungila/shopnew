@@ -62,11 +62,56 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')->with('success', 'Customer deleted successfully.');
     }
 
-    public function loyalty()
+    public function loyalty(Request $request)
     {
-        $customers = Customer::where('loyalty_points', '>', 0)
-            ->orderBy('loyalty_points', 'desc')
-            ->paginate(20);
-        return view('customers.loyalty', compact('customers'));
+        $query = Customer::with('sales');
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // Points filter
+        if ($request->filled('points_min')) {
+            $query->where('loyalty_points', '>=', $request->points_min);
+        }
+
+        if ($request->filled('points_max')) {
+            $query->where('loyalty_points', '<=', $request->points_max);
+        }
+
+        // Sort
+        $sortBy = $request->get('sort', 'loyalty_points');
+        $sortOrder = $request->get('order', 'desc');
+        $query->orderBy($sortBy, $sortOrder);
+
+        // Statistics
+        $totalCustomers = Customer::count();
+        $customersWithPoints = Customer::where('loyalty_points', '>', 0)->count();
+        $totalPointsIssued = Customer::sum('loyalty_points');
+        $totalPointsRedeemed = 0; // Can be tracked separately if needed
+        $averagePoints = Customer::where('loyalty_points', '>', 0)->avg('loyalty_points') ?? 0;
+
+        // Top customers by points
+        $topCustomers = Customer::orderBy('loyalty_points', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Points distribution
+        $pointsDistribution = [
+            'bronze' => Customer::where('loyalty_points', '>=', 0)->where('loyalty_points', '<', 100)->count(),
+            'silver' => Customer::where('loyalty_points', '>=', 100)->where('loyalty_points', '<', 500)->count(),
+            'gold' => Customer::where('loyalty_points', '>=', 500)->where('loyalty_points', '<', 1000)->count(),
+            'platinum' => Customer::where('loyalty_points', '>=', 1000)->count(),
+        ];
+
+        $customers = $query->paginate(20);
+
+        return view('customers.loyalty', compact('customers', 'totalCustomers', 'customersWithPoints', 'totalPointsIssued', 'totalPointsRedeemed', 'averagePoints', 'topCustomers', 'pointsDistribution'));
     }
 }
