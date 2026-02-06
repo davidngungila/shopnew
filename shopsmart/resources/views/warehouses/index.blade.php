@@ -9,7 +9,7 @@
             <h1 class="text-3xl font-bold text-gray-900">Warehouses</h1>
             <p class="text-gray-600 mt-1">Manage warehouse locations</p>
         </div>
-        <a href="{{ route('warehouses.create') }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Add Warehouse</a>
+        <a href="{{ route('warehouses.create') }}" class="px-4 py-2 rounded-lg text-white" style="background-color: #009245;" onmouseover="this.style.backgroundColor='#007a38'" onmouseout="this.style.backgroundColor='#009245'">Add Warehouse</a>
     </div>
 
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -35,7 +35,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <a href="{{ route('warehouses.edit', $warehouse) }}" class="text-purple-600 hover:text-purple-900 mr-3">Edit</a>
+                        <a href="{{ route('warehouses.edit', $warehouse) }}" class="text-[#009245] hover:text-[#007a38] mr-3">Edit</a>
                         <form action="{{ route('warehouses.destroy', $warehouse) }}" method="POST" class="inline">
                             @csrf
                             @method('DELETE')
