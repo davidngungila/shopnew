@@ -201,12 +201,19 @@
                             </span>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $quotation->quotation_date->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}
+                            @if($quotation->quotation_date)
+                                {{ \Carbon\Carbon::parse($quotation->quotation_date)->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}
+                            @else
+                                <span class="text-gray-400">N/A</span>
+                            @endif
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             @if($quotation->expiry_date)
-                                {{ $quotation->expiry_date->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}
-                                @if($quotation->expiry_date->isPast() && $quotation->status !== 'converted')
+                                {{ \Carbon\Carbon::parse($quotation->expiry_date)->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}
+                                @php
+                                    $expiryDate = \Carbon\Carbon::parse($quotation->expiry_date)->setTimezone('Africa/Dar_es_Salaam');
+                                @endphp
+                                @if($expiryDate->isPast() && $quotation->status !== 'converted')
                                     <span class="text-red-600 text-xs block">(Expired)</span>
                                 @endif
                             @else
