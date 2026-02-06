@@ -472,60 +472,7 @@
             <header class="bg-white border-b border-gray-200 sticky top-0 z-20">
                 <div class="px-6 py-4">
                     <div class="flex items-center justify-between">
-                        <div class="flex-1 max-w-xl" x-data="{ 
-                            searchOpen: false,
-                            searchQuery: '',
-                            searchResults: null,
-                            searchLoading: false,
-                            searchTimeout: null,
-                            init() {
-                                // Handle Ctrl+K / Cmd+K
-                                document.addEventListener('keydown', (e) => {
-                                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                                        e.preventDefault();
-                                        this.searchOpen = true;
-                                        this.$nextTick(() => {
-                                            const input = document.getElementById('search-input');
-                                            if (input) input.focus();
-                                        });
-                                    }
-                                });
-                            },
-                            performSearch() {
-                                clearTimeout(this.searchTimeout);
-                                const query = this.searchQuery.trim();
-                                
-                                if (query.length < 2) {
-                                    this.searchResults = null;
-                                    return;
-                                }
-                                
-                                this.searchLoading = true;
-                                
-                                this.searchTimeout = setTimeout(() => {
-                                    fetch(`{{ route('search') }}?q=${encodeURIComponent(query)}`, {
-                                        headers: {
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Accept': 'application/json',
-                                            'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]')?.getAttribute('content')
-                                        }
-                                    })
-                                    .then(response => {
-                                        if (!response.ok) throw new Error('Network error');
-                                        return response.json();
-                                    })
-                                    .then(data => {
-                                        this.searchResults = data;
-                                        this.searchLoading = false;
-                                    })
-                                    .catch(error => {
-                                        console.error('Search error:', error);
-                                        this.searchResults = { error: error.message };
-                                        this.searchLoading = false;
-                                    });
-                                }, 300);
-                            }
-                        }" @keydown.ctrl.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())" @keydown.meta.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())">
+                        <div class="flex-1 max-w-xl" x-data="{ searchOpen: false }" @keydown.ctrl.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())" @keydown.meta.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())">
                             <div class="relative">
                                 <input 
                                     type="text" 
@@ -568,11 +515,9 @@
                                                     <input 
                                                         type="text" 
                                                         id="search-input"
-                                                        x-model="searchQuery"
-                                                        @input="performSearch()"
                                                         placeholder="Search products, customers, sales, quotations..." 
                                                         autocomplete="off"
-                                                        @keydown.escape="searchOpen = false; searchQuery = ''; searchResults = null"
+                                                        @keydown.escape="searchOpen = false"
                                                         class="w-full px-4 py-3 pl-10 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245] focus:border-transparent text-lg"
                                                     >
                                                     <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,78 +534,9 @@
                                                 </div>
                                             </div>
                                             <div id="search-results" class="max-h-96 overflow-y-auto p-4">
-                                                <template x-if="searchLoading">
-                                                    <div class="text-center text-gray-500 py-8">
-                                                        <p>Searching...</p>
-                                                    </div>
-                                                </template>
-                                                
-                                                <template x-if="!searchLoading && !searchResults && searchQuery.length < 2">
-                                                    <div class="text-center text-gray-500 py-8">
-                                                        <p>Start typing to search...</p>
-                                                    </div>
-                                                </template>
-                                                
-                                                <template x-if="!searchLoading && !searchResults && searchQuery.length >= 2">
-                                                    <div class="text-center text-gray-500 py-8">
-                                                        <p>Type at least 2 characters to search...</p>
-                                                    </div>
-                                                </template>
-                                                
-                                                <template x-if="!searchLoading && searchResults && searchResults.error">
-                                                    <div class="text-center text-red-500 py-8">
-                                                        <p>Error searching. Please try again.</p>
-                                                        <p class="text-xs mt-2" x-text="searchResults.error"></p>
-                                                    </div>
-                                                </template>
-                                                
-                                                <template x-if="!searchLoading && searchResults && !searchResults.error">
-                                                    <div>
-                                                        <template x-for="(category, categoryName) in {
-                                                            'Products': searchResults.products || [],
-                                                            'Customers': searchResults.customers || [],
-                                                            'Sales': searchResults.sales || [],
-                                                            'Quotations': searchResults.quotations || [],
-                                                            'Purchases': searchResults.purchases || [],
-                                                            'Suppliers': searchResults.suppliers || [],
-                                                            'Categories': searchResults.categories || [],
-                                                            'Warehouses': searchResults.warehouses || []
-                                                        }" :key="categoryName">
-                                                            <div class="mb-4" x-show="category.length > 0">
-                                                                <h3 class="text-xs font-semibold text-gray-500 uppercase mb-2 px-2" x-text="categoryName"></h3>
-                                                                <template x-for="result in category" :key="result.id">
-                                                                    <a :href="result.url" class="block px-4 py-3 hover:bg-gray-50 rounded-lg transition-colors border-b border-gray-100 last:border-0">
-                                                                        <div class="flex items-center space-x-3">
-                                                                            <span class="text-2xl" x-text="result.icon"></span>
-                                                                            <div class="flex-1 min-w-0">
-                                                                                <p class="text-sm font-medium text-gray-900 truncate" x-text="result.name || result.invoice_number || result.quotation_number || result.purchase_number"></p>
-                                                                                <p class="text-xs text-gray-500" x-show="result.sku" x-text="'SKU: ' + result.sku"></p>
-                                                                                <p class="text-xs text-gray-500" x-show="result.email" x-text="result.email"></p>
-                                                                                <p class="text-xs text-gray-500" x-show="result.customer" x-text="'Customer: ' + result.customer"></p>
-                                                                                <p class="text-xs text-gray-500" x-show="result.supplier" x-text="'Supplier: ' + result.supplier"></p>
-                                                                                <p class="text-xs text-gray-500" x-show="result.price" x-text="'Price: ' + result.price + ' TZS'"></p>
-                                                                                <p class="text-xs text-gray-500" x-show="result.total" x-text="'Total: ' + result.total + ' TZS'"></p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </a>
-                                                                </template>
-                                                            </div>
-                                                        </template>
-                                                        
-                                                        <div x-show="(!searchResults.products || searchResults.products.length === 0) && 
-                                                                    (!searchResults.customers || searchResults.customers.length === 0) && 
-                                                                    (!searchResults.sales || searchResults.sales.length === 0) && 
-                                                                    (!searchResults.quotations || searchResults.quotations.length === 0) && 
-                                                                    (!searchResults.purchases || searchResults.purchases.length === 0) && 
-                                                                    (!searchResults.suppliers || searchResults.suppliers.length === 0) && 
-                                                                    (!searchResults.categories || searchResults.categories.length === 0) && 
-                                                                    (!searchResults.warehouses || searchResults.warehouses.length === 0) && 
-                                                                    searchQuery.length >= 2" 
-                                                             class="text-center text-gray-500 py-8">
-                                                            <p x-text="'No results found for \"' + searchQuery + '\"'"></p>
-                                                        </div>
-                                                    </div>
-                                                </template>
+                                                <div class="text-center text-gray-500 py-8">
+                                                    <p>Start typing to search...</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -1026,18 +902,86 @@
             sidebar.classList.toggle('-translate-x-full');
         });
 
-        // Search functionality is now handled by Alpine.js in the template
+        // Global Search Functionality
+        (function() {
+            let searchTimeout;
+            const searchInput = document.getElementById('search-input');
+            const searchResults = document.getElementById('search-results');
+            
+            if (!searchInput || !searchResults) return;
+
+            // Focus input when modal opens
+            const observer = new MutationObserver(() => {
+                if (searchInput && searchInput.offsetParent !== null) {
+                    searchInput.focus();
+                }
+            });
+            
+            if (searchResults) {
+                observer.observe(searchResults.parentElement, { childList: true, subtree: true });
+            }
+
+            // Live search on input
+            searchInput.addEventListener('input', function(e) {
+                const query = e.target.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (query.length < 2) {
+                    searchResults.innerHTML = '<div class="text-center text-gray-500 py-8"><p>Type at least 2 characters to search...</p></div>';
+                    return;
+                }
+
+                searchResults.innerHTML = '<div class="text-center text-gray-500 py-8"><p>Searching...</p></div>';
+
+                searchTimeout = setTimeout(() => {
+                    fetch(`{{ route('search') }}?q=${encodeURIComponent(query)}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network error: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && typeof data === 'object') {
+                            displaySearchResults(data, query);
+                        } else {
+                            throw new Error('Invalid response format');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        searchResults.innerHTML = '<div class="text-center text-red-500 py-8"><p>Error searching. Please try again.</p><p class="text-xs mt-2">' + (error.message || 'Unknown error') + '</p></div>';
+                    });
+                }, 300);
+            });
 
             function displaySearchResults(data, query) {
+                // Safely get arrays with fallback to empty array
+                const products = Array.isArray(data.products) ? data.products : [];
+                const customers = Array.isArray(data.customers) ? data.customers : [];
+                const sales = Array.isArray(data.sales) ? data.sales : [];
+                const quotations = Array.isArray(data.quotations) ? data.quotations : [];
+                const purchases = Array.isArray(data.purchases) ? data.purchases : [];
+                const suppliers = Array.isArray(data.suppliers) ? data.suppliers : [];
+                const categories = Array.isArray(data.categories) ? data.categories : [];
+                const warehouses = Array.isArray(data.warehouses) ? data.warehouses : [];
+                
                 const allResults = [
-                    ...data.products.map(r => ({...r, category: 'Products'})),
-                    ...data.customers.map(r => ({...r, category: 'Customers'})),
-                    ...data.sales.map(r => ({...r, category: 'Sales'})),
-                    ...data.quotations.map(r => ({...r, category: 'Quotations'})),
-                    ...data.purchases.map(r => ({...r, category: 'Purchases'})),
-                    ...data.suppliers.map(r => ({...r, category: 'Suppliers'})),
-                    ...data.categories.map(r => ({...r, category: 'Categories'})),
-                    ...data.warehouses.map(r => ({...r, category: 'Warehouses'})),
+                    ...products.map(r => ({...r, category: 'Products'})),
+                    ...customers.map(r => ({...r, category: 'Customers'})),
+                    ...sales.map(r => ({...r, category: 'Sales'})),
+                    ...quotations.map(r => ({...r, category: 'Quotations'})),
+                    ...purchases.map(r => ({...r, category: 'Purchases'})),
+                    ...suppliers.map(r => ({...r, category: 'Suppliers'})),
+                    ...categories.map(r => ({...r, category: 'Categories'})),
+                    ...warehouses.map(r => ({...r, category: 'Warehouses'})),
                 ];
 
                 if (allResults.length === 0) {
@@ -1082,9 +1026,15 @@
             }
 
             function highlightText(text, query) {
-                if (!text || !query) return text;
-                const regex = new RegExp(`(${query})`, 'gi');
-                return text.replace(regex, '<mark class="bg-yellow-200">$1</mark>');
+                if (!text || !query) return text || '';
+                try {
+                    // Escape special regex characters in query
+                    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                    const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                    return String(text).replace(regex, '<mark class="bg-yellow-200">$1</mark>');
+                } catch (e) {
+                    return String(text || '');
+                }
             }
 
             // Keyboard navigation
