@@ -484,6 +484,7 @@
                             <!-- Notifications -->
                             <div x-data="{ notificationsOpen: false }" class="relative" @mouseenter="notificationsOpen = true" @mouseleave="notificationsOpen = false">
                             @php
+                                use Illuminate\Support\Facades\Schema;
                                 // Get notification counts
                                 $lowStockCount = \App\Models\Product::whereColumn('stock_quantity', '<=', 'low_stock_alert')
                                     ->where('is_active', true)
@@ -495,14 +496,19 @@
                                     ->count();
                                 $pendingQuotations = \App\Models\Quotation::where('status', 'pending')
                                     ->where(function($q) {
-                                        $q->whereNull('expiry_date')
-                                          ->orWhere('expiry_date', '>=', now());
+                                        if (Schema::hasColumn('quotations', 'expiry_date')) {
+                                            $q->whereNull('expiry_date')
+                                              ->orWhere('expiry_date', '>=', now());
+                                        }
                                     })
                                     ->count();
-                                $expiredQuotations = \App\Models\Quotation::where('status', '!=', 'converted')
-                                    ->whereNotNull('expiry_date')
-                                    ->where('expiry_date', '<', now())
-                                    ->count();
+                                $expiredQuotations = 0;
+                                if (Schema::hasColumn('quotations', 'expiry_date')) {
+                                    $expiredQuotations = \App\Models\Quotation::where('status', '!=', 'converted')
+                                        ->whereNotNull('expiry_date')
+                                        ->where('expiry_date', '<', now())
+                                        ->count();
+                                }
                                 $pendingPurchases = \App\Models\Purchase::whereIn('status', ['pending', 'ordered'])
                                     ->count();
                                 
