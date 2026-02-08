@@ -69,6 +69,36 @@ Route::resource('stock-movements', StockMovementController::class);
     Route::resource('sales', SaleController::class);
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
     Route::post('/pos/complete', [POSController::class, 'complete'])->name('pos.complete');
+    
+    // API Routes for POS
+    Route::get('/api/sales/today', function() {
+        $total = \App\Models\Sale::whereDate('created_at', today())
+            ->where('status', 'completed')
+            ->sum('total');
+        return response()->json(['total' => $total]);
+    });
+    
+    Route::get('/api/products', function() {
+        $products = \App\Models\Product::where('is_active', true)
+            ->with(['category', 'warehouse'])
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'sku' => $product->sku,
+                    'barcode' => $product->barcode,
+                    'category_id' => $product->category_id,
+                    'selling_price' => (float) $product->selling_price,
+                    'stock_quantity' => $product->stock_quantity,
+                    'low_stock_alert' => $product->low_stock_alert,
+                    'track_stock' => $product->track_stock,
+                    'image' => $product->image,
+                    'unit' => $product->unit,
+                ];
+            });
+        return response()->json($products);
+    });
 
     // Quotations - Specific routes must come before resource routes
     Route::get('/quotations/reports', [QuotationReportController::class, 'overview'])->name('quotations.reports');

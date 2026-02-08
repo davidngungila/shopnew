@@ -9,8 +9,30 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->has('format') && $request->format === 'json') {
+            $products = Product::where('is_active', true)
+                ->with(['category', 'warehouse'])
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'sku' => $product->sku,
+                        'barcode' => $product->barcode,
+                        'category_id' => $product->category_id,
+                        'selling_price' => (float) $product->selling_price,
+                        'stock_quantity' => $product->stock_quantity,
+                        'low_stock_alert' => $product->low_stock_alert,
+                        'track_stock' => $product->track_stock,
+                        'image' => $product->image,
+                        'unit' => $product->unit,
+                    ];
+                });
+            return response()->json(['products' => $products]);
+        }
+        
         $products = Product::with(['category', 'warehouse'])->latest()->paginate(20);
         return view('products.index', compact('products'));
     }

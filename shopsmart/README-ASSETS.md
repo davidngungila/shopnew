@@ -68,3 +68,5 @@ php artisan serve
 - In **production mode**, run `npm run build` once before deploying
 - The Vite dev server provides Hot Module Replacement (HMR) for instant updates
 
+
+
