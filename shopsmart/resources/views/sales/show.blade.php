@@ -142,10 +142,11 @@
             </div>
 
             @php
+                $sale->load('payments');
                 $totalPaid = $sale->payments->sum('amount');
                 $balance = $sale->total - $totalPaid;
             @endphp
-
+            
             @if($sale->payment_method === 'credit')
             <!-- Payment Status -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -161,9 +162,7 @@
                     </div>
                     <div class="flex justify-between items-center pt-3 border-t border-gray-200">
                         <dt class="text-base font-bold text-gray-900">Balance</dt>
-                        <dd class="text-lg font-bold {{ $balance > 0 ? 'text-red-600' : 'text-green-600' }}">
-                            TZS {{ number_format($balance, 0) }}
-                        </dd>
+                        <dd class="text-lg font-bold {{ $balance > 0 ? 'text-red-600' : 'text-green-600' }}">TZS {{ number_format($balance, 0) }}</dd>
                     </div>
                     @if($balance > 0)
                     <div class="mt-4">
@@ -186,22 +185,22 @@
             @if($sale->payments->count() > 0)
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment History</h3>
-                <div class="space-y-3 max-h-96 overflow-y-auto">
-                    @foreach($sale->payments->sortByDesc('created_at') as $payment)
-                    <div class="border border-gray-200 rounded-lg p-3">
-                        <div class="flex justify-between items-start mb-2">
-                            <div>
-                                <p class="text-sm font-semibold text-gray-900">TZS {{ number_format($payment->amount, 0) }}</p>
-                                <p class="text-xs text-gray-500">{{ $payment->payment_date->format('M d, Y') }}</p>
+                <div class="space-y-3">
+                    @foreach($sale->payments->sortByDesc('payment_date') as $payment)
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">TZS {{ number_format($payment->amount, 0) }}</div>
+                            <div class="text-xs text-gray-500 mt-1">
+                                {{ $payment->payment_date->format('M d, Y') }} • 
+                                <span class="capitalize">{{ str_replace('_', ' ', $payment->payment_method) }}</span>
+                                @if($payment->user)
+                                • {{ $payment->user->name }}
+                                @endif
                             </div>
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 capitalize">
-                                {{ str_replace('_', ' ', $payment->payment_method) }}
-                            </span>
+                            @if($payment->notes)
+                            <div class="text-xs text-gray-400 mt-1">{{ $payment->notes }}</div>
+                            @endif
                         </div>
-                        @if($payment->notes)
-                        <p class="text-xs text-gray-600 mt-1">{{ $payment->notes }}</p>
-                        @endif
-                        <p class="text-xs text-gray-500 mt-1">Recorded by: {{ $payment->user->name ?? 'System' }}</p>
                     </div>
                     @endforeach
                 </div>
@@ -231,7 +230,6 @@
     </div>
 </div>
 
-@if($sale->payment_method === 'credit')
 <!-- Payment Modal -->
 <div id="paymentModal" class="fixed inset-0 z-50 overflow-y-auto hidden" style="background-color: rgba(0, 0, 0, 0.5);">
     <div class="flex items-center justify-center min-h-screen px-4">
@@ -295,6 +293,7 @@
 <script>
     function openPaymentModal() {
         document.getElementById('paymentModal').classList.remove('hidden');
+        document.getElementById('paymentAmount').focus();
     }
 
     function closePaymentModal() {
@@ -345,7 +344,6 @@
     });
 </script>
 @endsection
-@endif
 
 
 

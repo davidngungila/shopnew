@@ -14,16 +14,16 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50">
-    <div class="min-h-screen flex flex-col lg:flex-row">
+    <div class="min-h-screen flex">
         <!-- Mobile Menu Toggle -->
-        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md">
+        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-md">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
 
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 fixed h-screen overflow-y-auto z-40 transform -translate-x-full lg:translate-x-0 lg:static transition-transform duration-300">
+        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 fixed h-screen overflow-y-auto z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
             <div class="p-4">
                 <div class="flex items-center space-x-3 mb-8">
                     <img src="{{ asset('logo.png') }}" alt="ShopSmart Logo" class="h-10 w-auto">
@@ -467,9 +467,9 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0">
+        <div class="flex-1 lg:ml-64">
             <!-- Top Header -->
-            <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
+            <header class="bg-white border-b border-gray-200 sticky top-0 z-20">
                 <div class="px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 max-w-xl" x-data="{ searchOpen: false }" @keydown.ctrl.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())" @keydown.meta.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())">
@@ -888,7 +888,7 @@
             </header>
 
             <!-- Page Content -->
-            <main class="flex-1 p-4 sm:p-6 overflow-x-hidden">
+            <main class="p-6">
                 @yield('content')
             </main>
         </div>
