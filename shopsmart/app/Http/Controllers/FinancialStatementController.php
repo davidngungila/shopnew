@@ -10,6 +10,7 @@ use App\Models\Capital;
 use App\Models\Liability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -40,11 +41,20 @@ class FinancialStatementController extends Controller
         // Net Profit
         $netProfit = $grossProfit - $operatingExpenses;
 
-        // Expense breakdown
-        $expenseBreakdown = Expense::select('category', DB::raw('SUM(amount) as total'))
-            ->whereBetween('expense_date', [$dateFrom, $dateTo])
-            ->groupBy('category')
-            ->get();
+        // Expense breakdown - check if category column exists
+        $expenseBreakdown = collect();
+        if (Schema::hasColumn('expenses', 'category')) {
+            $expenseBreakdown = Expense::select('category', DB::raw('SUM(amount) as total'))
+                ->whereBetween('expense_date', [$dateFrom, $dateTo])
+                ->groupBy('category')
+                ->get();
+        } else {
+            // If category column doesn't exist, group by description or use a default
+            $expenseBreakdown = Expense::select(DB::raw('COALESCE(description, "Uncategorized") as category'), DB::raw('SUM(amount) as total'))
+                ->whereBetween('expense_date', [$dateFrom, $dateTo])
+                ->groupBy(DB::raw('COALESCE(description, "Uncategorized")'))
+                ->get();
+        }
 
         return view('financial-statements.profit-loss', compact(
             'revenue', 'cogs', 'grossProfit', 'operatingExpenses', 'netProfit',
@@ -140,10 +150,20 @@ class FinancialStatementController extends Controller
 
         $netProfit = $grossProfit - $operatingExpenses;
 
-        $expenseBreakdown = Expense::select('category', DB::raw('SUM(amount) as total'))
-            ->whereBetween('expense_date', [$dateFrom, $dateTo])
-            ->groupBy('category')
-            ->get();
+        // Expense breakdown - check if category column exists
+        $expenseBreakdown = collect();
+        if (Schema::hasColumn('expenses', 'category')) {
+            $expenseBreakdown = Expense::select('category', DB::raw('SUM(amount) as total'))
+                ->whereBetween('expense_date', [$dateFrom, $dateTo])
+                ->groupBy('category')
+                ->get();
+        } else {
+            // If category column doesn't exist, group by description or use a default
+            $expenseBreakdown = Expense::select(DB::raw('COALESCE(description, "Uncategorized") as category'), DB::raw('SUM(amount) as total'))
+                ->whereBetween('expense_date', [$dateFrom, $dateTo])
+                ->groupBy(DB::raw('COALESCE(description, "Uncategorized")'))
+                ->get();
+        }
 
         $pdf = Pdf::loadView('financial-statements.pdf.profit-loss', compact(
             'revenue', 'cogs', 'grossProfit', 'operatingExpenses', 'netProfit',
