@@ -10,6 +10,7 @@ use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
@@ -348,36 +349,51 @@ class ReportController extends Controller
 
         $sales = Sale::where('customer_id', $customer->id)
             ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
-            ->with(['items.product', 'user'])
+            ->with(['items.product', 'user', 'payments'])
             ->latest()
             ->paginate(50);
 
-        $totalSales = Sale::where('customer_id', $customer->id)
+        $salesInPeriod = Sale::where('customer_id', $customer->id)
             ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
             ->where('status', 'completed')
-            ->sum('total');
+            ->with('payments')
+            ->get();
+
+        $totalSales = $salesInPeriod->sum('total');
         
-        $totalPaid = Sale::where('customer_id', $customer->id)
-            ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
-            ->where('status', 'completed')
-            ->sum('paid_amount');
+        // Calculate total paid from payments
+        $totalPaid = $salesInPeriod->sum(function($sale) {
+            return $sale->payments->sum('amount');
+        });
         
-        $totalDue = Sale::where('customer_id', $customer->id)
-            ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
-            ->where('status', 'completed')
-            ->sum('due_amount');
+        // Calculate total due (total - paid)
+        $totalDue = $totalSales - $totalPaid;
 
         // Opening balance (sales before date range)
-        $openingBalance = Sale::where('customer_id', $customer->id)
+        $salesBeforePeriod = Sale::where('customer_id', $customer->id)
             ->where('created_at', '<', $dateFrom . ' 00:00:00')
             ->where('status', 'completed')
-            ->sum('due_amount');
+            ->with('payments')
+            ->get();
+        
+        $openingTotal = $salesBeforePeriod->sum('total');
+        $openingPaid = $salesBeforePeriod->sum(function($sale) {
+            return $sale->payments->sum('amount');
+        });
+        $openingBalance = $openingTotal - $openingPaid;
 
-        // Closing balance
-        $closingBalance = Sale::where('customer_id', $customer->id)
+        // Closing balance (all sales up to dateTo)
+        $salesUpToDate = Sale::where('customer_id', $customer->id)
             ->where('created_at', '<=', $dateTo . ' 23:59:59')
             ->where('status', 'completed')
-            ->sum('due_amount');
+            ->with('payments')
+            ->get();
+        
+        $closingTotal = $salesUpToDate->sum('total');
+        $closingPaid = $salesUpToDate->sum(function($sale) {
+            return $sale->payments->sum('amount');
+        });
+        $closingBalance = $closingTotal - $closingPaid;
 
         return view('reports.customer-statement', compact('customer', 'sales', 'totalSales', 'totalPaid', 'totalDue', 'openingBalance', 'closingBalance', 'dateFrom', 'dateTo'));
     }
@@ -436,5 +452,359 @@ class ReportController extends Controller
             ->sum('due_amount');
 
         return view('reports.supplier-statement', compact('supplier', 'purchases', 'totalPurchases', 'totalPaid', 'totalDue', 'openingBalance', 'closingBalance', 'dateFrom', 'dateTo'));
+    }
+
+    /**
+     * Get company settings for PDFs
+     */
+    private function getCompanySettings()
+    {
+        return [
+            'company_name' => \App\Models\Setting::get('company_name', 'ShopSmart'),
+            'company_email' => \App\Models\Setting::get('company_email', ''),
+            'company_phone' => \App\Models\Setting::get('company_phone', ''),
+            'company_address' => \App\Models\Setting::get('company_address', ''),
+            'tax_id' => \App\Models\Setting::get('tax_id', ''),
+            'company_website' => \App\Models\Setting::get('company_website', ''),
+        ];
+    }
+
+    /**
+     * Generate PDF for Sales Report
+     */
+    public function salesPdf(Request $request)
+    {
+        $dateFrom = $request->get('date_from', now()->startOfMonth()->toDateString());
+        $dateTo = $request->get('date_to', now()->toDateString());
+
+        // Get all sales (no pagination for PDF)
+        $query = Sale::whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
+            ->where('status', 'completed')
+            ->with(['customer', 'items.product']);
+
+        if ($request->filled('customer_id')) {
+            $query->where('customer_id', $request->customer_id);
+        }
+
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        $sales = $query->latest()->get();
+
+        // Statistics
+        $totalSales = $sales->sum('total');
+        $totalOrders = $sales->count();
+        $averageOrder = $totalOrders > 0 ? $totalSales / $totalOrders : 0;
+
+        // Sales by payment method
+        $salesByPayment = $sales->groupBy('payment_method')->map(function($group) {
+            return [
+                'total' => $group->sum('total'),
+                'count' => $group->count()
+            ];
+        });
+
+        // Top customers
+        $topCustomers = $sales->whereNotNull('customer_id')
+            ->groupBy('customer_id')
+            ->map(function($group) {
+                return [
+                    'customer' => $group->first()->customer,
+                    'total' => $group->sum('total'),
+                    'count' => $group->count()
+                ];
+            })
+            ->sortByDesc('total')
+            ->take(10);
+
+        $settings = $this->getCompanySettings();
+        $customers = Customer::orderBy('name')->get();
+
+        try {
+            $pdf = Pdf::loadView('reports.pdf.sales', compact(
+                'sales', 'totalSales', 'totalOrders', 'averageOrder',
+                'salesByPayment', 'topCustomers', 'settings', 'dateFrom', 'dateTo', 'customers'
+            ));
+        } catch (\Exception $e) {
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('reports.pdf.sales', compact(
+                'sales', 'totalSales', 'totalOrders', 'averageOrder',
+                'salesByPayment', 'topCustomers', 'settings', 'dateFrom', 'dateTo', 'customers'
+            ));
+        }
+
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        $filename = 'Sales-Report-' . $dateFrom . '-to-' . $dateTo . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Generate PDF for Purchase Report
+     */
+    public function purchasesPdf(Request $request)
+    {
+        $dateFrom = $request->get('date_from', now()->startOfMonth()->toDateString());
+        $dateTo = $request->get('date_to', now()->toDateString());
+
+        $query = Purchase::whereBetween('purchase_date', [$dateFrom, $dateTo])
+            ->with(['supplier', 'items.product']);
+
+        if ($request->filled('supplier_id')) {
+            $query->where('supplier_id', $request->supplier_id);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        } else {
+            $query->where('status', 'completed');
+        }
+
+        $purchases = $query->latest()->get();
+
+        // Statistics
+        $totalPurchases = $purchases->where('status', 'completed')->sum('total');
+        $totalOrders = $purchases->where('status', 'completed')->count();
+        $averageOrder = $totalOrders > 0 ? $totalPurchases / $totalOrders : 0;
+
+        // Purchases by supplier
+        $purchasesBySupplier = $purchases->where('status', 'completed')
+            ->whereNotNull('supplier_id')
+            ->groupBy('supplier_id')
+            ->map(function($group) {
+                return [
+                    'supplier' => $group->first()->supplier,
+                    'total' => $group->sum('total'),
+                    'count' => $group->count()
+                ];
+            })
+            ->sortByDesc('total')
+            ->take(10);
+
+        $settings = $this->getCompanySettings();
+        $suppliers = Supplier::where('is_active', true)->orderBy('name')->get();
+
+        try {
+            $pdf = Pdf::loadView('reports.pdf.purchases', compact(
+                'purchases', 'totalPurchases', 'totalOrders', 'averageOrder',
+                'purchasesBySupplier', 'settings', 'dateFrom', 'dateTo', 'suppliers'
+            ));
+        } catch (\Exception $e) {
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('reports.pdf.purchases', compact(
+                'purchases', 'totalPurchases', 'totalOrders', 'averageOrder',
+                'purchasesBySupplier', 'settings', 'dateFrom', 'dateTo', 'suppliers'
+            ));
+        }
+
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        $filename = 'Purchase-Report-' . $dateFrom . '-to-' . $dateTo . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Generate PDF for Inventory Report
+     */
+    public function inventoryPdf(Request $request)
+    {
+        $query = Product::with(['category', 'warehouse']);
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('warehouse_id')) {
+            $query->where('warehouse_id', $request->warehouse_id);
+        }
+
+        if ($request->filled('stock_status')) {
+            if ($request->stock_status === 'low') {
+                $query->whereRaw('stock_quantity <= low_stock_alert');
+            } elseif ($request->stock_status === 'out') {
+                $query->where('stock_quantity', '<=', 0);
+            } elseif ($request->stock_status === 'in_stock') {
+                $query->where('stock_quantity', '>', 0);
+            }
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhere('barcode', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->orderBy('name')->get();
+
+        // Statistics
+        $totalProducts = Product::count();
+        $activeProducts = Product::where('is_active', true)->count();
+        $totalStockValue = Product::sum(DB::raw('stock_quantity * cost_price'));
+        $totalSellingValue = Product::sum(DB::raw('stock_quantity * selling_price'));
+        $potentialProfit = $totalSellingValue - $totalStockValue;
+        $lowStockCount = Product::whereRaw('stock_quantity <= low_stock_alert')
+            ->where('stock_quantity', '>', 0)
+            ->count();
+        $outOfStockCount = Product::where('stock_quantity', '<=', 0)->count();
+
+        $settings = $this->getCompanySettings();
+        $categories = \App\Models\Category::where('is_active', true)->orderBy('name')->get();
+        $warehouses = \App\Models\Warehouse::where('is_active', true)->orderBy('name')->get();
+
+        try {
+            $pdf = Pdf::loadView('reports.pdf.inventory', compact(
+                'products', 'totalProducts', 'activeProducts', 'totalStockValue',
+                'totalSellingValue', 'potentialProfit', 'lowStockCount', 'outOfStockCount',
+                'settings', 'categories', 'warehouses'
+            ));
+        } catch (\Exception $e) {
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('reports.pdf.inventory', compact(
+                'products', 'totalProducts', 'activeProducts', 'totalStockValue',
+                'totalSellingValue', 'potentialProfit', 'lowStockCount', 'outOfStockCount',
+                'settings', 'categories', 'warehouses'
+            ));
+        }
+
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        $filename = 'Inventory-Report-' . now()->format('Y-m-d') . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Generate PDF for Customer Statement
+     */
+    public function customerStatementPdf(Request $request, Customer $customer)
+    {
+        $dateFrom = $request->get('date_from', now()->subMonths(3)->toDateString());
+        $dateTo = $request->get('date_to', now()->toDateString());
+
+        $sales = Sale::where('customer_id', $customer->id)
+            ->whereBetween('created_at', [$dateFrom . ' 00:00:00', $dateTo . ' 23:59:59'])
+            ->with(['items.product', 'user', 'payments'])
+            ->latest()
+            ->get();
+
+        $salesInPeriod = $sales->where('status', 'completed');
+        $totalSales = $salesInPeriod->sum('total');
+        $totalPaid = $salesInPeriod->sum(function($sale) {
+            return $sale->payments->sum('amount');
+        });
+        $totalDue = $totalSales - $totalPaid;
+
+        // Opening balance (sales before date range)
+        $salesBeforePeriod = Sale::where('customer_id', $customer->id)
+            ->where('created_at', '<', $dateFrom . ' 00:00:00')
+            ->where('status', 'completed')
+            ->with('payments')
+            ->get();
+        
+        $openingTotal = $salesBeforePeriod->sum('total');
+        $openingPaid = $salesBeforePeriod->sum(function($sale) {
+            return $sale->payments->sum('amount');
+        });
+        $openingBalance = $openingTotal - $openingPaid;
+
+        // Closing balance (all sales up to dateTo)
+        $salesUpToDate = Sale::where('customer_id', $customer->id)
+            ->where('created_at', '<=', $dateTo . ' 23:59:59')
+            ->where('status', 'completed')
+            ->with('payments')
+            ->get();
+        
+        $closingTotal = $salesUpToDate->sum('total');
+        $closingPaid = $salesUpToDate->sum(function($sale) {
+            return $sale->payments->sum('amount');
+        });
+        $closingBalance = $closingTotal - $closingPaid;
+
+        $settings = $this->getCompanySettings();
+
+        try {
+            $pdf = Pdf::loadView('reports.pdf.customer-statement', compact(
+                'customer', 'sales', 'totalSales', 'totalPaid', 'totalDue',
+                'openingBalance', 'closingBalance', 'dateFrom', 'dateTo', 'settings'
+            ));
+        } catch (\Exception $e) {
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('reports.pdf.customer-statement', compact(
+                'customer', 'sales', 'totalSales', 'totalPaid', 'totalDue',
+                'openingBalance', 'closingBalance', 'dateFrom', 'dateTo', 'settings'
+            ));
+        }
+
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        $filename = 'Customer-Statement-' . $customer->name . '-' . $dateFrom . '-to-' . $dateTo . '.pdf';
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Generate PDF for Supplier Statement
+     */
+    public function supplierStatementPdf(Request $request, Supplier $supplier)
+    {
+        $dateFrom = $request->get('date_from', now()->subMonths(3)->toDateString());
+        $dateTo = $request->get('date_to', now()->toDateString());
+
+        $purchases = Purchase::where('supplier_id', $supplier->id)
+            ->whereBetween('purchase_date', [$dateFrom, $dateTo])
+            ->with(['items.product', 'user'])
+            ->latest()
+            ->get();
+
+        $totalPurchases = $purchases->where('status', 'completed')->sum('total');
+        $totalPaid = $purchases->where('status', 'completed')->sum('paid_amount');
+        $totalDue = $purchases->where('status', 'completed')->sum('due_amount');
+
+        $openingBalance = Purchase::where('supplier_id', $supplier->id)
+            ->where('purchase_date', '<', $dateFrom)
+            ->where('status', 'completed')
+            ->sum('due_amount');
+
+        $closingBalance = Purchase::where('supplier_id', $supplier->id)
+            ->where('purchase_date', '<=', $dateTo)
+            ->where('status', 'completed')
+            ->sum('due_amount');
+
+        $settings = $this->getCompanySettings();
+
+        try {
+            $pdf = Pdf::loadView('reports.pdf.supplier-statement', compact(
+                'supplier', 'purchases', 'totalPurchases', 'totalPaid', 'totalDue',
+                'openingBalance', 'closingBalance', 'dateFrom', 'dateTo', 'settings'
+            ));
+        } catch (\Exception $e) {
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('reports.pdf.supplier-statement', compact(
+                'supplier', 'purchases', 'totalPurchases', 'totalPaid', 'totalDue',
+                'openingBalance', 'closingBalance', 'dateFrom', 'dateTo', 'settings'
+            ));
+        }
+
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOption('enable-local-file-access', true);
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isRemoteEnabled', true);
+
+        $filename = 'Supplier-Statement-' . $supplier->name . '-' . $dateFrom . '-to-' . $dateTo . '.pdf';
+        return $pdf->download($filename);
     }
 }

@@ -169,14 +169,19 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
-Route::get('/reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
-Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
-Route::get('/reports/financial', [ReportController::class, 'sales'])->name('reports.financial');
-Route::get('/reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
-Route::get('/reports/customers/{customer}/statement', [ReportController::class, 'customerStatement'])->name('reports.customer-statement');
-Route::get('/reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
-Route::get('/reports/suppliers/{supplier}/statement', [ReportController::class, 'supplierStatement'])->name('reports.supplier-statement');
+    Route::get('/reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+    Route::get('/reports/sales/pdf', [ReportController::class, 'salesPdf'])->name('reports.sales.pdf');
+    Route::get('/reports/purchases', [ReportController::class, 'purchases'])->name('reports.purchases');
+    Route::get('/reports/purchases/pdf', [ReportController::class, 'purchasesPdf'])->name('reports.purchases.pdf');
+    Route::get('/reports/inventory', [ReportController::class, 'inventory'])->name('reports.inventory');
+    Route::get('/reports/inventory/pdf', [ReportController::class, 'inventoryPdf'])->name('reports.inventory.pdf');
+    Route::get('/reports/financial', [ReportController::class, 'sales'])->name('reports.financial');
+    Route::get('/reports/customers', [ReportController::class, 'customers'])->name('reports.customers');
+    Route::get('/reports/customers/{customer}/statement', [ReportController::class, 'customerStatement'])->name('reports.customer-statement');
+    Route::get('/reports/customers/{customer}/statement/pdf', [ReportController::class, 'customerStatementPdf'])->name('reports.customer-statement.pdf');
+    Route::get('/reports/suppliers', [ReportController::class, 'suppliers'])->name('reports.suppliers');
+    Route::get('/reports/suppliers/{supplier}/statement', [ReportController::class, 'supplierStatement'])->name('reports.supplier-statement');
+    Route::get('/reports/suppliers/{supplier}/statement/pdf', [ReportController::class, 'supplierStatementPdf'])->name('reports.supplier-statement.pdf');
     Route::get('/reports/profit-loss', [FinancialStatementController::class, 'profitLoss'])->name('reports.profit-loss');
 
     // Settings

@@ -48,6 +48,9 @@ class Sale extends Model
 
     public function getTotalPaidAttribute()
     {
+        if ($this->relationLoaded('payments')) {
+            return $this->payments->sum('amount');
+        }
         return $this->payments()->sum('amount');
     }
 

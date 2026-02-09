@@ -17,6 +17,13 @@
                 </svg>
                 <span class="hidden sm:inline">Print</span>
             </button>
+            <a href="{{ route('reports.customer-statement.pdf', ['customer' => $customer->id] + request()->query()) }}" class="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center space-x-2 text-sm">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span class="hidden sm:inline">Export PDF</span>
+                <span class="sm:hidden">PDF</span>
+            </a>
             <a href="{{ route('reports.customers') }}" class="px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 flex items-center space-x-2 text-sm">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
@@ -100,13 +107,13 @@
                     </div>
                     <div class="text-right">
                         <div class="text-base font-bold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
-                        <div class="text-xs text-gray-500">Due: TZS {{ number_format($sale->due_amount, 0) }}</div>
+                        <div class="text-xs text-gray-500">Due: TZS {{ number_format($sale->balance ?? ($sale->total - $sale->total_paid), 0) }}</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
                         <span class="text-gray-500">Paid:</span>
-                        <div class="font-medium text-green-600 mt-0.5">TZS {{ number_format($sale->paid_amount, 0) }}</div>
+                        <div class="font-medium text-green-600 mt-0.5">TZS {{ number_format($sale->total_paid ?? 0, 0) }}</div>
                     </div>
                     <div>
                         <span class="text-gray-500">Status:</span>
@@ -152,10 +159,10 @@
                             <div class="text-xs sm:text-sm font-semibold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
-                            <div class="text-xs sm:text-sm font-semibold text-green-600">TZS {{ number_format($sale->paid_amount, 0) }}</div>
+                            <div class="text-xs sm:text-sm font-semibold text-green-600">TZS {{ number_format($sale->total_paid ?? 0, 0) }}</div>
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
-                            <div class="text-xs sm:text-sm font-semibold text-red-600">TZS {{ number_format($sale->due_amount, 0) }}</div>
+                            <div class="text-xs sm:text-sm font-semibold text-red-600">TZS {{ number_format($sale->balance ?? ($sale->total - ($sale->total_paid ?? 0)), 0) }}</div>
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 capitalize">
@@ -189,6 +196,7 @@
     </div>
 </div>
 @endsection
+
 
 
 
