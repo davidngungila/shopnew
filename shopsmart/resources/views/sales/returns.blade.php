@@ -84,20 +84,20 @@
     <!-- Filters -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
         <form method="GET" action="{{ route('sales.returns') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice, customer..." class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search invoice, customer..." class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
             
-            <select name="customer_id" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <select name="customer_id" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
                 <option value="">All Customers</option>
                 @foreach($customers ?? [] as $customer)
                 <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>{{ $customer->name }}</option>
                 @endforeach
             </select>
 
-            <input type="date" name="date_from" value="{{ request('date_from') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-            <input type="date" name="date_to" value="{{ request('date_to') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <input type="date" name="date_from" value="{{ request('date_from') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+            <input type="date" name="date_to" value="{{ request('date_to') }}" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
             
             <div class="sm:col-span-4 flex gap-2">
-                <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Filter</button>
+                <button type="submit" class="px-4 py-2 text-white rounded-lg" style="background-color: #009245;" onmouseover="this.style.backgroundColor='#007a38'" onmouseout="this.style.backgroundColor='#009245'">Filter</button>
                 <a href="{{ route('sales.returns') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300">Clear</a>
             </div>
         </form>
@@ -120,8 +120,6 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Original Invoice #</th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Return Date</th>
                         <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Refund Amount</th>
                         <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
@@ -133,15 +131,6 @@
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">#{{ $sale->invoice_number ?? $sale->id }}</div>
                         </td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $sale->customer->name ?? 'Walk-in' }}</div>
-                            @if($sale->customer)
-                            <div class="text-xs text-gray-500">{{ $sale->customer->email ?? $sale->customer->phone }}</div>
-                            @endif
-                        </td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $sale->items->count() ?? 0 }} items</div>
-                        </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}
                             <div class="text-xs text-gray-400">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('h:i A') }}</div>
@@ -150,17 +139,24 @@
                             TZS {{ number_format($sale->total, 0) }}
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{{ route('sales.show', $sale) }}" class="text-purple-600 hover:text-purple-900" title="View">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                </svg>
-                            </a>
+                            <div class="flex items-center justify-end space-x-2">
+                                <a href="{{ route('sales.show', $sale) }}" class="text-[#009245] hover:text-[#007a38]" title="View">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{{ route('sales.print', $sale) }}" target="_blank" class="text-blue-600 hover:text-blue-900" title="Print Receipt">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No returns found</td>
+                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">No returns found</td>
                     </tr>
                     @endforelse
                 </tbody>

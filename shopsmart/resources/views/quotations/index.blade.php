@@ -158,8 +158,6 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quotation #</th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Items</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total (TZS)</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
@@ -172,15 +170,6 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-medium text-gray-900">{{ $quotation->quotation_number }}</div>
-                        </td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $quotation->customer->name ?? 'Walk-in' }}</div>
-                            @if($quotation->customer && $quotation->customer->phone)
-                            <div class="text-xs text-gray-500">{{ $quotation->customer->phone }}</div>
-                            @endif
-                        </td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $quotation->items->count() ?? 0 }} item(s)</div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <div class="text-sm font-semibold text-gray-900">TZS {{ number_format($quotation->total, 0) }}</div>
@@ -248,7 +237,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500">No quotations found</td>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-500">No quotations found</td>
                     </tr>
                     @endforelse
                 </tbody>
