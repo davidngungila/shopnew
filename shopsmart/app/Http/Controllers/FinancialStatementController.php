@@ -11,6 +11,7 @@ use App\Models\Liability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FinancialStatementController extends Controller
 {
@@ -118,5 +119,108 @@ class FinancialStatementController extends Controller
         $totalCredit = $accounts->sum('credit');
 
         return view('financial-statements.trial-balance', compact('accounts', 'totalDebit', 'totalCredit', 'asOfDate'));
+    }
+
+    public function profitLossPdf(Request $request)
+    {
+        $dateFrom = $request->get('date_from', now()->startOfMonth()->toDateString());
+        $dateTo = $request->get('date_to', now()->toDateString());
+
+        $revenue = Sale::whereBetween('created_at', [$dateFrom, $dateTo])
+            ->where('status', 'completed')
+            ->sum('total');
+
+        $cogs = Purchase::whereBetween('created_at', [$dateFrom, $dateTo])
+            ->where('status', 'completed')
+            ->sum('total');
+
+        $grossProfit = $revenue - $cogs;
+        $operatingExpenses = Expense::whereBetween('expense_date', [$dateFrom, $dateTo])
+            ->sum('amount');
+
+        $netProfit = $grossProfit - $operatingExpenses;
+
+        $expenseBreakdown = Expense::select('category', DB::raw('SUM(amount) as total'))
+            ->whereBetween('expense_date', [$dateFrom, $dateTo])
+            ->groupBy('category')
+            ->get();
+
+        $pdf = Pdf::loadView('financial-statements.pdf.profit-loss', compact(
+            'revenue', 'cogs', 'grossProfit', 'operatingExpenses', 'netProfit',
+            'expenseBreakdown', 'dateFrom', 'dateTo'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download('profit-loss-statement-' . $dateFrom . '-to-' . $dateTo . '.pdf');
+    }
+
+    public function balanceSheetPdf(Request $request)
+    {
+        $asOfDate = $request->get('as_of_date', now()->toDateString());
+
+        $currentAssets = ChartOfAccount::where('account_type', 'asset')
+            ->where('account_category', 'current_asset')
+            ->where('is_active', true)
+            ->sum('current_balance');
+
+        $fixedAssets = ChartOfAccount::where('account_type', 'asset')
+            ->where('account_category', 'fixed_asset')
+            ->where('is_active', true)
+            ->sum('current_balance');
+
+        $totalAssets = $currentAssets + $fixedAssets;
+
+        $currentLiabilities = ChartOfAccount::where('account_type', 'liability')
+            ->where('account_category', 'current_liability')
+            ->where('is_active', true)
+            ->sum('current_balance');
+
+        $longTermLiabilities = Liability::where('status', 'active')
+            ->sum('outstanding_balance');
+
+        $totalLiabilities = $currentLiabilities + $longTermLiabilities;
+
+        $capital = Capital::where('type', 'contribution')->sum('amount') - 
+                   Capital::where('type', 'withdrawal')->sum('amount');
+
+        $retainedEarnings = ChartOfAccount::where('account_type', 'equity')
+            ->where('is_active', true)
+            ->sum('current_balance');
+
+        $totalEquity = $capital + $retainedEarnings;
+
+        $pdf = Pdf::loadView('financial-statements.pdf.balance-sheet', compact(
+            'currentAssets', 'fixedAssets', 'totalAssets',
+            'currentLiabilities', 'longTermLiabilities', 'totalLiabilities',
+            'capital', 'retainedEarnings', 'totalEquity', 'asOfDate'
+        ))->setPaper('a4', 'portrait');
+
+        return $pdf->download('balance-sheet-' . $asOfDate . '.pdf');
+    }
+
+    public function trialBalancePdf(Request $request)
+    {
+        $asOfDate = $request->get('as_of_date', now()->toDateString());
+
+        $accounts = ChartOfAccount::where('is_active', true)
+            ->orderBy('account_type')
+            ->orderBy('account_code')
+            ->get()
+            ->map(function($account) {
+                return [
+                    'code' => $account->account_code,
+                    'name' => $account->account_name,
+                    'type' => $account->account_type,
+                    'debit' => $account->account_type == 'asset' || $account->account_type == 'expense' ? $account->current_balance : 0,
+                    'credit' => $account->account_type == 'liability' || $account->account_type == 'equity' || $account->account_type == 'revenue' ? $account->current_balance : 0,
+                ];
+            });
+
+        $totalDebit = $accounts->sum('debit');
+        $totalCredit = $accounts->sum('credit');
+
+        $pdf = Pdf::loadView('financial-statements.pdf.trial-balance', compact('accounts', 'totalDebit', 'totalCredit', 'asOfDate'))
+            ->setPaper('a4', 'landscape');
+
+        return $pdf->download('trial-balance-' . $asOfDate . '.pdf');
     }
 }

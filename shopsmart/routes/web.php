@@ -151,8 +151,11 @@ Route::resource('transactions', TransactionController::class);
 
     // Financial Statements
     Route::get('/financial-statements/profit-loss', [FinancialStatementController::class, 'profitLoss'])->name('financial-statements.profit-loss');
-Route::get('/financial-statements/balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('financial-statements.balance-sheet');
+    Route::get('/financial-statements/profit-loss/pdf', [FinancialStatementController::class, 'profitLossPdf'])->name('financial-statements.profit-loss.pdf');
+    Route::get('/financial-statements/balance-sheet', [FinancialStatementController::class, 'balanceSheet'])->name('financial-statements.balance-sheet');
+    Route::get('/financial-statements/balance-sheet/pdf', [FinancialStatementController::class, 'balanceSheetPdf'])->name('financial-statements.balance-sheet.pdf');
     Route::get('/financial-statements/trial-balance', [FinancialStatementController::class, 'trialBalance'])->name('financial-statements.trial-balance');
+    Route::get('/financial-statements/trial-balance/pdf', [FinancialStatementController::class, 'trialBalancePdf'])->name('financial-statements.trial-balance.pdf');
 
     // Reports
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
