@@ -1,166 +1,225 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Balance Sheet</title>
+    <meta charset="utf-8">
+    <title>Balance Sheet - {{ config('app.name', 'TmcsSmart') }}</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        @page { size: A4; margin: 20mm; }
-        body { 
-            font-family: 'DM Sans', 'Roboto', Arial, sans-serif; 
-            font-size: 11px;
-            line-height: 1.6;
-            color: #1f2937;
+        @page {
+            margin: 10mm 12mm;
+            size: A4;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9pt;
+            line-height: 1.4;
+            color: #333;
         }
         .header {
-            text-align: center;
-            margin-bottom: 30px;
             border-bottom: 3px solid #009245;
             padding-bottom: 15px;
-        }
-        .header h1 {
-            font-size: 24px;
-            color: #009245;
-            margin-bottom: 5px;
-        }
-        .header p {
-            color: #6b7280;
-            font-size: 12px;
-        }
-        .as-of-date {
+            margin-bottom: 15px;
             text-align: center;
-            margin-bottom: 20px;
-            font-weight: 600;
+            width: 100%;
         }
-        .balance-sheet {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 20px;
+        .header-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 15px auto;
         }
-        .section {
-            border: 1px solid #e5e7eb;
-            border-radius: 4px;
+        .title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #009245;
+            margin: 15px 0 10px 0;
         }
-        .section-header {
-            background-color: #009245;
-            color: white;
-            padding: 12px;
-            font-weight: 700;
-            font-size: 13px;
+        .header-info {
+            font-size: 10pt;
+            color: #666;
+            margin-top: 8px;
         }
-        .section-body {
-            padding: 15px;
+        .stats {
+            display: table;
+            width: 100%;
+            margin: 15px 0;
+            border-collapse: collapse;
         }
-        .item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
+        .stats-row {
+            display: table-row;
+        }
+        .stats-cell {
+            display: table-cell;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            font-size: 8pt;
+        }
+        .stats-label {
+            font-weight: bold;
+            color: #009245;
+        }
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            background: white;
+        }
+        .info-table tr {
             border-bottom: 1px solid #e5e7eb;
         }
-        .item-label {
-            font-weight: 500;
+        .info-table tr:last-child {
+            border-bottom: none;
         }
-        .item-value {
+        .info-table td {
+            padding: 5px 8px;
+            vertical-align: top;
+            font-size: 8.5pt;
+        }
+        .info-table td:first-child {
             font-weight: 600;
-            text-align: right;
+            width: 60%;
+            color: #374151;
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
         }
-        .total {
-            background-color: #f3f4f6;
-            padding: 12px;
-            margin-top: 10px;
-            border-top: 2px solid #009245;
-            font-weight: 700;
-            font-size: 13px;
+        .info-table td:last-child {
+            color: #1a1a1a;
+            text-align: right;
+            font-weight: 600;
+        }
+        .two-column {
+            display: table;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .column {
+            display: table-cell;
+            width: 50%;
+            padding: 0 10px;
+            vertical-align: top;
+        }
+        .column:first-child {
+            padding-left: 0;
+        }
+        .column:last-child {
+            padding-right: 0;
+        }
+        .section {
+            margin: 15px 0;
+            page-break-inside: avoid;
+        }
+        .section-header {
+            background: #009245;
+            color: white;
+            padding: 8px 12px;
+            font-weight: bold;
+            font-size: 10pt;
+            margin-bottom: 8px;
+        }
+        .section-content {
+            padding: 8px 0;
+            font-size: 8.5pt;
         }
         .footer {
-            margin-top: 40px;
-            padding-top: 15px;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 20px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+            font-size: 7pt;
+            color: #666;
             text-align: center;
-            font-size: 10px;
-            color: #6b7280;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>BALANCE SHEET</h1>
-        <p>{{ config('app.name', 'ShopSmart') }}</p>
+        <div style="text-align: center; margin-bottom: 15px;">
+            @php
+                $headerImagePath = public_path('header-mfumo.png');
+                $headerBase64 = '';
+                if (file_exists($headerImagePath)) {
+                    $headerImageData = file_get_contents($headerImagePath);
+                    $headerBase64 = 'data:image/png;base64,' . base64_encode($headerImageData);
+                }
+            @endphp
+            @if($headerBase64)
+            <img src="{{ $headerBase64 }}" alt="FeedTan Header" class="header-image">
+            @endif
+        </div>
+        <div class="title">BALANCE SHEET</div>
+        <div class="header-info">
+            As of: <strong>{{ \Carbon\Carbon::parse($asOfDate)->format('F d, Y') }}</strong><br>
+            Generated: {{ now()->format('Y-m-d H:i:s') }}<br>
+            Company: {{ config('app.name', 'TmcsSmart') }}
+        </div>
     </div>
 
-    <div class="as-of-date">
-        As of: {{ \Carbon\Carbon::parse($asOfDate)->format('F d, Y') }}
-    </div>
-
-    <div class="balance-sheet">
-        <!-- Assets -->
-        <div class="section">
-            <div class="section-header">ASSETS</div>
-            <div class="section-body">
-                <div class="item">
-                    <span class="item-label">Current Assets</span>
-                    <span class="item-value">{{ number_format($currentAssets, 0) }}</span>
-                </div>
-                <div class="item">
-                    <span class="item-label">Fixed Assets</span>
-                    <span class="item-value">{{ number_format($fixedAssets, 0) }}</span>
-                </div>
-                <div class="total">
-                    <div class="item">
-                        <span>Total Assets</span>
-                        <span>{{ number_format($totalAssets, 0) }}</span>
-                    </div>
+    <!-- Balance Sheet -->
+    <div class="two-column">
+        <div class="column">
+            <div class="section">
+                <div class="section-header">ASSETS</div>
+                <div class="section-content">
+                    <table class="info-table">
+                        <tr>
+                            <td>Current Assets</td>
+                            <td>{{ number_format($currentAssets ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr>
+                            <td>Fixed Assets</td>
+                            <td>{{ number_format($fixedAssets ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr style="background: #f3f4f6; border-top: 2px solid #009245; font-weight: 700;">
+                            <td>Total Assets</td>
+                            <td style="font-size: 10pt;">{{ number_format($totalAssets ?? 0, 0) }} TZS</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <!-- Liabilities & Equity -->
-        <div class="section">
-            <div class="section-header">LIABILITIES & EQUITY</div>
-            <div class="section-body">
-                <div class="item">
-                    <span class="item-label">Current Liabilities</span>
-                    <span class="item-value">{{ number_format($currentLiabilities, 0) }}</span>
-                </div>
-                <div class="item">
-                    <span class="item-label">Long-term Liabilities</span>
-                    <span class="item-value">{{ number_format($longTermLiabilities, 0) }}</span>
-                </div>
-                <div class="total" style="margin-top: 20px;">
-                    <div class="item">
-                        <span>Total Liabilities</span>
-                        <span>{{ number_format($totalLiabilities, 0) }}</span>
-                    </div>
-                </div>
-                <div class="item" style="margin-top: 15px;">
-                    <span class="item-label">Capital</span>
-                    <span class="item-value">{{ number_format($capital, 0) }}</span>
-                </div>
-                <div class="item">
-                    <span class="item-label">Retained Earnings</span>
-                    <span class="item-value">{{ number_format($retainedEarnings, 0) }}</span>
-                </div>
-                <div class="total">
-                    <div class="item">
-                        <span>Total Equity</span>
-                        <span>{{ number_format($totalEquity, 0) }}</span>
-                    </div>
-                </div>
-                <div class="total" style="background-color: #e6f5ed; margin-top: 15px;">
-                    <div class="item">
-                        <span>Total Liabilities & Equity</span>
-                        <span>{{ number_format($totalLiabilities + $totalEquity, 0) }}</span>
-                    </div>
+        <div class="column">
+            <div class="section">
+                <div class="section-header">LIABILITIES & EQUITY</div>
+                <div class="section-content">
+                    <table class="info-table">
+                        <tr>
+                            <td>Current Liabilities</td>
+                            <td>{{ number_format($currentLiabilities ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr>
+                            <td>Long-term Liabilities</td>
+                            <td>{{ number_format($longTermLiabilities ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr style="background: #f3f4f6; border-top: 2px solid #009245; font-weight: 700;">
+                            <td>Total Liabilities</td>
+                            <td style="font-size: 10pt;">{{ number_format($totalLiabilities ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr>
+                            <td>Capital</td>
+                            <td>{{ number_format($capital ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr>
+                            <td>Retained Earnings</td>
+                            <td>{{ number_format($retainedEarnings ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr style="background: #f3f4f6; border-top: 2px solid #009245; font-weight: 700;">
+                            <td>Total Equity</td>
+                            <td style="font-size: 10pt;">{{ number_format($totalEquity ?? 0, 0) }} TZS</td>
+                        </tr>
+                        <tr style="background: #e6f5ed; border-top: 3px solid #009245; font-weight: 700; font-size: 10pt;">
+                            <td>Total Liabilities & Equity</td>
+                            <td>{{ number_format(($totalLiabilities ?? 0) + ($totalEquity ?? 0), 0) }} TZS</td>
+                        </tr>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>Generated on {{ now()->format('F d, Y \a\t h:i A') }}</p>
-        <p>This is a computer-generated document.</p>
+        <p><strong>FeedTan Community Microfinance Group - Balance Sheet</strong></p>
+        <p>Report generated on {{ now()->format('F d, Y \a\t H:i:s') }}</p>
+        <p>As of: {{ \Carbon\Carbon::parse($asOfDate)->format('F d, Y') }}</p>
     </div>
 </body>
 </html>
-

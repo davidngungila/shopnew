@@ -1,82 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Chart of Accounts</title>
+    <meta charset="utf-8">
+    <title>Chart of Accounts - {{ config('app.name', 'TmcsSmart') }}</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        @page { size: A4 landscape; margin: 15mm; }
-        body { 
-            font-family: 'DM Sans', 'Roboto', Arial, sans-serif; 
-            font-size: 9px;
+        @page {
+            margin: 10mm 12mm;
+            size: A4 landscape;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 9pt;
             line-height: 1.4;
-            color: #1f2937;
+            color: #333;
         }
         .header {
-            text-align: center;
-            margin-bottom: 20px;
             border-bottom: 3px solid #009245;
-            padding-bottom: 10px;
-        }
-        .header h1 {
-            font-size: 20px;
-            color: #009245;
-            margin-bottom: 5px;
-        }
-        .header p {
-            color: #6b7280;
-            font-size: 11px;
-        }
-        .summary {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            padding-bottom: 15px;
             margin-bottom: 15px;
-            padding: 10px;
-            background-color: #f9fafb;
-            border-radius: 4px;
-        }
-        .summary-item {
             text-align: center;
+            width: 100%;
         }
-        .summary-label {
-            font-size: 9px;
-            color: #6b7280;
-            margin-bottom: 3px;
+        .header-image {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 15px auto;
         }
-        .summary-value {
-            font-size: 14px;
-            font-weight: 700;
+        .title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #009245;
+            margin: 15px 0 10px 0;
+        }
+        .header-info {
+            font-size: 10pt;
+            color: #666;
+            margin-top: 8px;
+        }
+        .stats {
+            display: table;
+            width: 100%;
+            margin: 15px 0;
+            border-collapse: collapse;
+        }
+        .stats-row {
+            display: table-row;
+        }
+        .stats-cell {
+            display: table-cell;
+            padding: 8px;
+            border: 1px solid #ddd;
+            background: #f9f9f9;
+            font-size: 8pt;
+        }
+        .stats-label {
+            font-weight: bold;
             color: #009245;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin: 10px 0;
+            font-size: 8pt;
         }
         th {
-            background-color: #009245;
+            background: #009245;
             color: white;
             padding: 8px 6px;
             text-align: left;
-            font-weight: 600;
-            font-size: 9px;
+            font-weight: bold;
+            border: 1px solid #009245;
+        }
+        th.text-right {
+            text-align: right;
+        }
+        th.text-center {
+            text-align: center;
         }
         td {
             padding: 6px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 8px;
+            border: 1px solid #ddd;
+            vertical-align: top;
         }
-        .account-code { width: 10%; }
-        .account-name { width: 25%; }
-        .account-type { width: 12%; }
-        .account-category { width: 15%; }
-        .balance { width: 15%; text-align: right; font-weight: 600; }
-        .status { width: 10%; text-align: center; }
-        .description { width: 13%; }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
         .section-header {
-            background-color: #f3f4f6;
-            font-weight: 700;
+            background: #009245;
+            color: white;
+            font-weight: bold;
         }
         .inactive {
             color: #9ca3af;
@@ -84,51 +98,63 @@
         .footer {
             margin-top: 20px;
             padding-top: 10px;
-            border-top: 1px solid #e5e7eb;
+            border-top: 1px solid #ddd;
+            font-size: 7pt;
+            color: #666;
             text-align: center;
-            font-size: 8px;
-            color: #6b7280;
         }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>CHART OF ACCOUNTS</h1>
-        <p>{{ config('app.name', 'ShopSmart') }}</p>
+        <div style="text-align: center; margin-bottom: 15px;">
+            @php
+                $headerImagePath = public_path('header-mfumo.png');
+                $headerBase64 = '';
+                if (file_exists($headerImagePath)) {
+                    $headerImageData = file_get_contents($headerImagePath);
+                    $headerBase64 = 'data:image/png;base64,' . base64_encode($headerImageData);
+                }
+            @endphp
+            @if($headerBase64)
+            <img src="{{ $headerBase64 }}" alt="FeedTan Header" class="header-image">
+            @endif
+        </div>
+        <div class="title">CHART OF ACCOUNTS</div>
+        <div class="header-info">
+            Generated: {{ now()->format('Y-m-d H:i:s') }}<br>
+            Company: {{ config('app.name', 'TmcsSmart') }}
+        </div>
     </div>
 
-    <div class="summary">
-        <div class="summary-item">
-            <div class="summary-label">Total Accounts</div>
-            <div class="summary-value">{{ number_format($totalAccounts, 0) }}</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-label">Total Balance</div>
-            <div class="summary-value">TZS {{ number_format($totalBalance, 0) }}</div>
-        </div>
-        <div class="summary-item">
-            <div class="summary-label">Generated</div>
-            <div class="summary-value">{{ now()->format('M d, Y') }}</div>
+    <!-- Statistics -->
+    <div class="stats">
+        <div class="stats-row">
+            <div class="stats-cell stats-label">Total Accounts:</div>
+            <div class="stats-cell">{{ number_format($totalAccounts ?? 0, 0) }}</div>
+            <div class="stats-cell stats-label">Total Balance:</div>
+            <div class="stats-cell"><strong>TZS {{ number_format($totalBalance ?? 0, 0) }}</strong></div>
         </div>
     </div>
 
+    <!-- Accounts Table -->
     <table>
         <thead>
             <tr>
-                <th class="account-code">Code</th>
-                <th class="account-name">Account Name</th>
-                <th class="account-type">Type</th>
-                <th class="account-category">Category</th>
-                <th class="balance">Balance (TZS)</th>
-                <th class="status">Status</th>
-                <th class="description">Description</th>
+                <th style="width: 10%;">Code</th>
+                <th style="width: 25%;">Account Name</th>
+                <th style="width: 12%;">Type</th>
+                <th style="width: 15%;">Category</th>
+                <th class="text-right" style="width: 15%;">Balance (TZS)</th>
+                <th class="text-center" style="width: 10%;">Status</th>
+                <th style="width: 13%;">Description</th>
             </tr>
         </thead>
         <tbody>
             @php
                 $currentType = '';
             @endphp
-            @foreach($accounts as $account)
+            @foreach($accounts ?? [] as $account)
                 @if($currentType !== $account->account_type)
                     @php
                         $currentType = $account->account_type;
@@ -142,8 +168,8 @@
                     <td>{{ $account->account_name }}</td>
                     <td>{{ ucfirst($account->account_type) }}</td>
                     <td>{{ $account->account_category ?? '-' }}</td>
-                    <td class="balance">{{ number_format($account->current_balance, 0) }}</td>
-                    <td class="status">
+                    <td class="text-right" style="font-weight: 600;">{{ number_format($account->current_balance ?? 0, 0) }}</td>
+                    <td class="text-center">
                         @if($account->is_active)
                             <span style="color: #059669;">Active</span>
                         @else
@@ -157,9 +183,9 @@
     </table>
 
     <div class="footer">
-        <p>Generated on {{ now()->format('F d, Y \a\t h:i A') }}</p>
-        <p>This is a computer-generated document.</p>
+        <p><strong>FeedTan Community Microfinance Group - Chart of Accounts</strong></p>
+        <p>Report generated on {{ now()->format('F d, Y \a\t H:i:s') }}</p>
+        <p>Total Records: {{ $accounts->count() ?? 0 }}</p>
     </div>
 </body>
 </html>
-
