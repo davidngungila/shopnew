@@ -11,19 +11,52 @@
     <link rel="shortcut icon" type="image/png" href="{{ asset('logo.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('logo.png') }}">
     
+    <!-- Alpine.js x-cloak style -->
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50">
-    <div class="min-h-screen flex">
+    <div class="min-h-screen flex" x-data="{ mobileMenuOpen: false }">
+        <!-- Mobile Menu Overlay -->
+        <div 
+            x-show="mobileMenuOpen" 
+            @click="mobileMenuOpen = false"
+            x-transition:enter="transition-opacity ease-linear duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition-opacity ease-linear duration-300"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-gray-600 bg-opacity-75 z-20 lg:hidden"
+            x-cloak
+            style="display: none;"
+        ></div>
+
         <!-- Mobile Menu Toggle -->
-        <button id="mobileMenuToggle" class="lg:hidden fixed top-4 left-4 z-40 p-2 bg-white rounded-lg shadow-md">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button 
+            @click="mobileMenuOpen = !mobileMenuOpen"
+            class="lg:hidden fixed top-4 left-4 z-40 p-3 bg-white rounded-lg shadow-lg hover:bg-gray-50 active:bg-gray-100 transition-colors touch-manipulation"
+            :class="{ 'bg-[#009245] text-white hover:bg-[#007a38]': mobileMenuOpen }"
+            aria-label="Toggle menu"
+        >
+            <svg x-show="!mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+            <svg x-show="mobileMenuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
 
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-64 bg-white border-r border-gray-200 fixed h-screen overflow-y-auto z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+        <aside 
+            id="sidebar" 
+            :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
+            class="w-64 bg-white border-r border-gray-200 fixed h-screen overflow-y-auto z-30 lg:translate-x-0 transition-transform duration-300 ease-in-out"
+            @click.away="if (window.innerWidth < 1024) mobileMenuOpen = false"
+        >
             <div class="p-4">
                 <div class="flex items-center space-x-3 mb-8">
                     <img src="{{ asset('logo.png') }}" alt="ShopSmart Logo" class="h-10 w-auto">
@@ -470,7 +503,7 @@
         <div class="flex-1 lg:ml-64">
             <!-- Top Header -->
             <header class="bg-white border-b border-gray-200 sticky top-0 z-20">
-                <div class="px-6 py-4">
+                <div class="px-4 sm:px-6 py-4">
                     <div class="flex items-center justify-between">
                         <div class="flex-1 max-w-xl" x-data="{ searchOpen: false }" @keydown.ctrl.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())" @keydown.meta.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())">
                             <div class="relative">
@@ -888,7 +921,7 @@
             </header>
 
             <!-- Page Content -->
-            <main class="p-6">
+            <main class="p-4 sm:p-6 pt-16 lg:pt-6">
                 @yield('content')
             </main>
         </div>
@@ -896,10 +929,39 @@
 
     @yield('scripts')
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobileMenuToggle')?.addEventListener('click', function() {
+        // Mobile menu is now handled by Alpine.js in the template
+        // Close mobile menu when clicking on a link (for mobile devices)
+        document.addEventListener('DOMContentLoaded', function() {
             const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('-translate-x-full');
+            if (sidebar) {
+                sidebar.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        if (window.innerWidth < 1024) {
+                            // Find the Alpine.js data
+                            const container = document.querySelector('[x-data*="mobileMenuOpen"]');
+                            if (container && window.Alpine) {
+                                const alpineData = window.Alpine.$data(container);
+                                if (alpineData && alpineData.mobileMenuOpen) {
+                                    alpineData.mobileMenuOpen = false;
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+            
+            // Close menu on window resize to desktop
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 1024) {
+                    const container = document.querySelector('[x-data*="mobileMenuOpen"]');
+                    if (container && window.Alpine) {
+                        const alpineData = window.Alpine.$data(container);
+                        if (alpineData) {
+                            alpineData.mobileMenuOpen = false;
+                        }
+                    }
+                }
+            });
         });
 
         // Global Search Functionality
