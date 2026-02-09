@@ -131,32 +131,32 @@ Route::resource('expenses', ExpenseController::class);
 Route::resource('transactions', TransactionController::class);
     Route::get('/financial/profit-loss', [FinancialController::class, 'profitLoss'])->name('financial.profit-loss');
 
-    // Chart of Accounts
-    Route::resource('chart-of-accounts', ChartOfAccountController::class);
+    // Chart of Accounts - PDF route must come BEFORE resource route
     Route::get('/chart-of-accounts/pdf', [ChartOfAccountController::class, 'pdf'])->name('chart-of-accounts.pdf');
+    Route::resource('chart-of-accounts', ChartOfAccountController::class);
 
-    // Expense Categories
-    Route::resource('expense-categories', ExpenseCategoryController::class);
+    // Expense Categories - PDF route must come BEFORE resource route
     Route::get('/expense-categories/pdf', [ExpenseCategoryController::class, 'pdf'])->name('expense-categories.pdf');
+    Route::resource('expense-categories', ExpenseCategoryController::class);
 
-    // Capital
-    Route::resource('capital', CapitalController::class);
+    // Capital - PDF route must come BEFORE resource route
     Route::get('/capital/pdf', [CapitalController::class, 'pdf'])->name('capital.pdf');
+    Route::resource('capital', CapitalController::class);
 
-    // Liabilities
-    Route::resource('liabilities', LiabilityController::class);
+    // Liabilities - PDF route must come BEFORE resource route
     Route::get('/liabilities/pdf', [LiabilityController::class, 'pdf'])->name('liabilities.pdf');
+    Route::resource('liabilities', LiabilityController::class);
 
-    // Bank Reconciliation
-    Route::resource('bank-reconciliations', BankReconciliationController::class);
+    // Bank Reconciliation - PDF route must come BEFORE resource route
     Route::get('/bank-reconciliations/pdf', [BankReconciliationController::class, 'pdf'])->name('bank-reconciliations.pdf');
+    Route::resource('bank-reconciliations', BankReconciliationController::class);
 
-    // Delivery Notes
-    Route::resource('delivery-notes', DeliveryNoteController::class);
-    Route::get('/delivery-notes/{deliveryNote}/pdf', [DeliveryNoteController::class, 'pdf'])->name('delivery-notes.pdf');
+    // Delivery Notes - PDF routes must come BEFORE resource route
     Route::get('/delivery-notes/pdf/list', [DeliveryNoteController::class, 'pdfList'])->name('delivery-notes.pdf.list');
+    Route::get('/delivery-notes/{deliveryNote}/pdf', [DeliveryNoteController::class, 'pdf'])->name('delivery-notes.pdf');
+    Route::resource('delivery-notes', DeliveryNoteController::class);
 
-    // Expenses
+    // Expenses - PDF route must come BEFORE resource route
     Route::get('/expenses/pdf', [ExpenseController::class, 'pdf'])->name('expenses.pdf');
 
     // Financial Statements
