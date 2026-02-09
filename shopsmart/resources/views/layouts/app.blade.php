@@ -504,18 +504,27 @@
         <div class="flex-1 lg:ml-64">
             <!-- Top Header -->
             <header class="bg-white border-b border-gray-200 sticky top-0 z-20">
-                <div class="px-4 sm:px-6 py-4">
-                    <div class="flex items-center justify-between">
-                        <div class="flex-1 max-w-xl" x-data="{ searchOpen: false }" @keydown.ctrl.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())" @keydown.meta.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())">
+                <div class="px-3 sm:px-4 md:px-6 py-3 sm:py-4">
+                    <div class="flex items-center justify-between gap-2 sm:gap-4">
+                        <div class="flex-1 min-w-0 max-w-xl" x-data="{ searchOpen: false }" @keydown.ctrl.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())" @keydown.meta.k.prevent="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())">
                             <div class="relative">
                                 <input 
                                     type="text" 
-                                    placeholder="Search (Ctrl+K)" 
+                                    placeholder="Search" 
+                                    class="hidden sm:block w-full px-3 sm:px-4 py-2 pl-9 sm:pl-10 pr-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245] focus:border-transparent cursor-pointer"
                                     @click="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())"
-                                    class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245] focus:border-transparent cursor-pointer"
                                     readonly
                                 >
-                                <svg class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <button 
+                                    @click="searchOpen = true; $nextTick(() => document.getElementById('search-input')?.focus())"
+                                    class="sm:hidden w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                    aria-label="Search"
+                                >
+                                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                </button>
+                                <svg class="hidden sm:block w-4 h-4 sm:w-5 sm:h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
                                 
@@ -577,7 +586,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center space-x-4 ml-6" x-data="{ open: false }">
+                        <div class="flex items-center space-x-2 sm:space-x-3 md:space-x-4 ml-2 sm:ml-4 md:ml-6 flex-shrink-0" x-data="{ open: false }">
                             <!-- Notifications -->
                             <div x-data="{ notificationsOpen: false }" class="relative" @mouseenter="notificationsOpen = true" @mouseleave="notificationsOpen = false">
                             @php
@@ -646,7 +655,7 @@
                                      x-transition:leave="transition ease-in duration-150"
                                      x-transition:leave-start="opacity-100 transform scale-100"
                                      x-transition:leave-end="opacity-0 transform scale-95"
-                                     class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
+                                     class="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 max-h-96 overflow-hidden flex flex-col">
                                     <!-- Header -->
                                     <div class="px-4 py-3 border-b border-gray-200 bg-gray-50">
                                         <div class="flex items-center justify-between">
@@ -815,28 +824,28 @@
                                         ];
                                         $roleColor = $roleColors[strtolower($userRole)] ?? 'bg-gray-100 text-gray-700';
                                     @endphp
-                                    <button class="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-all duration-200 hover:shadow-md group">
-                                        <div class="relative group">
+                                    <button class="flex items-center space-x-2 sm:space-x-3 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-gray-50 active:bg-gray-100 transition-all duration-200 touch-manipulation group" aria-label="User menu">
+                                        <div class="relative">
                                             @if($avatarUrl)
-                                                <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full object-cover border-2 border-gray-200 transition-transform duration-200 group-hover:scale-110">
+                                                <img src="{{ $avatarUrl }}" alt="{{ $user->name }}" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-gray-200 transition-transform duration-200 group-hover:scale-110">
                                             @else
-                                                <div class="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-white text-sm transition-transform duration-200 group-hover:scale-110" style="background-color: #009245;">
+                                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold text-white text-xs sm:text-sm transition-transform duration-200 group-hover:scale-110" style="background-color: #009245;">
                                                     {{ $userInitials }}
                                                 </div>
                                             @endif
-                                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full transition-transform duration-200 group-hover:scale-125"></span>
+                                            <span class="absolute bottom-0 right-0 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 border-2 border-white rounded-full"></span>
                                         </div>
-                                        <div class="hidden md:block text-left">
+                                        <div class="hidden lg:block text-left">
                                             <p class="text-sm font-semibold text-gray-900 transition-colors duration-200 group-hover:text-[#009245]">{{ $user->name }}</p>
                                             <p class="text-xs text-gray-500 capitalize transition-colors duration-200 group-hover:text-gray-700">{{ $userRole }}</p>
                                         </div>
-                                        <svg class="w-4 h-4 text-gray-400 hidden md:block transition-transform duration-200 group-hover:rotate-180 group-hover:text-[#009245]" :class="{'rotate-180 text-[#009245]': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-3 h-3 sm:w-4 sm:h-4 text-gray-400 hidden lg:block transition-transform duration-200 group-hover:rotate-180 group-hover:text-[#009245]" :class="{'rotate-180 text-[#009245]': open}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                         </svg>
                                     </button>
                                 @else
-                                    <button class="w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors" style="background-color: #009245; color: white;" onmouseover="this.style.backgroundColor='#007a38'" onmouseout="this.style.backgroundColor='#009245'">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <button class="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-semibold transition-colors touch-manipulation" style="background-color: #009245; color: white;" onmouseover="this.style.backgroundColor='#007a38'" onmouseout="this.style.backgroundColor='#009245'" aria-label="User menu">
+                                        <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                         </svg>
                                     </button>
