@@ -568,6 +568,7 @@ class SettingsController extends Controller
         try {
             $email = $request->input('email');
             $configId = $request->input('config_id');
+            $configData = null;
             
             if (!$email) {
                 return response()->json([
@@ -581,30 +582,51 @@ class SettingsController extends Controller
                 $config = CommunicationConfig::find($configId);
                 if ($config && $config->type === 'email') {
                     $configData = $config->config;
-                    $fromAddress = $configData['mail_from_address'] ?? config('mail.from.address');
-                    $fromName = $configData['mail_from_name'] ?? config('mail.from.name');
-                } else {
-                    $fromAddress = config('mail.from.address');
-                    $fromName = config('mail.from.name');
                 }
             } else {
                 // Use primary configuration
                 $primaryConfig = CommunicationConfig::getPrimary('email');
                 if ($primaryConfig) {
                     $configData = $primaryConfig->config;
-                    $fromAddress = $configData['mail_from_address'] ?? config('mail.from.address');
-                    $fromName = $configData['mail_from_name'] ?? config('mail.from.name');
-                } else {
-                    $fromAddress = config('mail.from.address');
-                    $fromName = config('mail.from.name');
                 }
             }
 
-            Mail::raw('This is a test email from ShopSmart. Your email configuration is working correctly!', function ($message) use ($email, $fromAddress, $fromName) {
-                $message->to($email)
+            // Apply mail configuration dynamically if we have config data
+            $mailer = config('mail.default', 'smtp');
+            $fromAddress = config('mail.from.address');
+            $fromName = config('mail.from.name');
+
+            if (is_array($configData)) {
+                $mailer = $configData['mail_mailer'] ?? $mailer;
+                $fromAddress = $configData['mail_from_address'] ?? $fromAddress;
+                $fromName = $configData['mail_from_name'] ?? $fromName;
+
+                // For smtp mailer, override connection details for this request
+                if ($mailer === 'smtp') {
+                    config([
+                        'mail.default' => 'smtp',
+                        'mail.mailers.smtp.host' => $configData['mail_host'] ?? config('mail.mailers.smtp.host'),
+                        'mail.mailers.smtp.port' => $configData['mail_port'] ?? config('mail.mailers.smtp.port'),
+                        'mail.mailers.smtp.encryption' => $configData['mail_encryption'] ?? config('mail.mailers.smtp.encryption'),
+                        'mail.mailers.smtp.username' => $configData['mail_username'] ?? config('mail.mailers.smtp.username'),
+                        'mail.mailers.smtp.password' => $configData['mail_password'] ?? config('mail.mailers.smtp.password'),
+                    ]);
+                } else {
+                    // At least ensure default mailer matches selected one (for non-smtp drivers)
+                    config([
+                        'mail.default' => $mailer,
+                    ]);
+                }
+            }
+
+            Mail::mailer($mailer)->raw(
+                'This is a test email from ShopSmart. Your email configuration is working correctly!',
+                function ($message) use ($email, $fromAddress, $fromName) {
+                    $message->to($email)
                         ->subject('ShopSmart - Test Email')
                         ->from($fromAddress, $fromName);
-            });
+                }
+            );
 
             return response()->json([
                 'success' => true,
