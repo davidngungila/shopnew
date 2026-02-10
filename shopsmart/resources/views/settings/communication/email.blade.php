@@ -149,7 +149,12 @@
                             placeholder="test@example.com">
                     </div>
                     <div class="flex items-end">
-                        <button type="button" onclick="testEmail()" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2">
+                        <button
+                            id="test_email_button"
+                            type="button"
+                            onclick="testEmail(event)"
+                            class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2"
+                        >
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
@@ -157,6 +162,7 @@
                         </button>
                     </div>
                 </div>
+                <p id="test_email_status" class="mt-2 text-xs text-gray-500"></p>
             </div>
 
             <!-- Submit Button -->
@@ -174,17 +180,31 @@
 
 @push('scripts')
 <script>
-    function testEmail() {
-        const email = document.getElementById('test_email').value;
+    function testEmail(e) {
+        if (e && typeof e.preventDefault === 'function') {
+            e.preventDefault();
+        }
+
+        const emailInput = document.getElementById('test_email');
+        const email = emailInput ? emailInput.value : '';
+        const statusEl = document.getElementById('test_email_status');
+        const button = (e && e.target) ? e.target.closest('button') : document.getElementById('test_email_button');
+
         if (!email) {
             alert('Please enter a test email address');
             return;
         }
 
-        const button = event.target.closest('button');
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 inline mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
+        const originalText = button ? button.innerHTML : '';
+        if (button) {
+            button.disabled = true;
+            button.innerHTML = '<svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 inline mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
+        }
+
+        if (statusEl) {
+            statusEl.textContent = 'Sending test email...';
+            statusEl.className = 'mt-2 text-xs text-gray-500';
+        }
 
         fetch('{{ route("settings.communication.test-email") }}', {
             method: 'POST',
@@ -197,17 +217,36 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Test email sent successfully!');
+                if (statusEl) {
+                    statusEl.textContent = 'Test email sent successfully!';
+                    statusEl.className = 'mt-2 text-xs text-green-600';
+                } else {
+                    alert('Test email sent successfully!');
+                }
             } else {
-                alert('Error sending test email: ' + (data.message || 'Unknown error'));
+                const message = 'Error sending test email: ' + (data.message || 'Unknown error');
+                if (statusEl) {
+                    statusEl.textContent = message;
+                    statusEl.className = 'mt-2 text-xs text-red-600';
+                } else {
+                    alert(message);
+                }
             }
         })
         .catch(error => {
-            alert('Error sending test email: ' + error.message);
+            const message = 'Error sending test email: ' + error.message;
+            if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.className = 'mt-2 text-xs text-red-600';
+            } else {
+                alert(message);
+            }
         })
         .finally(() => {
-            button.disabled = false;
-            button.innerHTML = originalText;
+            if (button) {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
         });
     }
 </script>
