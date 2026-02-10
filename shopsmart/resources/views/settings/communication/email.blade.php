@@ -152,7 +152,7 @@
                         <button
                             id="test_email_button"
                             type="button"
-                            onclick="testEmail(event)"
+                            onclick="testEmail()"
                             class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2"
                         >
                             <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -180,15 +180,11 @@
 
 @push('scripts')
 <script>
-    function testEmail(e) {
-        if (e && typeof e.preventDefault === 'function') {
-            e.preventDefault();
-        }
-
+    function testEmail() {
         const emailInput = document.getElementById('test_email');
         const email = emailInput ? emailInput.value : '';
         const statusEl = document.getElementById('test_email_status');
-        const button = (e && e.target) ? e.target.closest('button') : document.getElementById('test_email_button');
+        const button = document.getElementById('test_email_button');
 
         if (!email) {
             alert('Please enter a test email address');
