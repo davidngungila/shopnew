@@ -283,23 +283,23 @@
             <table class="summary-table">
                 <tr>
                     <td>Opening Balance</td>
-                    <td>{{ number_format($openingBalance, 0) }} TZS</td>
+                    <td>{{ number_format($openingBalance, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Sales (Period)</td>
-                    <td>{{ number_format($totalSales, 0) }} TZS</td>
+                    <td>{{ number_format($totalSales, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Paid (Period)</td>
-                    <td class="success">{{ number_format($totalPaid, 0) }} TZS</td>
+                    <td class="success">{{ number_format($totalPaid, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Due (Period)</td>
-                    <td>{{ number_format($totalDue, 0) }} TZS</td>
+                    <td>{{ number_format($totalDue, 0) }} TSh</td>
                 </tr>
                 <tr class="total">
                     <td>Closing Balance</td>
-                    <td class="balance-due">{{ number_format($closingBalance, 0) }} TZS</td>
+                    <td class="balance-due">{{ number_format($closingBalance, 0) }} TSh</td>
                 </tr>
             </table>
         </div>
@@ -329,9 +329,9 @@
                         <td>{{ $sale->created_at->format('M d, Y') }}</td>
                         <td>{{ $sale->invoice_number ?? 'N/A' }}</td>
                         <td>{{ ucfirst(str_replace('_', ' ', $sale->payment_method)) }}</td>
-                        <td class="text-right">{{ number_format($sale->total, 0) }} TZS</td>
-                        <td class="text-right success">{{ number_format($sale->total_paid ?? 0, 0) }} TZS</td>
-                        <td class="text-right balance-due">{{ number_format($sale->balance ?? ($sale->total - ($sale->total_paid ?? 0)), 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($sale->total, 0) }} TSh</td>
+                        <td class="text-right success">{{ number_format($sale->total_paid ?? 0, 0) }} TSh</td>
+                        <td class="text-right balance-due">{{ number_format($sale->balance ?? ($sale->total - ($sale->total_paid ?? 0)), 0) }} TSh</td>
                         <td class="text-center">{{ ucfirst($sale->status) }}</td>
                     </tr>
                     @endforeach
@@ -339,9 +339,9 @@
                 <tfoot>
                     <tr style="background: #009245; color: white; font-weight: bold;">
                         <td colspan="4" class="text-right">TOTALS:</td>
-                        <td class="text-right">{{ number_format($totalSales, 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($totalPaid, 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($totalDue, 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($totalSales, 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($totalPaid, 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($totalDue, 0) }} TSh</td>
                         <td></td>
                     </tr>
                 </tfoot>

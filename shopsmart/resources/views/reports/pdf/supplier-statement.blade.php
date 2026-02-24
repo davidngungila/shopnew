@@ -283,23 +283,23 @@
             <table class="summary-table">
                 <tr>
                     <td>Opening Balance</td>
-                    <td>{{ number_format($openingBalance, 0) }} TZS</td>
+                    <td>{{ number_format($openingBalance, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Purchases (Period)</td>
-                    <td>{{ number_format($totalPurchases, 0) }} TZS</td>
+                    <td>{{ number_format($totalPurchases, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Paid (Period)</td>
-                    <td class="success">{{ number_format($totalPaid, 0) }} TZS</td>
+                    <td class="success">{{ number_format($totalPaid, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Due (Period)</td>
-                    <td>{{ number_format($totalDue, 0) }} TZS</td>
+                    <td>{{ number_format($totalDue, 0) }} TSh</td>
                 </tr>
                 <tr class="total">
                     <td>Closing Balance</td>
-                    <td class="balance-due">{{ number_format($closingBalance, 0) }} TZS</td>
+                    <td class="balance-due">{{ number_format($closingBalance, 0) }} TSh</td>
                 </tr>
             </table>
         </div>
@@ -329,9 +329,9 @@
                         <td>{{ \Carbon\Carbon::parse($purchase->purchase_date)->format('M d, Y') }}</td>
                         <td>{{ $purchase->invoice_number ?? 'N/A' }}</td>
                         <td class="text-center">{{ ucfirst($purchase->status) }}</td>
-                        <td class="text-right">{{ number_format($purchase->total, 0) }} TZS</td>
-                        <td class="text-right success">{{ number_format($purchase->paid_amount ?? 0, 0) }} TZS</td>
-                        <td class="text-right balance-due">{{ number_format($purchase->due_amount ?? 0, 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($purchase->total, 0) }} TSh</td>
+                        <td class="text-right success">{{ number_format($purchase->paid_amount ?? 0, 0) }} TSh</td>
+                        <td class="text-right balance-due">{{ number_format($purchase->due_amount ?? 0, 0) }} TSh</td>
                         <td class="text-center">{{ $purchase->items->count() }}</td>
                     </tr>
                     @endforeach
@@ -339,9 +339,9 @@
                 <tfoot>
                     <tr style="background: #009245; color: white; font-weight: bold;">
                         <td colspan="4" class="text-right">TOTALS:</td>
-                        <td class="text-right">{{ number_format($totalPurchases, 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($totalPaid, 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($totalDue, 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($totalPurchases, 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($totalPaid, 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($totalDue, 0) }} TSh</td>
                         <td></td>
                     </tr>
                 </tfoot>

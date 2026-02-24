@@ -195,15 +195,15 @@
                 </tr>
                 <tr>
                     <td>Total Stock Value (Cost)</td>
-                    <td>{{ number_format($totalStockValue, 0) }} TZS</td>
+                    <td>{{ number_format($totalStockValue, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Stock Value (Selling)</td>
-                    <td>{{ number_format($totalSellingValue, 0) }} TZS</td>
+                    <td>{{ number_format($totalSellingValue, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Potential Profit</td>
-                    <td class="success">{{ number_format($potentialProfit, 0) }} TZS</td>
+                    <td class="success">{{ number_format($potentialProfit, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Low Stock Items</td>
@@ -215,7 +215,7 @@
                 </tr>
                 <tr class="total">
                     <td>Total Inventory Value</td>
-                    <td>{{ number_format($totalStockValue, 0) }} TZS</td>
+                    <td>{{ number_format($totalStockValue, 0) }} TSh</td>
                 </tr>
             </table>
         </div>
@@ -251,15 +251,15 @@
                             {{ number_format($product->stock_quantity, 0) }}
                         </td>
                         <td class="text-center">{{ number_format($product->low_stock_alert ?? 0, 0) }}</td>
-                        <td class="text-right">{{ number_format($product->cost_price ?? 0, 0) }} TZS</td>
-                        <td class="text-right"><strong style="color: #009245;">{{ number_format(($product->stock_quantity ?? 0) * ($product->cost_price ?? 0), 0) }} TZS</strong></td>
+                        <td class="text-right">{{ number_format($product->cost_price ?? 0, 0) }} TSh</td>
+                        <td class="text-right"><strong style="color: #009245;">{{ number_format(($product->stock_quantity ?? 0) * ($product->cost_price ?? 0), 0) }} TSh</strong></td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr style="background: #009245; color: white; font-weight: bold;">
                         <td colspan="8" class="text-right">TOTAL STOCK VALUE:</td>
-                        <td class="text-right">{{ number_format($totalStockValue, 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($totalStockValue, 0) }} TSh</td>
                     </tr>
                 </tfoot>
             </table>
