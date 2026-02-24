@@ -217,7 +217,7 @@
             <tr>
                 <th class="item-name">Item</th>
                 <th class="item-qty">Qty</th>
-                <th class="item-price">Amount (TZS)</th>
+                <th class="item-price">Amount (TSh)</th>
             </tr>
         </thead>
         <tbody>
@@ -239,29 +239,29 @@
     <div class="summary">
         <div class="summary-row">
             <span>Subtotal:</span>
-            <span>TZS {{ number_format($sale->subtotal, 0) }}</span>
+            <span>TSh {{ number_format($sale->subtotal, 0) }}</span>
         </div>
         @if($sale->discount > 0)
         <div class="summary-row">
             <span>Discount:</span>
-            <span>- TZS {{ number_format($sale->discount, 0) }}</span>
+            <span>- TSh {{ number_format($sale->discount, 0) }}</span>
         </div>
         @endif
         @if($sale->tax > 0)
         <div class="summary-row">
             <span>Tax (VAT):</span>
-            <span>TZS {{ number_format($sale->tax, 0) }}</span>
+            <span>TSh {{ number_format($sale->tax, 0) }}</span>
         </div>
         @endif
         <div class="summary-row total">
             <span>TOTAL:</span>
-            <span>TZS {{ number_format($sale->total, 0) }}</span>
+            <span>TSh {{ number_format($sale->total, 0) }}</span>
         </div>
     </div>
 
     <div class="payment-info">
         <strong>Payment Method:</strong> {{ strtoupper(str_replace('_', ' ', $sale->payment_method ?? 'cash')) }}<br>
-        <strong>Amount Paid:</strong> TZS {{ number_format($sale->total, 0) }}<br>
+        <strong>Amount Paid:</strong> TSh {{ number_format($sale->total, 0) }}<br>
     </div>
 
     <div class="barcode">

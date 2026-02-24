@@ -52,7 +52,7 @@
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">Total Revenue</p>
                     <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
-                        TZS {{ number_format($totalAmount ?? 0, 0) }}
+                        TSh {{ number_format($totalAmount ?? 0, 0) }}
                     </p>
                     <p class="text-xs text-gray-500 mt-1">All time</p>
                 </div>
@@ -70,7 +70,7 @@
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">This Month</p>
                     <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">
-                        TZS {{ number_format($thisMonthAmount ?? 0, 0) }}
+                        TSh {{ number_format($thisMonthAmount ?? 0, 0) }}
                     </p>
                     <div class="flex items-center mt-2">
                         @php
@@ -109,7 +109,7 @@
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">Today's Sales</p>
                     <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">{{ number_format($todayInvoices ?? 0) }} invoices</p>
-                    <p class="text-xs text-gray-500 mt-1">TZS {{ number_format($todayAmount ?? 0, 0) }}</p>
+                    <p class="text-xs text-gray-500 mt-1">TSh {{ number_format($todayAmount ?? 0, 0) }}</p>
                 </div>
                 <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                     <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,11 +131,11 @@
             </div>
             <div>
                 <p class="text-sm text-gray-600">Filtered Amount</p>
-                <p class="text-2xl font-bold text-gray-900">TZS {{ number_format($filteredAmount ?? 0, 0) }}</p>
+                <p class="text-2xl font-bold text-gray-900">TSh {{ number_format($filteredAmount ?? 0, 0) }}</p>
             </div>
             <div>
                 <p class="text-sm text-gray-600">Average Invoice</p>
-                <p class="text-2xl font-bold text-gray-900">TZS {{ number_format($averageInvoice ?? 0, 0) }}</p>
+                <p class="text-2xl font-bold text-gray-900">TSh {{ number_format($averageInvoice ?? 0, 0) }}</p>
             </div>
         </div>
     </div>
@@ -220,7 +220,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-semibold text-gray-900">TZS {{ number_format($customerData->total_spent, 0) }}</p>
+                        <p class="text-sm font-semibold text-gray-900">TSh {{ number_format($customerData->total_spent, 0) }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -247,7 +247,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <p class="text-sm font-semibold text-gray-900">TZS {{ number_format($productData->total_revenue, 0) }}</p>
+                        <p class="text-sm font-semibold text-gray-900">TSh {{ number_format($productData->total_revenue, 0) }}</p>
                     </div>
                 </div>
                 @endforeach
@@ -266,7 +266,7 @@
             @foreach($paymentMethods as $method)
             <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <p class="text-sm text-gray-600 capitalize mb-2">{{ str_replace('_', ' ', $method->payment_method ?? 'N/A') }}</p>
-                <p class="text-2xl font-bold text-gray-900">TZS {{ number_format($method->total ?? 0, 0) }}</p>
+                <p class="text-2xl font-bold text-gray-900">TSh {{ number_format($method->total ?? 0, 0) }}</p>
                 <p class="text-xs text-gray-500 mt-1">{{ $method->count ?? 0 }} invoices</p>
                 @php
                     $totalFiltered = $paymentMethods->sum('total');
@@ -299,7 +299,7 @@
                             <div class="text-xs text-gray-500 mt-1">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y h:i A') }}</div>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm font-semibold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
+                            <div class="text-sm font-semibold text-gray-900">TSh {{ number_format($sale->total, 0) }}</div>
                             @php
                                 $statusColors = [
                                     'completed' => 'bg-green-100 text-green-800',
@@ -328,7 +328,7 @@
                         @if($sale->discount > 0)
                         <div>
                             <span class="font-medium">Discount:</span>
-                            <div class="mt-1">TZS {{ number_format($sale->discount, 0) }}</div>
+                            <div class="mt-1">TSh {{ number_format($sale->discount, 0) }}</div>
                         </div>
                         @endif
                     </div>
@@ -387,9 +387,9 @@
                             <div class="text-xs text-gray-500">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('h:i A') }}</div>
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
-                            <div class="text-xs sm:text-sm font-semibold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
+                            <div class="text-xs sm:text-sm font-semibold text-gray-900">TSh {{ number_format($sale->total, 0) }}</div>
                             @if($sale->discount > 0)
-                            <div class="text-xs text-gray-500">Discount: TZS {{ number_format($sale->discount, 0) }}</div>
+                            <div class="text-xs text-gray-500">Discount: TSh {{ number_format($sale->discount, 0) }}</div>
                             @endif
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
@@ -460,7 +460,7 @@
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Revenue (TZS)',
+                    label: 'Revenue (TSh)',
                     data: totals,
                     borderColor: 'rgb(147, 51, 234)',
                     backgroundColor: 'rgba(147, 51, 234, 0.1)',
@@ -495,7 +495,7 @@
                         beginAtZero: true,
                         ticks: {
                             callback: function(value) {
-                                return 'TZS ' + new Intl.NumberFormat().format(value);
+                                return 'TSh ' + new Intl.NumberFormat().format(value);
                             }
                         }
                     },
@@ -550,7 +550,7 @@
                                 if (label) {
                                     label += ': ';
                                 }
-                                label += 'TZS ' + new Intl.NumberFormat().format(context.parsed);
+                                label += 'TSh ' + new Intl.NumberFormat().format(context.parsed);
                                 return label;
                             }
                         }
