@@ -25,9 +25,9 @@ class ExpenseCategoryController extends Controller
             $query->where('is_active', $request->is_active == '1');
         }
 
-        $categories = $query->orderBy('sort_order')->orderBy('name')->paginate(20);
-        $totalCategories = ExpenseCategory::count();
-        $activeCategories = ExpenseCategory::where('is_active', true)->count();
+        $categories = $query->orderBy('sort_order')->orderBy('name')->paginate(20)->appends($request->query());
+        $totalCategories = (clone $query)->count();
+        $activeCategories = (clone $query)->where('is_active', true)->count();
 
         return view('expense-categories.index', compact('categories', 'totalCategories', 'activeCategories'));
     }
@@ -116,7 +116,9 @@ class ExpenseCategoryController extends Controller
         $totalCategories = $categories->count();
         $activeCategories = $categories->where('is_active', true)->count();
 
-        $pdf = Pdf::loadView('expense-categories.pdf.index', compact('categories', 'totalCategories', 'activeCategories'))
+        $filters = $request->only(['search', 'is_active']);
+
+        $pdf = Pdf::loadView('expense-categories.pdf.index', compact('categories', 'totalCategories', 'activeCategories', 'filters'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('expense-categories-' . now()->format('Y-m-d') . '.pdf');

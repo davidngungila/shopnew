@@ -135,11 +135,47 @@
         </div>
     </div>
 
+    @if(isset($filters) && collect($filters)->filter(fn($v) => $v !== null && $v !== '')->count() > 0)
+    <div class="section" style="margin-top: 0;">
+        <div class="section-header">Applied Filters</div>
+        <div class="section-content">
+            <table>
+                <tbody>
+                    @if(!empty($filters['search']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Search</td>
+                        <td>{{ $filters['search'] }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['category']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Category</td>
+                        <td>{{ $filters['category'] }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['payment_method']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Payment Method</td>
+                        <td>{{ ucfirst(str_replace('_', ' ', $filters['payment_method'])) }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['date_from']) || !empty($filters['date_to']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Date Range</td>
+                        <td>{{ $filters['date_from'] ?? '-' }} to {{ $filters['date_to'] ?? '-' }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <!-- Statistics -->
     <div class="stats">
         <div class="stats-row">
             <div class="stats-cell stats-label">Total Expenses:</div>
-            <div class="stats-cell"><strong>TZS {{ number_format($totalAmount ?? 0, 0) }}</strong></div>
+            <div class="stats-cell"><strong>TSh {{ number_format($totalAmount ?? 0, 0) }}</strong></div>
             <div class="stats-cell stats-label">Number of Expenses:</div>
             <div class="stats-cell">{{ number_format($expenses->count() ?? 0, 0) }}</div>
         </div>
@@ -157,7 +193,7 @@
                         <th style="width: 18%;">Category</th>
                         <th style="width: 25%;">Description</th>
                         <th style="width: 15%;">Payment Method</th>
-                        <th class="text-right" style="width: 15%;">Amount (TZS)</th>
+                        <th class="text-right" style="width: 15%;">Amount (TSh)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -177,7 +213,7 @@
                     @endforelse
                     <tr style="background: #f3f4f6; font-weight: 700; border-top: 2px solid #009245;">
                         <td colspan="5"><strong>TOTAL</strong></td>
-                        <td class="text-right" style="font-weight: 700; color: #dc2626;"><strong>TZS {{ number_format($totalAmount ?? 0, 0) }}</strong></td>
+                        <td class="text-right" style="font-weight: 700; color: #dc2626;"><strong>TSh {{ number_format($totalAmount ?? 0, 0) }}</strong></td>
                     </tr>
                 </tbody>
             </table>
@@ -193,7 +229,7 @@
                     <tr>
                         <th style="width: 60%;">Category</th>
                         <th class="text-right" style="width: 20%;">Count</th>
-                        <th class="text-right" style="width: 20%;">Total Amount (TZS)</th>
+                        <th class="text-right" style="width: 20%;">Total Amount (TSh)</th>
                     </tr>
                 </thead>
                 <tbody>

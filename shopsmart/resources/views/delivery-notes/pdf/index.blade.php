@@ -157,6 +157,36 @@
         </div>
     </div>
 
+    @if(isset($filters) && collect($filters)->filter(fn($v) => $v !== null && $v !== '')->count() > 0)
+    <div class="section" style="margin-top: 0;">
+        <div class="section-header">Applied Filters</div>
+        <div class="section-content">
+            <table>
+                <tbody>
+                    @if(!empty($filters['type']))
+                    <tr>
+                        <td style="width: 25%; font-weight: bold;">Type</td>
+                        <td>{{ ucfirst($filters['type']) }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['status']))
+                    <tr>
+                        <td style="width: 25%; font-weight: bold;">Status</td>
+                        <td>{{ ucfirst(str_replace('_', ' ', $filters['status'])) }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['date_from']) || !empty($filters['date_to']))
+                    <tr>
+                        <td style="width: 25%; font-weight: bold;">Date Range</td>
+                        <td>{{ $filters['date_from'] ?? '-' }} to {{ $filters['date_to'] ?? '-' }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <!-- Delivery Notes Table -->
     <div class="section">
         <div class="section-header">Delivery Notes</div>

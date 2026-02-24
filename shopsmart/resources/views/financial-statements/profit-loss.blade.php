@@ -39,20 +39,20 @@
             <!-- Revenue -->
             <div class="flex justify-between items-center py-3 border-b">
                 <span class="text-lg font-semibold text-gray-900">Revenue</span>
-                <span class="text-lg font-semibold text-gray-900">TZS {{ number_format($revenue ?? 0, 0) }}</span>
+                <span class="text-lg font-semibold text-gray-900">TSh {{ number_format($revenue ?? 0, 0) }}</span>
             </div>
 
             <!-- Cost of Goods Sold -->
             <div class="flex justify-between items-center py-3 border-b">
                 <span class="text-gray-700 ml-4">Cost of Goods Sold</span>
-                <span class="text-gray-700">TZS {{ number_format($cogs ?? 0, 0) }}</span>
+                <span class="text-gray-700">TSh {{ number_format($cogs ?? 0, 0) }}</span>
             </div>
 
             <!-- Gross Profit -->
             <div class="flex justify-between items-center py-3 border-b-2 border-gray-300">
                 <span class="text-lg font-semibold text-gray-900">Gross Profit</span>
                 <span class="text-lg font-semibold {{ ($grossProfit ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                    TZS {{ number_format($grossProfit ?? 0, 0) }}
+                    TSh {{ number_format($grossProfit ?? 0, 0) }}
                 </span>
             </div>
 
@@ -63,13 +63,13 @@
                     @foreach($expenseBreakdown as $expense)
                     <div class="flex justify-between items-center py-2 ml-4">
                         <span class="text-gray-700">{{ $expense->category }}</span>
-                        <span class="text-gray-700">TZS {{ number_format($expense->total, 0) }}</span>
+                        <span class="text-gray-700">TSh {{ number_format($expense->total, 0) }}</span>
                     </div>
                     @endforeach
                 @endif
                 <div class="flex justify-between items-center py-3 border-b mt-2">
                     <span class="font-semibold text-gray-900">Total Operating Expenses</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($operatingExpenses ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($operatingExpenses ?? 0, 0) }}</span>
                 </div>
             </div>
 
@@ -77,7 +77,7 @@
             <div class="flex justify-between items-center py-4 border-t-2 border-gray-300 mt-4">
                 <span class="text-xl font-bold text-gray-900">Net Profit / Loss</span>
                 <span class="text-xl font-bold {{ ($netProfit ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }}">
-                    TZS {{ number_format($netProfit ?? 0, 0) }}
+                    TSh {{ number_format($netProfit ?? 0, 0) }}
                 </span>
             </div>
         </div>

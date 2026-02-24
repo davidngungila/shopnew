@@ -28,10 +28,10 @@ class ChartOfAccountController extends Controller
             $query->where('is_active', $request->is_active == '1');
         }
 
-        $accounts = $query->orderBy('account_code')->paginate(50);
+        $accounts = $query->orderBy('account_code')->paginate(50)->appends($request->query());
         $accountTypes = ['asset', 'liability', 'equity', 'revenue', 'expense'];
-        $totalAccounts = ChartOfAccount::count();
-        $totalBalance = ChartOfAccount::sum('current_balance');
+        $totalAccounts = (clone $query)->count();
+        $totalBalance = (clone $query)->sum('current_balance');
 
         return view('chart-of-accounts.index', compact('accounts', 'accountTypes', 'totalAccounts', 'totalBalance'));
     }

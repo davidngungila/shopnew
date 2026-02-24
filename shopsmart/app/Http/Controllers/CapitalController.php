@@ -25,9 +25,11 @@ class CapitalController extends Controller
             $query->whereDate('transaction_date', '<=', $request->date_to);
         }
 
-        $capitals = $query->latest()->paginate(20);
-        $totalContributions = Capital::where('type', 'contribution')->sum('amount');
-        $totalWithdrawals = Capital::where('type', 'withdrawal')->sum('amount');
+        $capitals = $query->latest()->paginate(20)->appends($request->query());
+
+        $allCapitalsForStats = (clone $query)->get();
+        $totalContributions = $allCapitalsForStats->where('type', 'contribution')->sum('amount');
+        $totalWithdrawals = $allCapitalsForStats->where('type', 'withdrawal')->sum('amount');
         $netCapital = $totalContributions - $totalWithdrawals;
 
         return view('capital.index', compact('capitals', 'totalContributions', 'totalWithdrawals', 'netCapital'));
@@ -113,11 +115,13 @@ class CapitalController extends Controller
         }
 
         $capitals = $query->latest()->get();
-        $totalContributions = Capital::where('type', 'contribution')->sum('amount');
-        $totalWithdrawals = Capital::where('type', 'withdrawal')->sum('amount');
+        $totalContributions = $capitals->where('type', 'contribution')->sum('amount');
+        $totalWithdrawals = $capitals->where('type', 'withdrawal')->sum('amount');
         $netCapital = $totalContributions - $totalWithdrawals;
 
-        $pdf = Pdf::loadView('capital.pdf.index', compact('capitals', 'totalContributions', 'totalWithdrawals', 'netCapital'))
+        $filters = $request->only(['type', 'date_from', 'date_to']);
+
+        $pdf = Pdf::loadView('capital.pdf.index', compact('capitals', 'totalContributions', 'totalWithdrawals', 'netCapital', 'filters'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('capital-report-' . now()->format('Y-m-d') . '.pdf');

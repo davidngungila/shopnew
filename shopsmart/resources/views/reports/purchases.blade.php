@@ -73,7 +73,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">Total Purchases</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TZS {{ number_format($totalPurchases ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TSh {{ number_format($totalPurchases ?? 0, 0) }}</p>
                     <p class="text-xs text-gray-500 mt-1">{{ number_format($totalOrders ?? 0) }} orders</p>
                 </div>
                 <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -89,7 +89,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">Average Order</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TZS {{ number_format($averageOrder ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TSh {{ number_format($averageOrder ?? 0, 0) }}</p>
                     <p class="text-xs text-gray-500 mt-1">Per transaction</p>
                 </div>
                 <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -105,7 +105,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">Today's Purchases</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TZS {{ number_format($todayPurchases ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TSh {{ number_format($todayPurchases ?? 0, 0) }}</p>
                     <p class="text-xs text-gray-500 mt-1">Today</p>
                 </div>
                 <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -121,7 +121,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs sm:text-sm text-gray-600">This Month</p>
-                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TZS {{ number_format($thisMonthPurchases ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl font-bold text-gray-900 mt-2">TSh {{ number_format($thisMonthPurchases ?? 0, 0) }}</p>
                     @if(isset($monthGrowth))
                     <div class="flex items-center mt-2">
                         @if($monthGrowth >= 0)
@@ -193,7 +193,7 @@
                             <p class="text-xs text-gray-500">{{ $supplier->count }} orders</p>
                         </div>
                     </div>
-                    <span class="text-sm font-semibold text-gray-900">TZS {{ number_format($supplier->total, 0) }}</span>
+                    <span class="text-sm font-semibold text-gray-900">TSh {{ number_format($supplier->total, 0) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -216,7 +216,7 @@
                             <p class="text-xs text-gray-500">{{ number_format($product->total_quantity ?? 0) }} units</p>
                         </div>
                     </div>
-                    <span class="text-sm font-semibold text-gray-900">TZS {{ number_format($product->total_cost ?? 0, 0) }}</span>
+                    <span class="text-sm font-semibold text-gray-900">TSh {{ number_format($product->total_cost ?? 0, 0) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -232,7 +232,7 @@
             @foreach($statusBreakdown as $status)
             <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
                 <p class="text-sm text-gray-600 capitalize mb-2">{{ $status->status ?? 'N/A' }}</p>
-                <p class="text-2xl font-bold text-gray-900">TZS {{ number_format($status->total ?? 0, 0) }}</p>
+                <p class="text-2xl font-bold text-gray-900">TSh {{ number_format($status->total ?? 0, 0) }}</p>
                 <p class="text-xs text-gray-500 mt-1">{{ $status->count ?? 0 }} orders</p>
             </div>
             @endforeach
@@ -271,7 +271,7 @@
                         <div class="text-xs text-gray-500 mt-1">{{ $purchase->purchase_date->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-base font-bold text-gray-900">TZS {{ number_format($purchase->total, 0) }}</div>
+                        <div class="text-base font-bold text-gray-900">TSh {{ number_format($purchase->total, 0) }}</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs">
@@ -335,7 +335,7 @@
                             <div class="text-xs sm:text-sm text-gray-900">{{ $purchase->purchase_date->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}</div>
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
-                            <div class="text-xs sm:text-sm font-semibold text-gray-900">TZS {{ number_format($purchase->total, 0) }}</div>
+                            <div class="text-xs sm:text-sm font-semibold text-gray-900">TSh {{ number_format($purchase->total, 0) }}</div>
                         </td>
                     </tr>
                     @empty
@@ -419,7 +419,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Purchases (TZS)',
+                            label: 'Purchases (TSh)',
                             data: totals,
                             borderColor: 'rgb(59, 130, 246)',
                             backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -439,7 +439,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return 'Purchases: TZS ' + context.parsed.y.toLocaleString('en-US');
+                                        return 'Purchases: TSh ' + context.parsed.y.toLocaleString('en-US');
                                     }
                                 }
                             }
@@ -450,11 +450,11 @@
                                 ticks: {
                                     callback: function(value) {
                                         if (value >= 1000000) {
-                                            return 'TZS ' + (value / 1000000).toFixed(1) + 'M';
+                                            return 'TSh ' + (value / 1000000).toFixed(1) + 'M';
                                         } else if (value >= 1000) {
-                                            return 'TZS ' + (value / 1000).toFixed(0) + 'K';
+                                            return 'TSh ' + (value / 1000).toFixed(0) + 'K';
                                         }
-                                        return 'TZS ' + value.toLocaleString('en-US');
+                                        return 'TSh ' + value.toLocaleString('en-US');
                                     }
                                 }
                             }
@@ -484,7 +484,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Purchases (TZS)',
+                            label: 'Purchases (TSh)',
                             data: totals,
                             backgroundColor: 'rgba(147, 51, 234, 0.8)',
                             borderColor: 'rgb(147, 51, 234)',
@@ -502,7 +502,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return 'Purchases: TZS ' + context.parsed.y.toLocaleString('en-US');
+                                        return 'Purchases: TSh ' + context.parsed.y.toLocaleString('en-US');
                                     }
                                 }
                             }
@@ -513,11 +513,11 @@
                                 ticks: {
                                     callback: function(value) {
                                         if (value >= 1000000) {
-                                            return 'TZS ' + (value / 1000000).toFixed(1) + 'M';
+                                            return 'TSh ' + (value / 1000000).toFixed(1) + 'M';
                                         } else if (value >= 1000) {
-                                            return 'TZS ' + (value / 1000).toFixed(0) + 'K';
+                                            return 'TSh ' + (value / 1000).toFixed(0) + 'K';
                                         }
-                                        return 'TZS ' + value.toLocaleString('en-US');
+                                        return 'TSh ' + value.toLocaleString('en-US');
                                     }
                                 }
                             }

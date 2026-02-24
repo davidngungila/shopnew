@@ -132,15 +132,39 @@
         </div>
     </div>
 
+    @if(isset($filters) && collect($filters)->filter(fn($v) => $v !== null && $v !== '')->count() > 0)
+    <div class="section" style="margin-top: 0;">
+        <div class="section-header">Applied Filters</div>
+        <div class="section-content">
+            <table>
+                <tbody>
+                    @if(!empty($filters['type']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Type</td>
+                        <td>{{ ucfirst($filters['type']) }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['date_from']) || !empty($filters['date_to']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Date Range</td>
+                        <td>{{ $filters['date_from'] ?? '-' }} to {{ $filters['date_to'] ?? '-' }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <!-- Statistics -->
     <div class="stats">
         <div class="stats-row">
             <div class="stats-cell stats-label">Total Contributions:</div>
-            <div class="stats-cell" style="color: #059669; font-weight: 600;">TZS {{ number_format($totalContributions ?? 0, 0) }}</div>
+            <div class="stats-cell" style="color: #059669; font-weight: 600;">TSh {{ number_format($totalContributions ?? 0, 0) }}</div>
             <div class="stats-cell stats-label">Total Withdrawals:</div>
-            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TZS {{ number_format($totalWithdrawals ?? 0, 0) }}</div>
+            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TSh {{ number_format($totalWithdrawals ?? 0, 0) }}</div>
             <div class="stats-cell stats-label">Net Capital:</div>
-            <div class="stats-cell" style="color: {{ ($netCapital ?? 0) >= 0 ? '#059669' : '#dc2626' }}; font-weight: 700;">TZS {{ number_format($netCapital ?? 0, 0) }}</div>
+            <div class="stats-cell" style="color: {{ ($netCapital ?? 0) >= 0 ? '#059669' : '#dc2626' }}; font-weight: 700;">TSh {{ number_format($netCapital ?? 0, 0) }}</div>
         </div>
     </div>
 
@@ -156,7 +180,7 @@
                         <th style="width: 15%;">Type</th>
                         <th style="width: 30%;">Description</th>
                         <th style="width: 15%;">Reference</th>
-                        <th class="text-right" style="width: 13%;">Amount (TZS)</th>
+                        <th class="text-right" style="width: 13%;">Amount (TSh)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -179,7 +203,7 @@
                     <tr style="background: #f3f4f6; font-weight: 700; border-top: 2px solid #009245;">
                         <td colspan="5"><strong>NET CAPITAL</strong></td>
                         <td class="text-right" style="font-weight: 700; color: {{ ($netCapital ?? 0) >= 0 ? '#059669' : '#dc2626' }};">
-                            <strong>TZS {{ number_format($netCapital ?? 0, 0) }}</strong>
+                            <strong>TSh {{ number_format($netCapital ?? 0, 0) }}</strong>
                         </td>
                     </tr>
                 </tbody>

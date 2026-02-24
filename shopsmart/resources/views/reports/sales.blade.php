@@ -73,7 +73,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <p class="text-xs sm:text-sm text-purple-700 font-medium">Total Sales</p>
-                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-900 mt-2">TZS {{ number_format($totalSales ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-900 mt-2">TSh {{ number_format($totalSales ?? 0, 0) }}</p>
                     <p class="text-xs text-purple-600 mt-1">{{ number_format($totalOrders ?? 0) }} orders</p>
                 </div>
                 <div class="w-12 h-12 sm:w-14 sm:h-14 bg-purple-600 rounded-lg flex items-center justify-center shadow-md">
@@ -89,7 +89,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <p class="text-xs sm:text-sm text-blue-700 font-medium">Average Order</p>
-                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-900 mt-2">TZS {{ number_format($averageOrder ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-900 mt-2">TSh {{ number_format($averageOrder ?? 0, 0) }}</p>
                     <p class="text-xs text-blue-600 mt-1">Per transaction</p>
                 </div>
                 <div class="w-12 h-12 sm:w-14 sm:h-14 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
@@ -105,7 +105,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <p class="text-xs sm:text-sm text-green-700 font-medium">Today's Sales</p>
-                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-900 mt-2">TZS {{ number_format($todaySales ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-900 mt-2">TSh {{ number_format($todaySales ?? 0, 0) }}</p>
                     <p class="text-xs text-green-600 mt-1">{{ number_format($todayOrders ?? 0) }} orders</p>
                 </div>
                 <div class="w-12 h-12 sm:w-14 sm:h-14 bg-green-600 rounded-lg flex items-center justify-center shadow-md">
@@ -121,7 +121,7 @@
             <div class="flex items-center justify-between">
                 <div class="flex-1">
                     <p class="text-xs sm:text-sm text-orange-700 font-medium">This Month</p>
-                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-900 mt-2">TZS {{ number_format($thisMonthSales ?? 0, 0) }}</p>
+                    <p class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-900 mt-2">TSh {{ number_format($thisMonthSales ?? 0, 0) }}</p>
                     @if(isset($monthGrowth))
                     <div class="flex items-center mt-2">
                         @if($monthGrowth >= 0)
@@ -196,7 +196,7 @@
                 <div class="space-y-2">
                     <div class="flex items-center justify-between text-sm">
                         <span class="font-medium text-gray-700 capitalize">{{ str_replace('_', ' ', $method->payment_method ?? 'N/A') }}</span>
-                        <span class="font-semibold text-gray-900">TZS {{ number_format($method->total ?? 0, 0) }}</span>
+                        <span class="font-semibold text-gray-900">TSh {{ number_format($method->total ?? 0, 0) }}</span>
                     </div>
                     <div class="flex items-center space-x-2">
                         <div class="flex-1 bg-gray-200 rounded-full h-2">
@@ -227,7 +227,7 @@
                             <p class="text-xs text-gray-500">{{ $customer->count }} orders</p>
                         </div>
                     </div>
-                    <span class="text-sm font-semibold text-gray-900 ml-3">TZS {{ number_format($customer->total, 0) }}</span>
+                    <span class="text-sm font-semibold text-gray-900 ml-3">TSh {{ number_format($customer->total, 0) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -250,7 +250,7 @@
                     <p class="text-xs text-gray-600">Quantity Sold</p>
                     <p class="text-base font-bold text-gray-900">{{ number_format($product->total_quantity ?? 0) }}</p>
                     <p class="text-xs text-gray-600 mt-2">Revenue</p>
-                    <p class="text-sm font-semibold text-purple-600">TZS {{ number_format($product->total_revenue ?? 0, 0) }}</p>
+                    <p class="text-sm font-semibold text-purple-600">TSh {{ number_format($product->total_revenue ?? 0, 0) }}</p>
                 </div>
             </div>
             @endforeach
@@ -284,7 +284,7 @@
                         <div class="text-xs text-gray-500 mt-1">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y h:i A') }}</div>
                     </div>
                     <div class="text-right ml-3">
-                        <div class="text-base font-bold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
+                        <div class="text-base font-bold text-gray-900">TSh {{ number_format($sale->total, 0) }}</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-2 text-xs">
@@ -352,7 +352,7 @@
                             <div class="text-xs text-gray-500">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('h:i A') }}</div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
-                            <div class="text-sm font-bold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
+                            <div class="text-sm font-bold text-gray-900">TSh {{ number_format($sale->total, 0) }}</div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
                             <div class="flex items-center justify-end space-x-2">
@@ -452,7 +452,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Sales (TZS)',
+                            label: 'Sales (TSh)',
                             data: totals,
                             borderColor: 'rgb(147, 51, 234)',
                             backgroundColor: 'rgba(147, 51, 234, 0.1)',
@@ -472,7 +472,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return 'Sales: TZS ' + context.parsed.y.toLocaleString('en-US');
+                                        return 'Sales: TSh ' + context.parsed.y.toLocaleString('en-US');
                                     }
                                 }
                             }
@@ -483,11 +483,11 @@
                                 ticks: {
                                     callback: function(value) {
                                         if (value >= 1000000) {
-                                            return 'TZS ' + (value / 1000000).toFixed(1) + 'M';
+                                            return 'TSh ' + (value / 1000000).toFixed(1) + 'M';
                                         } else if (value >= 1000) {
-                                            return 'TZS ' + (value / 1000).toFixed(0) + 'K';
+                                            return 'TSh ' + (value / 1000).toFixed(0) + 'K';
                                         }
-                                        return 'TZS ' + value.toLocaleString('en-US');
+                                        return 'TSh ' + value.toLocaleString('en-US');
                                     }
                                 }
                             }
@@ -517,7 +517,7 @@
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'Sales (TZS)',
+                            label: 'Sales (TSh)',
                             data: totals,
                             backgroundColor: 'rgba(59, 130, 246, 0.8)',
                             borderColor: 'rgb(59, 130, 246)',
@@ -535,7 +535,7 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        return 'Sales: TZS ' + context.parsed.y.toLocaleString('en-US');
+                                        return 'Sales: TSh ' + context.parsed.y.toLocaleString('en-US');
                                     }
                                 }
                             }
@@ -546,11 +546,11 @@
                                 ticks: {
                                     callback: function(value) {
                                         if (value >= 1000000) {
-                                            return 'TZS ' + (value / 1000000).toFixed(1) + 'M';
+                                            return 'TSh ' + (value / 1000000).toFixed(1) + 'M';
                                         } else if (value >= 1000) {
-                                            return 'TZS ' + (value / 1000).toFixed(0) + 'K';
+                                            return 'TSh ' + (value / 1000).toFixed(0) + 'K';
                                         }
-                                        return 'TZS ' + value.toLocaleString('en-US');
+                                        return 'TSh ' + value.toLocaleString('en-US');
                                     }
                                 }
                             }

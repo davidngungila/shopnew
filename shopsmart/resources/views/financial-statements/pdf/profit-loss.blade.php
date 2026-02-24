@@ -174,11 +174,11 @@
                 </tr>
                 <tr>
                     <td style="padding-left: 20px;">Sales Revenue</td>
-                    <td>{{ number_format($revenue ?? 0, 0) }} TZS</td>
+                    <td>{{ number_format($revenue ?? 0, 0) }} TSh</td>
                 </tr>
                 <tr style="background: #f3f4f6; border-top: 2px solid #009245;">
                     <td><strong>Total Revenue</strong></td>
-                    <td><strong>{{ number_format($revenue ?? 0, 0) }} TZS</strong></td>
+                    <td><strong>{{ number_format($revenue ?? 0, 0) }} TSh</strong></td>
                 </tr>
 
                 <tr style="background: #f3f4f6; margin-top: 10px;">
@@ -187,16 +187,16 @@
                 </tr>
                 <tr>
                     <td style="padding-left: 20px;">Purchases</td>
-                    <td>{{ number_format($cogs ?? 0, 0) }} TZS</td>
+                    <td>{{ number_format($cogs ?? 0, 0) }} TSh</td>
                 </tr>
                 <tr style="background: #f3f4f6; border-top: 2px solid #009245;">
                     <td><strong>Total COGS</strong></td>
-                    <td><strong>{{ number_format($cogs ?? 0, 0) }} TZS</strong></td>
+                    <td><strong>{{ number_format($cogs ?? 0, 0) }} TSh</strong></td>
                 </tr>
 
                 <tr style="background: #e6f5ed; border-top: 3px solid #009245; margin-top: 15px;">
                     <td><strong>GROSS PROFIT</strong></td>
-                    <td style="color: {{ ($grossProfit ?? 0) >= 0 ? '#059669' : '#dc2626' }};"><strong>{{ number_format($grossProfit ?? 0, 0) }} TZS</strong></td>
+                    <td style="color: {{ ($grossProfit ?? 0) >= 0 ? '#059669' : '#dc2626' }};"><strong>{{ number_format($grossProfit ?? 0, 0) }} TSh</strong></td>
                 </tr>
 
                 <tr style="background: #f3f4f6; margin-top: 10px;">
@@ -206,22 +206,22 @@
                 @forelse($expenseBreakdown ?? [] as $expense)
                 <tr>
                     <td style="padding-left: 20px;">{{ $expense->category }}</td>
-                    <td>{{ number_format($expense->total ?? 0, 0) }} TZS</td>
+                    <td>{{ number_format($expense->total ?? 0, 0) }} TSh</td>
                 </tr>
                 @empty
                 <tr>
                     <td style="padding-left: 20px;">No expenses recorded</td>
-                    <td>0 TZS</td>
+                    <td>0 TSh</td>
                 </tr>
                 @endforelse
                 <tr style="background: #f3f4f6; border-top: 2px solid #009245;">
                     <td><strong>Total Operating Expenses</strong></td>
-                    <td><strong>{{ number_format($operatingExpenses ?? 0, 0) }} TZS</strong></td>
+                    <td><strong>{{ number_format($operatingExpenses ?? 0, 0) }} TSh</strong></td>
                 </tr>
 
                 <tr class="total">
                     <td><strong>NET PROFIT / (LOSS)</strong></td>
-                    <td style="color: {{ ($netProfit ?? 0) >= 0 ? '#ffffff' : '#fee2e2' }};"><strong>{{ number_format($netProfit ?? 0, 0) }} TZS</strong></td>
+                    <td style="color: {{ ($netProfit ?? 0) >= 0 ? '#ffffff' : '#fee2e2' }};"><strong>{{ number_format($netProfit ?? 0, 0) }} TSh</strong></td>
                 </tr>
             </table>
         </div>

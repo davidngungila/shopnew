@@ -197,7 +197,7 @@
             <table class="summary-table">
                 <tr>
                     <td>Total Sales</td>
-                    <td>{{ number_format($totalSales, 0) }} TZS</td>
+                    <td>{{ number_format($totalSales, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Orders</td>
@@ -205,11 +205,11 @@
                 </tr>
                 <tr>
                     <td>Average Order Value</td>
-                    <td>{{ number_format($averageOrder, 0) }} TZS</td>
+                    <td>{{ number_format($averageOrder, 0) }} TSh</td>
                 </tr>
                 <tr class="total">
                     <td>Total Revenue</td>
-                    <td>{{ number_format($totalSales, 0) }} TZS</td>
+                    <td>{{ number_format($totalSales, 0) }} TSh</td>
                 </tr>
             </table>
         </div>
@@ -232,7 +232,7 @@
                     @foreach($salesByPayment as $method => $data)
                     <tr>
                         <td>{{ ucfirst(str_replace('_', ' ', $method)) }}</td>
-                        <td class="text-right">{{ number_format($data['total'], 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($data['total'], 0) }} TSh</td>
                         <td class="text-center">{{ $data['count'] }}</td>
                     </tr>
                     @endforeach
@@ -261,7 +261,7 @@
                     <tr>
                         <td style="text-align: center; color: #9ca3af;">{{ $index + 1 }}</td>
                         <td>{{ $data['customer']->name ?? 'N/A' }}</td>
-                        <td class="text-right"><strong style="color: #009245;">{{ number_format($data['total'], 0) }} TZS</strong></td>
+                        <td class="text-right"><strong style="color: #009245;">{{ number_format($data['total'], 0) }} TSh</strong></td>
                         <td class="text-center">{{ $data['count'] }}</td>
                     </tr>
                     @endforeach
@@ -298,18 +298,18 @@
                         <td>{{ $sale->customer->name ?? 'Walk-in' }}</td>
                         <td>{{ ucfirst(str_replace('_', ' ', $sale->payment_method)) }}</td>
                         <td class="text-right">{{ $sale->items->count() }}</td>
-                        <td class="text-right">{{ number_format($sale->subtotal ?? 0, 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($sale->tax ?? 0, 0) }} TZS</td>
-                        <td class="text-right"><strong style="color: #009245;">{{ number_format($sale->total, 0) }} TZS</strong></td>
+                        <td class="text-right">{{ number_format($sale->subtotal ?? 0, 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($sale->tax ?? 0, 0) }} TSh</td>
+                        <td class="text-right"><strong style="color: #009245;">{{ number_format($sale->total, 0) }} TSh</strong></td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr style="background: #009245; color: white; font-weight: bold;">
                         <td colspan="6" class="text-right">TOTAL:</td>
-                        <td class="text-right">{{ number_format($sales->sum('subtotal'), 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($sales->sum('tax'), 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($totalSales, 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($sales->sum('subtotal'), 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($sales->sum('tax'), 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($totalSales, 0) }} TSh</td>
                     </tr>
                 </tfoot>
             </table>

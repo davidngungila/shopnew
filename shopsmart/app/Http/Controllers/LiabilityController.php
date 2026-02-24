@@ -22,10 +22,12 @@ class LiabilityController extends Controller
             $query->where('status', $request->status);
         }
 
-        $liabilities = $query->latest()->paginate(20);
-        $totalLiabilities = Liability::sum('outstanding_balance');
-        $activeLiabilities = Liability::where('status', 'active')->sum('outstanding_balance');
-        $overdueLiabilities = Liability::where('status', 'overdue')->sum('outstanding_balance');
+        $liabilities = $query->latest()->paginate(20)->appends($request->query());
+
+        $allLiabilitiesForStats = (clone $query)->get();
+        $totalLiabilities = $allLiabilitiesForStats->sum('outstanding_balance');
+        $activeLiabilities = $allLiabilitiesForStats->where('status', 'active')->sum('outstanding_balance');
+        $overdueLiabilities = $allLiabilitiesForStats->where('status', 'overdue')->sum('outstanding_balance');
 
         return view('liabilities.index', compact('liabilities', 'totalLiabilities', 'activeLiabilities', 'overdueLiabilities'));
     }
@@ -122,7 +124,9 @@ class LiabilityController extends Controller
         $activeLiabilities = $liabilities->where('status', 'active')->sum('outstanding_balance');
         $overdueLiabilities = $liabilities->where('status', 'overdue')->sum('outstanding_balance');
 
-        $pdf = Pdf::loadView('liabilities.pdf.index', compact('liabilities', 'totalLiabilities', 'activeLiabilities', 'overdueLiabilities'))
+        $filters = $request->only(['type', 'status']);
+
+        $pdf = Pdf::loadView('liabilities.pdf.index', compact('liabilities', 'totalLiabilities', 'activeLiabilities', 'overdueLiabilities', 'filters'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('liabilities-report-' . now()->format('Y-m-d') . '.pdf');

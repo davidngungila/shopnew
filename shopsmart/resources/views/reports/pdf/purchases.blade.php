@@ -180,7 +180,7 @@
             <table class="summary-table">
                 <tr>
                     <td>Total Purchases</td>
-                    <td>{{ number_format($totalPurchases, 0) }} TZS</td>
+                    <td>{{ number_format($totalPurchases, 0) }} TSh</td>
                 </tr>
                 <tr>
                     <td>Total Orders</td>
@@ -188,11 +188,11 @@
                 </tr>
                 <tr>
                     <td>Average Order Value</td>
-                    <td>{{ number_format($averageOrder, 0) }} TZS</td>
+                    <td>{{ number_format($averageOrder, 0) }} TSh</td>
                 </tr>
                 <tr class="total">
                     <td>Total Cost</td>
-                    <td>{{ number_format($totalPurchases, 0) }} TZS</td>
+                    <td>{{ number_format($totalPurchases, 0) }} TSh</td>
                 </tr>
             </table>
         </div>
@@ -215,7 +215,7 @@
                     @foreach($purchasesBySupplier as $data)
                     <tr>
                         <td>{{ $data['supplier']->name ?? 'N/A' }}</td>
-                        <td class="text-right"><strong style="color: #009245;">{{ number_format($data['total'], 0) }} TZS</strong></td>
+                        <td class="text-right"><strong style="color: #009245;">{{ number_format($data['total'], 0) }} TSh</strong></td>
                         <td class="text-center">{{ $data['count'] }}</td>
                     </tr>
                     @endforeach
@@ -252,18 +252,18 @@
                         <td>{{ $purchase->supplier->name ?? 'N/A' }}</td>
                         <td class="text-center">{{ ucfirst($purchase->status) }}</td>
                         <td class="text-right">{{ $purchase->items->count() }}</td>
-                        <td class="text-right">{{ number_format($purchase->subtotal ?? 0, 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($purchase->tax ?? 0, 0) }} TZS</td>
-                        <td class="text-right"><strong style="color: #009245;">{{ number_format($purchase->total, 0) }} TZS</strong></td>
+                        <td class="text-right">{{ number_format($purchase->subtotal ?? 0, 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($purchase->tax ?? 0, 0) }} TSh</td>
+                        <td class="text-right"><strong style="color: #009245;">{{ number_format($purchase->total, 0) }} TSh</strong></td>
                     </tr>
                     @endforeach
                 </tbody>
                 <tfoot>
                     <tr style="background: #009245; color: white; font-weight: bold;">
                         <td colspan="6" class="text-right">TOTAL:</td>
-                        <td class="text-right">{{ number_format($purchases->sum('subtotal'), 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($purchases->sum('tax'), 0) }} TZS</td>
-                        <td class="text-right">{{ number_format($totalPurchases, 0) }} TZS</td>
+                        <td class="text-right">{{ number_format($purchases->sum('subtotal'), 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($purchases->sum('tax'), 0) }} TSh</td>
+                        <td class="text-right">{{ number_format($totalPurchases, 0) }} TSh</td>
                     </tr>
                 </tfoot>
             </table>

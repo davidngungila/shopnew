@@ -44,14 +44,14 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
                             @if($account['debit'] > 0)
-                            TZS {{ number_format($account['debit'], 0) }}
+                            TSh {{ number_format($account['debit'], 0) }}
                             @else
                             <span class="text-gray-400">-</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">
                             @if($account['credit'] > 0)
-                            TZS {{ number_format($account['credit'], 0) }}
+                            TSh {{ number_format($account['credit'], 0) }}
                             @else
                             <span class="text-gray-400">-</span>
                             @endif
@@ -65,8 +65,8 @@
                     @if(isset($accounts) && $accounts->count() > 0)
                     <tr class="bg-gray-50 font-bold">
                         <td colspan="3" class="px-6 py-4 text-sm text-gray-900">Total</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">TZS {{ number_format($totalDebit ?? 0, 0) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">TZS {{ number_format($totalCredit ?? 0, 0) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">TSh {{ number_format($totalDebit ?? 0, 0) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">TSh {{ number_format($totalCredit ?? 0, 0) }}</td>
                     </tr>
                     @endif
                 </tbody>

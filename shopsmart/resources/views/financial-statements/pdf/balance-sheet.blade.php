@@ -163,15 +163,15 @@
                     <table class="info-table">
                         <tr>
                             <td>Current Assets</td>
-                            <td>{{ number_format($currentAssets ?? 0, 0) }} TZS</td>
+                            <td>{{ number_format($currentAssets ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr>
                             <td>Fixed Assets</td>
-                            <td>{{ number_format($fixedAssets ?? 0, 0) }} TZS</td>
+                            <td>{{ number_format($fixedAssets ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr style="background: #f3f4f6; border-top: 2px solid #009245; font-weight: 700;">
                             <td>Total Assets</td>
-                            <td style="font-size: 10pt;">{{ number_format($totalAssets ?? 0, 0) }} TZS</td>
+                            <td style="font-size: 10pt;">{{ number_format($totalAssets ?? 0, 0) }} TSh</td>
                         </tr>
                     </table>
                 </div>
@@ -184,31 +184,31 @@
                     <table class="info-table">
                         <tr>
                             <td>Current Liabilities</td>
-                            <td>{{ number_format($currentLiabilities ?? 0, 0) }} TZS</td>
+                            <td>{{ number_format($currentLiabilities ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr>
                             <td>Long-term Liabilities</td>
-                            <td>{{ number_format($longTermLiabilities ?? 0, 0) }} TZS</td>
+                            <td>{{ number_format($longTermLiabilities ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr style="background: #f3f4f6; border-top: 2px solid #009245; font-weight: 700;">
                             <td>Total Liabilities</td>
-                            <td style="font-size: 10pt;">{{ number_format($totalLiabilities ?? 0, 0) }} TZS</td>
+                            <td style="font-size: 10pt;">{{ number_format($totalLiabilities ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr>
                             <td>Capital</td>
-                            <td>{{ number_format($capital ?? 0, 0) }} TZS</td>
+                            <td>{{ number_format($capital ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr>
                             <td>Retained Earnings</td>
-                            <td>{{ number_format($retainedEarnings ?? 0, 0) }} TZS</td>
+                            <td>{{ number_format($retainedEarnings ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr style="background: #f3f4f6; border-top: 2px solid #009245; font-weight: 700;">
                             <td>Total Equity</td>
-                            <td style="font-size: 10pt;">{{ number_format($totalEquity ?? 0, 0) }} TZS</td>
+                            <td style="font-size: 10pt;">{{ number_format($totalEquity ?? 0, 0) }} TSh</td>
                         </tr>
                         <tr style="background: #e6f5ed; border-top: 3px solid #009245; font-weight: 700; font-size: 10pt;">
                             <td>Total Liabilities & Equity</td>
-                            <td>{{ number_format(($totalLiabilities ?? 0) + ($totalEquity ?? 0), 0) }} TZS</td>
+                            <td>{{ number_format(($totalLiabilities ?? 0) + ($totalEquity ?? 0), 0) }} TSh</td>
                         </tr>
                     </table>
                 </div>

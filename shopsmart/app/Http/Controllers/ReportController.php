@@ -305,6 +305,8 @@ class ReportController extends Controller
             });
         }
 
+        $statsQuery = clone $query;
+
         // Sorting
         $sortBy = $request->get('sort_by', 'name');
         $sortOrder = $request->get('sort_order', 'asc');
@@ -320,18 +322,19 @@ class ReportController extends Controller
         $products = $query->paginate($perPage)->appends($request->query());
 
         // Statistics
-        $totalProducts = Product::count();
-        $activeProducts = Product::where('is_active', true)->count();
+        $totalProducts = (clone $statsQuery)->count();
+        $activeProducts = (clone $statsQuery)->where('is_active', true)->count();
         
-        $totalStockValue = Product::sum(DB::raw('stock_quantity * cost_price'));
-        $totalSellingValue = Product::sum(DB::raw('stock_quantity * selling_price'));
+        $totalStockValue = (clone $statsQuery)->sum(DB::raw('stock_quantity * cost_price'));
+        $totalSellingValue = (clone $statsQuery)->sum(DB::raw('stock_quantity * selling_price'));
         $potentialProfit = $totalSellingValue - $totalStockValue;
 
-        $lowStockCount = Product::whereRaw('stock_quantity <= low_stock_alert')
+        $lowStockCount = (clone $statsQuery)
+            ->whereRaw('stock_quantity <= low_stock_alert')
             ->where('stock_quantity', '>', 0)
             ->count();
         
-        $outOfStockCount = Product::where('stock_quantity', '<=', 0)->count();
+        $outOfStockCount = (clone $statsQuery)->where('stock_quantity', '<=', 0)->count();
 
         // Products by category
         $productsByCategory = Product::select('category_id', DB::raw('COUNT(*) as count'), DB::raw('SUM(stock_quantity * cost_price) as value'))
@@ -836,6 +839,39 @@ class ReportController extends Controller
             }
         }
 
+        // Advanced Filters
+        if ($request->filled('stock_min')) {
+            $query->where('stock_quantity', '>=', $request->stock_min);
+        }
+
+        if ($request->filled('stock_max')) {
+            $query->where('stock_quantity', '<=', $request->stock_max);
+        }
+
+        if ($request->filled('cost_min')) {
+            $query->where('cost_price', '>=', $request->cost_min);
+        }
+
+        if ($request->filled('cost_max')) {
+            $query->where('cost_price', '<=', $request->cost_max);
+        }
+
+        if ($request->filled('price_min')) {
+            $query->where('selling_price', '>=', $request->price_min);
+        }
+
+        if ($request->filled('price_max')) {
+            $query->where('selling_price', '<=', $request->price_max);
+        }
+
+        if ($request->filled('active_only') && $request->active_only == '1') {
+            $query->where('is_active', true);
+        }
+
+        if ($request->filled('with_image') && $request->with_image == '1') {
+            $query->whereNotNull('image')->where('image', '!=', '');
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -848,32 +884,37 @@ class ReportController extends Controller
         $products = $query->orderBy('name')->get();
 
         // Statistics
-        $totalProducts = Product::count();
-        $activeProducts = Product::where('is_active', true)->count();
-        $totalStockValue = Product::sum(DB::raw('stock_quantity * cost_price'));
-        $totalSellingValue = Product::sum(DB::raw('stock_quantity * selling_price'));
+        $totalProducts = $products->count();
+        $activeProducts = $products->where('is_active', true)->count();
+        $totalStockValue = $products->sum(fn ($p) => (float) $p->stock_quantity * (float) $p->cost_price);
+        $totalSellingValue = $products->sum(fn ($p) => (float) $p->stock_quantity * (float) $p->selling_price);
         $potentialProfit = $totalSellingValue - $totalStockValue;
-        $lowStockCount = Product::whereRaw('stock_quantity <= low_stock_alert')
-            ->where('stock_quantity', '>', 0)
-            ->count();
-        $outOfStockCount = Product::where('stock_quantity', '<=', 0)->count();
+        $lowStockCount = $products->filter(fn ($p) => (float) $p->stock_quantity <= (float) $p->low_stock_alert && (float) $p->stock_quantity > 0)->count();
+        $outOfStockCount = $products->filter(fn ($p) => (float) $p->stock_quantity <= 0)->count();
 
         $settings = $this->getCompanySettings();
         $categories = \App\Models\Category::where('is_active', true)->orderBy('name')->get();
         $warehouses = \App\Models\Warehouse::where('is_active', true)->orderBy('name')->get();
 
+        $filters = $request->only([
+            'category_id', 'warehouse_id', 'stock_status',
+            'stock_min', 'stock_max', 'cost_min', 'cost_max',
+            'price_min', 'price_max', 'active_only', 'with_image',
+            'search'
+        ]);
+
         try {
             $pdf = Pdf::loadView('reports.pdf.inventory', compact(
                 'products', 'totalProducts', 'activeProducts', 'totalStockValue',
                 'totalSellingValue', 'potentialProfit', 'lowStockCount', 'outOfStockCount',
-                'settings', 'categories', 'warehouses'
+                'settings', 'categories', 'warehouses', 'filters'
             ));
         } catch (\Exception $e) {
             $pdf = app('dompdf.wrapper');
             $pdf->loadView('reports.pdf.inventory', compact(
                 'products', 'totalProducts', 'activeProducts', 'totalStockValue',
                 'totalSellingValue', 'potentialProfit', 'lowStockCount', 'outOfStockCount',
-                'settings', 'categories', 'warehouses'
+                'settings', 'categories', 'warehouses', 'filters'
             ));
         }
 

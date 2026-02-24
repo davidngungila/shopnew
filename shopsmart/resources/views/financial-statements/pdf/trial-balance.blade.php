@@ -137,12 +137,12 @@
     <div class="stats">
         <div class="stats-row">
             <div class="stats-cell stats-label">Total Debit:</div>
-            <div class="stats-cell"><strong>{{ number_format($totalDebit ?? 0, 0) }} TZS</strong></div>
+            <div class="stats-cell"><strong>{{ number_format($totalDebit ?? 0, 0) }} TSh</strong></div>
             <div class="stats-cell stats-label">Total Credit:</div>
-            <div class="stats-cell"><strong>{{ number_format($totalCredit ?? 0, 0) }} TZS</strong></div>
+            <div class="stats-cell"><strong>{{ number_format($totalCredit ?? 0, 0) }} TSh</strong></div>
             <div class="stats-cell stats-label">Difference:</div>
             <div class="stats-cell" style="color: {{ abs(($totalDebit ?? 0) - ($totalCredit ?? 0)) < 0.01 ? '#059669' : '#dc2626' }}; font-weight: 700;">
-                {{ number_format(abs(($totalDebit ?? 0) - ($totalCredit ?? 0)), 0) }} TZS
+                {{ number_format(abs(($totalDebit ?? 0) - ($totalCredit ?? 0)), 0) }} TSh
             </div>
         </div>
     </div>
@@ -157,8 +157,8 @@
                         <th style="width: 10%;">Account Code</th>
                         <th style="width: 40%;">Account Name</th>
                         <th style="width: 15%;">Type</th>
-                        <th class="text-right" style="width: 17.5%;">Debit (TZS)</th>
-                        <th class="text-right" style="width: 17.5%;">Credit (TZS)</th>
+                        <th class="text-right" style="width: 17.5%;">Debit (TSh)</th>
+                        <th class="text-right" style="width: 17.5%;">Credit (TSh)</th>
                     </tr>
                 </thead>
                 <tbody>

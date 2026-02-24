@@ -29,15 +29,15 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <p class="text-xs sm:text-sm text-gray-600">Total Liabilities</p>
-            <p class="text-xl sm:text-2xl font-bold text-red-600 mt-2">TZS {{ number_format($totalLiabilities ?? 0, 0) }}</p>
+            <p class="text-xl sm:text-2xl font-bold text-red-600 mt-2">TSh {{ number_format($totalLiabilities ?? 0, 0) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <p class="text-xs sm:text-sm text-gray-600">Active Liabilities</p>
-            <p class="text-xl sm:text-2xl font-bold text-orange-600 mt-2">TZS {{ number_format($activeLiabilities ?? 0, 0) }}</p>
+            <p class="text-xl sm:text-2xl font-bold text-orange-600 mt-2">TSh {{ number_format($activeLiabilities ?? 0, 0) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <p class="text-xs sm:text-sm text-gray-600">Overdue Liabilities</p>
-            <p class="text-xl sm:text-2xl font-bold text-red-600 mt-2">TZS {{ number_format($overdueLiabilities ?? 0, 0) }}</p>
+            <p class="text-xl sm:text-2xl font-bold text-red-600 mt-2">TSh {{ number_format($overdueLiabilities ?? 0, 0) }}</p>
         </div>
     </div>
 
@@ -92,8 +92,8 @@
                             <br><span class="text-xs text-gray-400">Due: {{ \Carbon\Carbon::parse($liability->due_date)->format('M d, Y') }}</span>
                             @endif
                         </td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">TZS {{ number_format($liability->principal_amount, 0) }}</td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-600 text-right">TZS {{ number_format($liability->outstanding_balance, 0) }}</td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">TSh {{ number_format($liability->principal_amount, 0) }}</td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-red-600 text-right">TSh {{ number_format($liability->outstanding_balance, 0) }}</td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $liability->status === 'active' ? 'bg-blue-100 text-blue-800' : ($liability->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800') }}">
                                 {{ ucfirst($liability->status) }}

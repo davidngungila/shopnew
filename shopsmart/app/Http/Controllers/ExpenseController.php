@@ -9,10 +9,62 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ExpenseController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $expenses = Expense::with('user')->latest()->paginate(20);
-        return view('expenses.index', compact('expenses'));
+        $query = Expense::with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('expense_number', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('expense_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('expense_date', '<=', $request->date_to);
+        }
+
+        $expenses = $query->latest()->paginate(20)->appends($request->query());
+
+        $categories = Expense::query()
+            ->select('category')
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category');
+
+        $paymentMethods = ['cash', 'card', 'bank', 'mobile_money'];
+
+        $allExpensesForStats = (clone $query)->get();
+        $totalAmount = $allExpensesForStats->sum('amount');
+        $todayExpenses = $allExpensesForStats->where('expense_date', today())->sum('amount');
+        $thisMonthExpenses = $allExpensesForStats
+            ->filter(fn ($expense) => optional($expense->expense_date)->isCurrentMonth())
+            ->sum('amount');
+
+        return view('expenses.index', compact(
+            'expenses',
+            'categories',
+            'paymentMethods',
+            'totalAmount',
+            'todayExpenses',
+            'thisMonthExpenses'
+        ));
     }
 
     public function create()
@@ -115,14 +167,44 @@ class ExpenseController extends Controller
 
     public function pdf(Request $request)
     {
-        $expenses = Expense::with('user')->latest()->get();
+        $query = Expense::with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('expense_number', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('payment_method')) {
+            $query->where('payment_method', $request->payment_method);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('expense_date', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('expense_date', '<=', $request->date_to);
+        }
+
+        $expenses = $query->latest()->get();
         $totalAmount = $expenses->sum('amount');
-        $categoryBreakdown = Expense::selectRaw('category, SUM(amount) as total, COUNT(*) as count')
+        $categoryBreakdown = (clone $query)
+            ->selectRaw('category, SUM(amount) as total, COUNT(*) as count')
             ->groupBy('category')
             ->orderBy('total', 'desc')
             ->get();
 
-        $pdf = Pdf::loadView('expenses.pdf.index', compact('expenses', 'totalAmount', 'categoryBreakdown'))
+        $filters = $request->only(['search', 'category', 'payment_method', 'date_from', 'date_to']);
+
+        $pdf = Pdf::loadView('expenses.pdf.index', compact('expenses', 'totalAmount', 'categoryBreakdown', 'filters'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('expenses-report-' . now()->format('Y-m-d') . '.pdf');

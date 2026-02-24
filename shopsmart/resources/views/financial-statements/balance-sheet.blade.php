@@ -29,15 +29,15 @@
             <div class="space-y-3">
                 <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-gray-700">Current Assets</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($currentAssets ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($currentAssets ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-gray-700">Fixed Assets</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($fixedAssets ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($fixedAssets ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-t-2 border-gray-300 mt-2">
                     <span class="text-lg font-bold text-gray-900">Total Assets</span>
-                    <span class="text-lg font-bold text-gray-900">TZS {{ number_format($totalAssets ?? 0, 0) }}</span>
+                    <span class="text-lg font-bold text-gray-900">TSh {{ number_format($totalAssets ?? 0, 0) }}</span>
                 </div>
             </div>
         </div>
@@ -48,31 +48,31 @@
             <div class="space-y-3">
                 <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-gray-700">Current Liabilities</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($currentLiabilities ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($currentLiabilities ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-gray-700">Long-term Liabilities</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($longTermLiabilities ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($longTermLiabilities ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b-2 border-gray-300">
                     <span class="font-semibold text-gray-900">Total Liabilities</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($totalLiabilities ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($totalLiabilities ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b mt-2">
                     <span class="text-gray-700">Capital</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($capital ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($capital ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-2 border-b">
                     <span class="text-gray-700">Retained Earnings</span>
-                    <span class="font-semibold text-gray-900">TZS {{ number_format($retainedEarnings ?? 0, 0) }}</span>
+                    <span class="font-semibold text-gray-900">TSh {{ number_format($retainedEarnings ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-t-2 border-gray-300 mt-2">
                     <span class="text-lg font-bold text-gray-900">Total Equity</span>
-                    <span class="text-lg font-bold text-gray-900">TZS {{ number_format($totalEquity ?? 0, 0) }}</span>
+                    <span class="text-lg font-bold text-gray-900">TSh {{ number_format($totalEquity ?? 0, 0) }}</span>
                 </div>
                 <div class="flex justify-between items-center py-3 border-t-2 border-gray-300 mt-2">
                     <span class="text-xl font-bold text-gray-900">Total Liabilities & Equity</span>
-                    <span class="text-xl font-bold text-gray-900">TZS {{ number_format(($totalLiabilities ?? 0) + ($totalEquity ?? 0), 0) }}</span>
+                    <span class="text-xl font-bold text-gray-900">TSh {{ number_format(($totalLiabilities ?? 0) + ($totalEquity ?? 0), 0) }}</span>
                 </div>
             </div>
         </div>

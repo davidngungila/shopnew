@@ -135,6 +135,30 @@
         </div>
     </div>
 
+    @if(isset($filters) && collect($filters)->filter(fn($v) => $v !== null && $v !== '')->count() > 0)
+    <div class="section" style="margin-top: 0;">
+        <div class="section-header">Applied Filters</div>
+        <div class="section-content">
+            <table>
+                <tbody>
+                    @if(!empty($filters['search']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Search</td>
+                        <td>{{ $filters['search'] }}</td>
+                    </tr>
+                    @endif
+                    @if(isset($filters['is_active']) && $filters['is_active'] !== '')
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Status</td>
+                        <td>{{ $filters['is_active'] == '1' ? 'Active' : 'Inactive' }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <!-- Statistics -->
     <div class="stats">
         <div class="stats-row">

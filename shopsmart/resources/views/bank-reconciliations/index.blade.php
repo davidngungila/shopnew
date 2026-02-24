@@ -56,9 +56,9 @@
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reconciliation #</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Account</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statement Date</th>
-                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Bank Balance (TZS)</th>
-                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Book Balance (TZS)</th>
-                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Adjusted Balance (TZS)</th>
+                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Bank Balance (TSh)</th>
+                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Book Balance (TSh)</th>
+                        <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Adjusted Balance (TSh)</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         <th class="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
@@ -69,9 +69,9 @@
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $reconciliation->reconciliation_number }}</td>
                         <td class="px-4 sm:px-6 py-4 text-sm text-gray-900">{{ $reconciliation->account->account_name ?? '-' }}</td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($reconciliation->statement_date)->format('M d, Y') }}</td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">TZS {{ number_format($reconciliation->bank_balance, 0) }}</td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">TZS {{ number_format($reconciliation->book_balance, 0) }}</td>
-                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">TZS {{ number_format($reconciliation->adjusted_balance, 0) }}</td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">TSh {{ number_format($reconciliation->bank_balance, 0) }}</td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">TSh {{ number_format($reconciliation->book_balance, 0) }}</td>
+                        <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900 text-right">TSh {{ number_format($reconciliation->adjusted_balance, 0) }}</td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap">
                             <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $reconciliation->status === 'reconciled' ? 'bg-green-100 text-green-800' : ($reconciliation->status === 'discrepancy' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
                                 {{ ucfirst($reconciliation->status) }}

@@ -14,7 +14,7 @@ class DeliveryNoteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = DeliveryNote::with(['customer', 'supplier', 'sale', 'purchase']);
+        $query = DeliveryNote::with(['customer', 'supplier', 'sale', 'purchase', 'items']);
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -32,7 +32,7 @@ class DeliveryNoteController extends Controller
             $query->whereDate('delivery_date', '<=', $request->date_to);
         }
 
-        $deliveryNotes = $query->latest()->paginate(20);
+        $deliveryNotes = $query->latest()->paginate(20)->appends($request->query());
         return view('delivery-notes.index', compact('deliveryNotes'));
     }
 
@@ -137,7 +137,7 @@ class DeliveryNoteController extends Controller
 
     public function pdfList(Request $request)
     {
-        $query = DeliveryNote::with(['customer', 'supplier', 'sale', 'purchase']);
+        $query = DeliveryNote::with(['customer', 'supplier', 'sale', 'purchase', 'items']);
 
         if ($request->filled('type')) {
             $query->where('type', $request->type);
@@ -157,7 +157,9 @@ class DeliveryNoteController extends Controller
 
         $deliveryNotes = $query->latest()->get();
 
-        $pdf = Pdf::loadView('delivery-notes.pdf.index', compact('deliveryNotes'))
+        $filters = $request->only(['type', 'status', 'date_from', 'date_to']);
+
+        $pdf = Pdf::loadView('delivery-notes.pdf.index', compact('deliveryNotes', 'filters'))
             ->setPaper('a4', 'landscape');
 
         return $pdf->download('delivery-notes-report-' . now()->format('Y-m-d') . '.pdf');

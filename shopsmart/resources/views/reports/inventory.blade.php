@@ -124,7 +124,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Cost Price Range (TZS)</label>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Cost Price Range (TSh)</label>
                         <div class="flex gap-2">
                             <input type="number" name="cost_min" value="{{ request('cost_min') }}" placeholder="Min" 
                                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
@@ -134,7 +134,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Selling Price Range (TZS)</label>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Selling Price Range (TSh)</label>
                         <div class="flex gap-2">
                             <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Min" 
                                 class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
@@ -227,7 +227,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs sm:text-sm text-blue-600 font-medium">Stock Value (Cost)</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-blue-900 mt-2">TZS {{ number_format($totalStockValue ?? 0, 0) }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-blue-900 mt-2">TSh {{ number_format($totalStockValue ?? 0, 0) }}</p>
                     <p class="text-xs text-blue-600 mt-1">At cost price</p>
                 </div>
                 <div class="w-14 h-14 bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -243,7 +243,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-xs sm:text-sm text-green-600 font-medium">Potential Profit</p>
-                    <p class="text-2xl sm:text-3xl font-bold text-green-900 mt-2">TZS {{ number_format($potentialProfit ?? 0, 0) }}</p>
+                    <p class="text-2xl sm:text-3xl font-bold text-green-900 mt-2">TSh {{ number_format($potentialProfit ?? 0, 0) }}</p>
                     <p class="text-xs text-green-600 mt-1">If all sold</p>
                 </div>
                 <div class="w-14 h-14 bg-green-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -290,7 +290,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-1">
                         <span class="text-sm font-medium text-gray-900">{{ $category->category->name ?? 'Uncategorized' }}</span>
-                        <span class="text-sm font-semibold text-gray-700">TZS {{ number_format($category->value ?? 0, 0) }}</span>
+                        <span class="text-sm font-semibold text-gray-700">TSh {{ number_format($category->value ?? 0, 0) }}</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-2.5">
                         <div class="bg-gradient-to-r from-[#009245] to-[#007a38] h-2.5 rounded-full transition-all duration-500" 
@@ -324,7 +324,7 @@
                             <p class="text-xs text-gray-500">{{ number_format($product->stock_quantity) }} units</p>
                         </div>
                     </div>
-                    <span class="text-sm font-bold text-gray-900 ml-3">TZS {{ number_format($product->stock_value ?? 0, 0) }}</span>
+                    <span class="text-sm font-bold text-gray-900 ml-3">TSh {{ number_format($product->stock_value ?? 0, 0) }}</span>
                 </div>
                 @endforeach
             </div>
@@ -455,13 +455,13 @@
                             </div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
-                            <div class="text-sm font-medium text-gray-900">TZS {{ number_format($product->cost_price, 0) }}</div>
+                            <div class="text-sm font-medium text-gray-900">TSh {{ number_format($product->cost_price, 0) }}</div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
-                            <div class="text-sm font-medium text-gray-900">TZS {{ number_format($product->selling_price, 0) }}</div>
+                            <div class="text-sm font-medium text-gray-900">TSh {{ number_format($product->selling_price, 0) }}</div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right">
-                            <div class="text-sm font-bold text-gray-900">TZS {{ number_format($product->stock_quantity * $product->cost_price, 0) }}</div>
+                            <div class="text-sm font-bold text-gray-900">TSh {{ number_format($product->stock_quantity * $product->cost_price, 0) }}</div>
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-center">
                             <a href="{{ route('products.show', $product->id) }}" class="text-[#009245] hover:text-[#007a38]" title="View">
@@ -521,15 +521,15 @@
                     </div>
                     <div>
                         <span class="text-gray-500">Value:</span>
-                        <div class="font-medium text-gray-900 mt-0.5">TZS {{ number_format($product->stock_quantity * $product->cost_price, 0) }}</div>
+                        <div class="font-medium text-gray-900 mt-0.5">TSh {{ number_format($product->stock_quantity * $product->cost_price, 0) }}</div>
                     </div>
                     <div>
                         <span class="text-gray-500">Cost:</span>
-                        <div class="font-medium text-gray-900 mt-0.5">TZS {{ number_format($product->cost_price, 0) }}</div>
+                        <div class="font-medium text-gray-900 mt-0.5">TSh {{ number_format($product->cost_price, 0) }}</div>
                     </div>
                     <div>
                         <span class="text-gray-500">Price:</span>
-                        <div class="font-medium text-gray-900 mt-0.5">TZS {{ number_format($product->selling_price, 0) }}</div>
+                        <div class="font-medium text-gray-900 mt-0.5">TSh {{ number_format($product->selling_price, 0) }}</div>
                     </div>
                 </div>
             </div>

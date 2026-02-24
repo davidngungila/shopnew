@@ -29,15 +29,15 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <p class="text-xs sm:text-sm text-gray-600">Total Contributions</p>
-            <p class="text-xl sm:text-2xl font-bold text-green-600 mt-2">TZS {{ number_format($totalContributions ?? 0, 0) }}</p>
+            <p class="text-xl sm:text-2xl font-bold text-green-600 mt-2">TSh {{ number_format($totalContributions ?? 0, 0) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <p class="text-xs sm:text-sm text-gray-600">Total Withdrawals</p>
-            <p class="text-xl sm:text-2xl font-bold text-red-600 mt-2">TZS {{ number_format($totalWithdrawals ?? 0, 0) }}</p>
+            <p class="text-xl sm:text-2xl font-bold text-red-600 mt-2">TSh {{ number_format($totalWithdrawals ?? 0, 0) }}</p>
         </div>
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
             <p class="text-xs sm:text-sm text-gray-600">Net Capital</p>
-            <p class="text-xl sm:text-2xl font-bold {{ ($netCapital ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }} mt-2">TZS {{ number_format($netCapital ?? 0, 0) }}</p>
+            <p class="text-xl sm:text-2xl font-bold {{ ($netCapital ?? 0) >= 0 ? 'text-green-600' : 'text-red-600' }} mt-2">TSh {{ number_format($netCapital ?? 0, 0) }}</p>
         </div>
     </div>
 
@@ -88,7 +88,7 @@
                         <td class="px-4 sm:px-6 py-4 text-sm text-gray-500">{{ Str::limit($capital->description ?? '-', 40) }}</td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $capital->reference ?? '-' }}</td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-sm font-semibold text-right {{ $capital->type === 'contribution' || $capital->type === 'profit' ? 'text-green-600' : 'text-red-600' }}">
-                            TZS {{ number_format($capital->amount, 0) }}
+                            TSh {{ number_format($capital->amount, 0) }}
                         </td>
                         <td class="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-2">

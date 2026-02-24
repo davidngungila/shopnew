@@ -109,7 +109,7 @@
             </table>
         </div>
         @if(isset($deliveryNotes) && $deliveryNotes->hasPages())
-        <div class="px-4 sm:px-6 py-4 border-t border-gray-200">{{ $deliveryNotes->links() }}</div>
+        <div class="px-4 sm:px-6 py-4 border-t border-gray-200">{{ $deliveryNotes->appends(request()->query())->links() }}</div>
         @endif
     </div>
 </div>

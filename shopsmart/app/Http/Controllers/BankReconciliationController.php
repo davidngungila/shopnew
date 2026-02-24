@@ -21,7 +21,7 @@ class BankReconciliationController extends Controller
             $query->where('status', $request->status);
         }
 
-        $reconciliations = $query->latest()->paginate(20);
+        $reconciliations = $query->latest()->paginate(20)->appends($request->query());
         $accounts = ChartOfAccount::where('account_type', 'asset')
             ->where('account_category', 'current_asset')
             ->where('is_active', true)
@@ -140,7 +140,9 @@ class BankReconciliationController extends Controller
             ->orderBy('account_name')
             ->get();
 
-        $pdf = Pdf::loadView('bank-reconciliations.pdf.index', compact('reconciliations', 'accounts'))
+        $filters = $request->only(['account_id', 'status']);
+
+        $pdf = Pdf::loadView('bank-reconciliations.pdf.index', compact('reconciliations', 'accounts', 'filters'))
             ->setPaper('a4', 'portrait');
 
         return $pdf->download('bank-reconciliation-report-' . now()->format('Y-m-d') . '.pdf');

@@ -153,15 +153,39 @@
         </div>
     </div>
 
+    @if(isset($filters) && collect($filters)->filter(fn($v) => $v !== null && $v !== '')->count() > 0)
+    <div class="section" style="margin-top: 0;">
+        <div class="section-header">Applied Filters</div>
+        <div class="section-content">
+            <table>
+                <tbody>
+                    @if(!empty($filters['type']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Type</td>
+                        <td>{{ ucfirst($filters['type']) }}</td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['status']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Status</td>
+                        <td>{{ ucfirst($filters['status']) }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <!-- Statistics -->
     <div class="stats">
         <div class="stats-row">
             <div class="stats-cell stats-label">Total Liabilities:</div>
-            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TZS {{ number_format($totalLiabilities ?? 0, 0) }}</div>
+            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TSh {{ number_format($totalLiabilities ?? 0, 0) }}</div>
             <div class="stats-cell stats-label">Active Liabilities:</div>
-            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TZS {{ number_format($activeLiabilities ?? 0, 0) }}</div>
+            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TSh {{ number_format($activeLiabilities ?? 0, 0) }}</div>
             <div class="stats-cell stats-label">Overdue Liabilities:</div>
-            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TZS {{ number_format($overdueLiabilities ?? 0, 0) }}</div>
+            <div class="stats-cell" style="color: #dc2626; font-weight: 600;">TSh {{ number_format($overdueLiabilities ?? 0, 0) }}</div>
         </div>
     </div>
 
@@ -176,8 +200,8 @@
                         <th style="width: 20%;">Name</th>
                         <th style="width: 12%;">Type</th>
                         <th style="width: 18%;">Start / Due Date</th>
-                        <th class="text-right" style="width: 12%;">Principal (TZS)</th>
-                        <th class="text-right" style="width: 12%;">Outstanding (TZS)</th>
+                        <th class="text-right" style="width: 12%;">Principal (TSh)</th>
+                        <th class="text-right" style="width: 12%;">Outstanding (TSh)</th>
                         <th class="text-center" style="width: 14%;">Status</th>
                     </tr>
                 </thead>
@@ -208,7 +232,7 @@
                     @endforelse
                     <tr style="background: #f3f4f6; font-weight: 700; border-top: 2px solid #009245;">
                         <td colspan="5"><strong>TOTAL OUTSTANDING</strong></td>
-                        <td class="text-right" style="font-weight: 700; color: #dc2626;"><strong>TZS {{ number_format($totalLiabilities ?? 0, 0) }}</strong></td>
+                        <td class="text-right" style="font-weight: 700; color: #dc2626;"><strong>TSh {{ number_format($totalLiabilities ?? 0, 0) }}</strong></td>
                         <td></td>
                     </tr>
                 </tbody>

@@ -160,6 +160,32 @@
         </div>
     </div>
 
+    @if(isset($filters) && collect($filters)->filter(fn($v) => $v !== null && $v !== '')->count() > 0)
+    <div class="section" style="margin-top: 0;">
+        <div class="section-header">Applied Filters</div>
+        <div class="section-content">
+            <table>
+                <tbody>
+                    @if(!empty($filters['account_id']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Account</td>
+                        <td>
+                            {{ optional(($accounts ?? collect())->firstWhere('id', (int) $filters['account_id']))->account_name ?? $filters['account_id'] }}
+                        </td>
+                    </tr>
+                    @endif
+                    @if(!empty($filters['status']))
+                    <tr>
+                        <td style="width: 30%; font-weight: bold;">Status</td>
+                        <td>{{ ucfirst($filters['status']) }}</td>
+                    </tr>
+                    @endif
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <!-- Bank Reconciliations Table -->
     <div class="section">
         <div class="section-header">Bank Reconciliations</div>
@@ -170,9 +196,9 @@
                         <th style="width: 15%;">Reconciliation #</th>
                         <th style="width: 20%;">Account</th>
                         <th style="width: 12%;">Statement Date</th>
-                        <th class="text-right" style="width: 15%;">Bank Balance (TZS)</th>
-                        <th class="text-right" style="width: 15%;">Book Balance (TZS)</th>
-                        <th class="text-right" style="width: 15%;">Adjusted Balance (TZS)</th>
+                        <th class="text-right" style="width: 15%;">Bank Balance (TSh)</th>
+                        <th class="text-right" style="width: 15%;">Book Balance (TSh)</th>
+                        <th class="text-right" style="width: 15%;">Adjusted Balance (TSh)</th>
                         <th class="text-center" style="width: 8%;">Status</th>
                     </tr>
                 </thead>
@@ -197,16 +223,16 @@
                             <div class="reconciliation-detail">
                                 <strong>Details for {{ $reconciliation->reconciliation_number }}:</strong><br>
                                 @if($reconciliation->deposits_in_transit)
-                                Deposits in Transit: TZS {{ number_format($reconciliation->deposits_in_transit, 0) }} | 
+                                Deposits in Transit: TSh {{ number_format($reconciliation->deposits_in_transit, 0) }} | 
                                 @endif
                                 @if($reconciliation->outstanding_checks)
-                                Outstanding Checks: TZS {{ number_format($reconciliation->outstanding_checks, 0) }} | 
+                                Outstanding Checks: TSh {{ number_format($reconciliation->outstanding_checks, 0) }} | 
                                 @endif
                                 @if($reconciliation->bank_charges)
-                                Bank Charges: TZS {{ number_format($reconciliation->bank_charges, 0) }} | 
+                                Bank Charges: TSh {{ number_format($reconciliation->bank_charges, 0) }} | 
                                 @endif
                                 @if($reconciliation->interest_earned)
-                                Interest Earned: TZS {{ number_format($reconciliation->interest_earned, 0) }}
+                                Interest Earned: TSh {{ number_format($reconciliation->interest_earned, 0) }}
                                 @endif
                                 @if($reconciliation->notes)
                                 <br><em>Notes: {{ $reconciliation->notes }}</em>
