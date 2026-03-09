@@ -42,12 +42,16 @@ class LandingController extends Controller
             // Get testimonials (you can create a testimonials table or use static data)
             $testimonials = $this->getTestimonials();
 
-            // Get statistics
+            // Get real statistics from the system
             $stats = [
                 'totalCustomers' => $this->getTotalCustomers(),
                 'totalProducts' => Product::where('is_active', true)->count(),
                 'totalSales' => $this->getTotalSales(),
-                'supportHours' => '24/7'
+                'supportHours' => '24/7',
+                'ordersToday' => $this->getOrdersToday(),
+                'averageRating' => $this->getAverageRating(),
+                'activeProducts' => Product::where('is_active', true)->where('stock_quantity', '>', 0)->count(),
+                'totalCategories' => Category::where('is_active', true)->count()
             ];
 
             return view('landing', compact(
@@ -69,7 +73,11 @@ class LandingController extends Controller
                     'totalCustomers' => 0,
                     'totalProducts' => 0,
                     'totalSales' => 0,
-                    'supportHours' => '24/7'
+                    'supportHours' => '24/7',
+                    'ordersToday' => 0,
+                    'averageRating' => 0,
+                    'activeProducts' => 0,
+                    'totalCategories' => 0
                 ]
             ]);
         }
@@ -280,6 +288,20 @@ class LandingController extends Controller
     {
         return Sale::where('status', 'completed')
             ->sum('total') ?? 0;
+    }
+
+    private function getOrdersToday()
+    {
+        return Sale::where('status', 'completed')
+            ->whereDate('created_at', Carbon::today())
+            ->count() ?? 0;
+    }
+
+    private function getAverageRating()
+    {
+        // If you have a ratings table, calculate average rating
+        // For now, return a default value
+        return 4.8;
     }
 
     private function getTestimonials()

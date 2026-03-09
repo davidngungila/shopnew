@@ -67,45 +67,305 @@
     </style>
 </head>
 <body class="bg-gray-50" x-data="landingPage()">
-    <!-- Professional Navigation -->
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <h1 class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                            <i class="fas fa-shopping-bag mr-2"></i>ShopSmart
-                        </h1>
+    <!-- Advanced Professional Header with System Colors -->
+    <header class="bg-white shadow-xl sticky top-0 z-50 border-b border-gray-100">
+        <!-- Top Bar with System Info -->
+        <div class="bg-gradient-to-r from-green-600 to-green-700 text-white py-2">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center text-xs sm:text-sm">
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-phone mr-1"></i>
+                            +255 712 345 678
+                        </span>
+                        <span class="hidden sm:flex items-center">
+                            <i class="fas fa-envelope mr-1"></i>
+                            info@shopsmart.co.tz
+                        </span>
                     </div>
-                </div>
-                <div class="hidden md:block">
-                    <div class="ml-10 flex items-baseline space-x-4">
-                        <a href="#home" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
-                        <a href="#products" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Products</a>
-                        <a href="#categories" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Categories</a>
-                        <a href="#deals" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Deals</a>
-                        <a href="#testimonials" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Reviews</a>
-                        <a href="#contact" class="text-gray-700 hover:text-purple-600 px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+                    <div class="flex items-center space-x-4">
+                        <span class="flex items-center">
+                            <i class="fas fa-clock mr-1"></i>
+                            <span x-text="currentTime"></span>
+                        </span>
+                        <span class="hidden sm:flex items-center">
+                            <i class="fas fa-map-marker-alt mr-1"></i>
+                            Dar es Salaam, Tanzania
+                        </span>
                     </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                    <div class="relative">
-                        <input type="text" x-model="searchQuery" @input="searchProducts()" placeholder="Search products..." 
-                               class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
-                    </div>
-                    <button @click="toggleCart()" class="relative p-2 text-gray-700 hover:text-purple-600">
-                        <i class="fas fa-shopping-cart text-xl"></i>
-                        <span x-show="cart.length > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" x-text="cart.length"></span>
-                    </button>
-                    <button @click="showUserMenu = !showUserMenu" class="flex items-center space-x-2 text-gray-700 hover:text-purple-600">
-                        <i class="fas fa-user-circle text-xl"></i>
-                        <span class="hidden md:block">Account</span>
-                    </button>
                 </div>
             </div>
         </div>
-    </nav>
+
+        <!-- Main Navigation -->
+        <nav class="bg-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <!-- Logo and Brand -->
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3">
+                                    <i class="fas fa-shopping-bag text-white text-lg"></i>
+                                </div>
+                                <div>
+                                    <h1 class="text-2xl font-bold text-gray-900">ShopSmart</h1>
+                                    <p class="text-xs text-gray-500 hidden sm:block">Your Trusted Shopping Partner</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Desktop Navigation -->
+                    <div class="hidden lg:flex items-center space-x-8">
+                        <div class="relative group">
+                            <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
+                                <span>Shop</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <div class="py-2">
+                                    <a href="#products" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-th-large mr-2"></i>All Products
+                                    </a>
+                                    <a href="#categories" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-list mr-2"></i>Categories
+                                    </a>
+                                    <a href="#deals" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-fire mr-2"></i>Hot Deals
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-tag mr-2"></i>Offers
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="relative group">
+                            <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
+                                <span>Services</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <div class="py-2">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-truck mr-2"></i>Fast Delivery
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-shield-alt mr-2"></i>Secure Payment
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-undo mr-2"></i>Easy Returns
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-headset mr-2"></i>24/7 Support
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="#about" class="text-gray-700 hover:text-green-600 font-medium transition">About</a>
+                        <a href="#contact" class="text-gray-700 hover:text-green-600 font-medium transition">Contact</a>
+                        
+                        <div class="relative group">
+                            <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
+                                <span>More</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <div class="py-2">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-blog mr-2"></i>Blog
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-question-circle mr-2"></i>FAQs
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-file-alt mr-2"></i>Terms & Conditions
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-lock mr-2"></i>Privacy Policy
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Bar -->
+                    <div class="hidden md:flex items-center flex-1 max-w-lg mx-8">
+                        <div class="relative w-full">
+                            <input 
+                                type="text" 
+                                x-model="searchQuery" 
+                                @input="searchProducts()" 
+                                @focus="showSearchSuggestions = true"
+                                @blur="setTimeout(() => showSearchSuggestions = false, 200)"
+                                placeholder="Search products, brands, categories..." 
+                                class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            >
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            
+                            <!-- Search Suggestions Dropdown -->
+                            <div x-show="showSearchSuggestions && searchQuery" x-cloak class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200">
+                                <div class="p-2">
+                                    <template x-for="suggestion in searchSuggestions.slice(0, 5)" :key="suggestion">
+                                        <div class="px-3 py-2 hover:bg-green-50 rounded cursor-pointer flex items-center">
+                                            <i class="fas fa-search text-gray-400 mr-2"></i>
+                                            <span x-text="suggestion"></span>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Side Actions -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Language Selector -->
+                        <div class="relative group">
+                            <button class="flex items-center text-gray-700 hover:text-green-600 transition">
+                                <i class="fas fa-globe mr-1"></i>
+                                <span class="hidden sm:inline">EN</span>
+                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                            </button>
+                            <div class="absolute top-full right-0 mt-2 w-32 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <div class="py-2">
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">English</a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">Swahili</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Wishlist -->
+                        <button class="relative p-2 text-gray-700 hover:text-green-600 transition">
+                            <i class="fas fa-heart text-xl"></i>
+                            <span x-show="wishlist.length > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" x-text="wishlist.length"></span>
+                        </button>
+
+                        <!-- Cart -->
+                        <button @click="toggleCart()" class="relative p-2 text-gray-700 hover:text-green-600 transition">
+                            <i class="fas fa-shopping-cart text-xl"></i>
+                            <span x-show="cart.length > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" x-text="cart.length"></span>
+                        </button>
+
+                        <!-- User Account -->
+                        <div class="relative group">
+                            <button class="flex items-center text-gray-700 hover:text-green-600 transition">
+                                <i class="fas fa-user-circle text-xl"></i>
+                                <i class="fas fa-chevron-down ml-1 text-xs hidden sm:inline"></i>
+                            </button>
+                            <div class="absolute top-full right-0 mt-2 w-56 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <div class="py-2">
+                                    <div class="px-4 py-2 border-b border-gray-100">
+                                        <p class="text-sm font-medium text-gray-900">Welcome back!</p>
+                                        <p class="text-xs text-gray-500" x-text="customerEmail || 'guest@example.com'"></p>
+                                    </div>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-user mr-2"></i>My Account
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-box mr-2"></i>My Orders
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-heart mr-2"></i>My Wishlist
+                                    </a>
+                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                        <i class="fas fa-cog mr-2"></i>Settings
+                                    </a>
+                                    <div class="border-t border-gray-100 mt-2 pt-2">
+                                        <a href="/login" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
+                                            <i class="fas fa-sign-in-alt mr-2"></i>Login / Register
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mobile Menu Toggle -->
+                        <button @click="toggleMobileMenu()" class="lg:hidden p-2 text-gray-700 hover:text-green-600">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div x-show="showMobileMenu" x-cloak class="lg:hidden border-t border-gray-200">
+                <div class="px-4 py-2 space-y-1">
+                    <a href="#products" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                        <i class="fas fa-th-large mr-2"></i>All Products
+                    </a>
+                    <a href="#categories" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                        <i class="fas fa-list mr-2"></i>Categories
+                    </a>
+                    <a href="#deals" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                        <i class="fas fa-fire mr-2"></i>Hot Deals
+                    </a>
+                    <a href="#about" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                        <i class="fas fa-info-circle mr-2"></i>About
+                    </a>
+                    <a href="#contact" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                        <i class="fas fa-phone mr-2"></i>Contact
+                    </a>
+                </div>
+                
+                <!-- Mobile Search -->
+                <div class="px-4 py-3 border-t border-gray-200">
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            x-model="searchQuery" 
+                            @input="searchProducts()" 
+                            placeholder="Search products..." 
+                            class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        >
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Mobile User Actions -->
+                <div class="px-4 py-3 border-t border-gray-200 flex justify-around">
+                    <button class="flex flex-col items-center text-gray-700 hover:text-green-600">
+                        <i class="fas fa-heart text-lg"></i>
+                        <span class="text-xs mt-1">Wishlist</span>
+                    </button>
+                    <button @click="toggleCart()" class="flex flex-col items-center text-gray-700 hover:text-green-600">
+                        <i class="fas fa-shopping-cart text-lg"></i>
+                        <span class="text-xs mt-1">Cart</span>
+                    </button>
+                    <button class="flex flex-col items-center text-gray-700 hover:text-green-600">
+                        <i class="fas fa-user text-lg"></i>
+                        <span class="text-xs mt-1">Account</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Live Stats Bar -->
+        <div class="bg-green-50 border-b border-green-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-wrap justify-center items-center py-2 text-xs sm:text-sm space-x-4 sm:space-x-8">
+                    <div class="flex items-center text-green-700">
+                        <i class="fas fa-users mr-2"></i>
+                        <span><span x-text="liveStats.customers"></span> Happy Customers</span>
+                    </div>
+                    <div class="flex items-center text-green-700">
+                        <i class="fas fa-box mr-2"></i>
+                        <span><span x-text="liveStats.products"></span> Products Available</span>
+                    </div>
+                    <div class="flex items-center text-green-700">
+                        <i class="fas fa-truck mr-2"></i>
+                        <span><span x-text="liveStats.ordersToday"></span> Orders Today</span>
+                    </div>
+                    <div class="flex items-center text-green-700">
+                        <i class="fas fa-star mr-2"></i>
+                        <span><span x-text="liveStats.rating"></span> Average Rating</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
 
     <!-- Hero Section -->
     <section id="home" class="gradient-bg text-white py-20">
@@ -621,17 +881,31 @@
                 products: [],
                 categories: [],
                 cart: [],
+                wishlist: [],
                 searchQuery: '',
+                searchSuggestions: [],
                 sortBy: 'name',
                 viewMode: 'grid',
                 selectedCategory: null,
                 showCart: false,
                 showCheckout: false,
                 showSuccess: false,
+                showMobileMenu: false,
+                showSearchSuggestions: false,
                 processing: false,
                 orderId: '',
                 paymentMethod: 'card',
                 newsletterEmail: '',
+                customerEmail: '',
+                currentTime: '',
+                
+                // Live Statistics
+                liveStats: {
+                    customers: 0,
+                    products: 0,
+                    ordersToday: 0,
+                    rating: 0
+                },
                 
                 // Customer Information
                 customerInfo: {
@@ -754,6 +1028,87 @@
                     this.loadProducts();
                     this.loadCategories();
                     this.loadFromLocalStorage();
+                    this.updateCurrentTime();
+                    this.loadLiveStats();
+                    this.setupAutoUpdates();
+                },
+                
+                updateCurrentTime() {
+                    const updateTime = () => {
+                        const now = new Date();
+                        this.currentTime = now.toLocaleString('en-US', { 
+                            weekday: 'short', 
+                            hour: '2-digit', 
+                            minute: '2-digit',
+                            hour12: true 
+                        });
+                    };
+                    updateTime();
+                    setInterval(updateTime, 60000); // Update every minute
+                },
+                
+                async loadLiveStats() {
+                    // Simulate loading real data from API
+                    try {
+                        // In real app, this would be an API call
+                        this.liveStats = {
+                            customers: 52467,
+                            products: 10234,
+                            ordersToday: 156,
+                            rating: 4.8
+                        };
+                    } catch (error) {
+                        console.error('Error loading live stats:', error);
+                    }
+                },
+                
+                setupAutoUpdates() {
+                    // Update live stats every 30 seconds
+                    setInterval(() => {
+                        this.loadLiveStats();
+                    }, 30000);
+                    
+                    // Update search suggestions based on query
+                    this.$watch('searchQuery', (value) => {
+                        if (value.length > 2) {
+                            this.generateSearchSuggestions(value);
+                        } else {
+                            this.searchSuggestions = [];
+                        }
+                    });
+                },
+                
+                generateSearchSuggestions(query) {
+                    // Generate search suggestions from products
+                    const suggestions = [];
+                    const lowerQuery = query.toLowerCase();
+                    
+                    this.products.forEach(product => {
+                        if (product.name.toLowerCase().includes(lowerQuery)) {
+                            suggestions.push(product.name);
+                        }
+                        if (product.description.toLowerCase().includes(lowerQuery)) {
+                            suggestions.push(product.description.substring(0, 50) + '...');
+                        }
+                    });
+                    
+                    // Add category suggestions
+                    this.categories.forEach(category => {
+                        if (category.name.toLowerCase().includes(lowerQuery)) {
+                            suggestions.push(category.name + ' category');
+                        }
+                    });
+                    
+                    // Remove duplicates and limit to 10 suggestions
+                    this.searchSuggestions = [...new Set(suggestions)].slice(0, 10);
+                },
+                
+                toggleMobileMenu() {
+                    this.showMobileMenu = !this.showMobileMenu;
+                },
+                
+                toggleCart() {
+                    this.showCart = !this.showCart;
                 },
                 
                 loadProducts() {
