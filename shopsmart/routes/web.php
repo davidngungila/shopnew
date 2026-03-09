@@ -30,7 +30,17 @@ use App\Http\Controllers\FinancialStatementController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\LandingController;
 use Illuminate\Support\Facades\Auth;
+
+// Public Routes (No Authentication Required)
+Route::get('/landing', [LandingController::class, 'index'])->name('landing');
+Route::get('/shop', [LandingController::class, 'index'])->name('shop');
+Route::get('/search-products', [LandingController::class, 'search'])->name('landing.search');
+Route::get('/category/{id}/products', [LandingController::class, 'getCategoryProducts'])->name('landing.category.products');
+Route::get('/product/{id}/details', [LandingController::class, 'getProductDetails'])->name('landing.product.details');
+Route::post('/cart/add', [LandingController::class, 'addToCart'])->name('landing.cart.add');
+Route::post('/payment/process', [LandingController::class, 'processPayment'])->name('landing.payment.process');
 
 // Authentication Routes (Public)
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -39,12 +49,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/forgot-password', [AuthController::class, 'showForgotPasswordForm'])->name('password.forgot');
 Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
 
-// Redirect root to dashboard (or login if not authenticated)
+// Redirect root to landing page
 Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect()->route('dashboard');
-    }
-    return redirect()->route('login');
+    return redirect()->route('landing');
 });
 
 // Protected Routes (Require Authentication)
