@@ -49,6 +49,21 @@
         .feature-icon:hover {
             transform: rotate(360deg) scale(1.1);
         }
+        
+        /* x-cloak styling to hide elements until Alpine is ready */
+        [x-cloak] {
+            display: none !important;
+        }
+        
+        /* Modal backdrop styles */
+        .modal-backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        /* Ensure modals are hidden by default */
+        .modal-hidden {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="bg-gray-50" x-data="landingPage()">
@@ -535,7 +550,7 @@
     </div>
 
     <!-- Success Modal -->
-    <div x-show="showSuccess" @click.away="showSuccess = false" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="background-color: rgba(0, 0, 0, 0.5);">
+    <div x-show="showSuccess" @click.away="showSuccess = false" x-cloak class="fixed inset-0 z-50 overflow-y-auto modal-hidden" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="flex items-center justify-center min-h-screen px-4">
             <div @click.stop class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 text-center">
                 <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -544,7 +559,7 @@
                 <h3 class="text-xl font-bold mb-2">Payment Successful!</h3>
                 <p class="text-gray-600 mb-4">Your order has been placed successfully. Order ID: #<span x-text="orderId"></span></p>
                 <p class="text-gray-600 mb-6">You will receive a confirmation email shortly.</p>
-                <button @click="showSuccess = false" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
+                <button @click="closeSuccessModal()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
                     Continue Shopping
                 </button>
             </div>
@@ -942,6 +957,21 @@
                     if (savedCart) {
                         this.cart = JSON.parse(savedCart);
                     }
+                },
+                
+                closeSuccessModal() {
+                    this.showSuccess = false;
+                    // Reset form data
+                    this.customerInfo = {
+                        firstName: '',
+                        lastName: '',
+                        email: '',
+                        phone: '',
+                        address: ''
+                    };
+                    this.cardInfo = { number: '', expiry: '', cvv: '' };
+                    this.mobileInfo = { number: '', provider: '' };
+                    this.orderId = '';
                 },
                 
                 showNotification(message, type = 'info') {
