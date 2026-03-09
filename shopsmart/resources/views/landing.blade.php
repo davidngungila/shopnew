@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://js.stripe.com/v3/"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&family=Roboto:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'DM Sans', 'Roboto', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+        }
+        
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
@@ -64,6 +70,85 @@
         .modal-hidden {
             display: none !important;
         }
+        
+        /* Enhanced Features Section */
+        .feature-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #009245, #10b981);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-color: #009245;
+        }
+        
+        .feature-icon-wrapper {
+            background: linear-gradient(135deg, #009245 0%, #10b981 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover .feature-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 10px 20px rgba(0, 146, 69, 0.3);
+        }
+        
+        .feature-number {
+            background: linear-gradient(135deg, #009245 0%, #10b981 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* Animated background */
+        .features-bg {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #bbf7d0 100%);
+            position: relative;
+        }
+        
+        .features-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 146, 69, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(0, 146, 69, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        /* Floating animation for feature cards */
+        @keyframes float-card {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .feature-card:nth-child(1) { animation: float-card 4s ease-in-out infinite; }
+        .feature-card:nth-child(2) { animation: float-card 4s ease-in-out infinite 1s; }
+        .feature-card:nth-child(3) { animation: float-card 4s ease-in-out infinite 2s; }
+        .feature-card:nth-child(4) { animation: float-card 4s ease-in-out infinite 3s; }
     </style>
 </head>
 <body class="bg-gray-50" x-data="landingPage()">
@@ -421,38 +506,147 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-16 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-bold text-center mb-12">Why Choose ShopSmart?</h2>
+    <!-- Enhanced Features Section -->
+    <section class="features-bg py-20 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium mb-4">
+                    <i class="fas fa-star mr-2"></i>
+                    Trusted by Thousands of Customers
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                    Why Choose <span class="feature-number">ShopSmart</span>?
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Experience the future of online shopping with our innovative features and unmatched customer service
+                </p>
+            </div>
+
+            <!-- Features Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center">
-                    <div class="feature-icon w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-truck text-purple-600 text-2xl"></i>
+                <!-- Fast Delivery -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center relative">
+                    <div class="feature-number text-5xl font-bold mb-4">01</div>
+                    <div class="feature-icon-wrapper w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-truck text-white text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-2">Fast Delivery</h3>
-                    <p class="text-gray-600 text-sm">Get your orders delivered within 24 hours</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Fast Delivery</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Get your orders delivered within 24 hours with our express delivery service
+                    </p>
+                    <div class="flex items-center justify-center space-x-2 text-green-600">
+                        <i class="fas fa-check-circle"></i>
+                        <span class="font-medium">Express Available</span>
+                    </div>
+                    <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 </div>
-                <div class="text-center">
-                    <div class="feature-icon w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+
+                <!-- Secure Payment -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center relative">
+                    <div class="feature-number text-5xl font-bold mb-4">02</div>
+                    <div class="feature-icon-wrapper w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-shield-alt text-white text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-2">Secure Payment</h3>
-                    <p class="text-gray-600 text-sm">100% secure payment processing</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Secure Payment</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        100% secure payment processing with advanced encryption and fraud protection
+                    </p>
+                    <div class="flex items-center justify-center space-x-2 text-green-600">
+                        <i class="fas fa-lock"></i>
+                        <span class="font-medium">SSL Encrypted</span>
+                    </div>
+                    <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 </div>
-                <div class="text-center">
-                    <div class="feature-icon w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-undo text-green-600 text-2xl"></i>
+
+                <!-- Easy Returns -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center relative">
+                    <div class="feature-number text-5xl font-bold mb-4">03</div>
+                    <div class="feature-icon-wrapper w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-undo text-white text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-2">Easy Returns</h3>
-                    <p class="text-gray-600 text-sm">30-day return policy</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Easy Returns</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        30-day hassle-free return policy with no questions asked guarantee
+                    </p>
+                    <div class="flex items-center justify-center space-x-2 text-green-600">
+                        <i class="fas fa-check-double"></i>
+                        <span class="font-medium">Hassle-Free</span>
+                    </div>
+                    <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 </div>
-                <div class="text-center">
-                    <div class="feature-icon w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-headset text-orange-600 text-2xl"></i>
+
+                <!-- 24/7 Support -->
+                <div class="feature-card bg-white rounded-2xl p-8 text-center relative">
+                    <div class="feature-number text-5xl font-bold mb-4">04</div>
+                    <div class="feature-icon-wrapper w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-headset text-white text-3xl"></i>
                     </div>
-                    <h3 class="font-semibold mb-2">24/7 Support</h3>
-                    <p class="text-gray-600 text-sm">Round-the-clock customer service</p>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">24/7 Support</h3>
+                    <p class="text-gray-600 mb-6 leading-relaxed">
+                        Round-the-clock customer service to help you with any questions or concerns
+                    </p>
+                    <div class="flex items-center justify-center space-x-2 text-green-600">
+                        <i class="fas fa-phone-alt"></i>
+                        <span class="font-medium">Always Available</span>
+                    </div>
+                    <div class="absolute top-4 right-4 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                </div>
+            </div>
+
+            <!-- Additional Features Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                <!-- Price Match Guarantee -->
+                <div class="feature-card bg-white rounded-2xl p-6 flex items-center space-x-4">
+                    <div class="feature-icon-wrapper w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-tag text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Price Match Guarantee</h4>
+                        <p class="text-gray-600 text-sm">Find a lower price? We'll match it!</p>
+                    </div>
+                </div>
+
+                <!-- Quality Assurance -->
+                <div class="feature-card bg-white rounded-2xl p-6 flex items-center space-x-4">
+                    <div class="feature-icon-wrapper w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-certificate text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Quality Assurance</h4>
+                        <p class="text-gray-600 text-sm">100% genuine products guaranteed</p>
+                    </div>
+                </div>
+
+                <!-- Loyalty Rewards -->
+                <div class="feature-card bg-white rounded-2xl p-6 flex items-center space-x-4">
+                    <div class="feature-icon-wrapper w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fas fa-gift text-white text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Loyalty Rewards</h4>
+                        <p class="text-gray-600 text-sm">Earn points with every purchase</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Trust Badges -->
+            <div class="flex flex-wrap justify-center items-center gap-8 mt-16">
+                <div class="flex items-center space-x-2 text-gray-600">
+                    <i class="fas fa-award text-green-600 text-2xl"></i>
+                    <span class="font-medium">Award Winning Service</span>
+                </div>
+                <div class="flex items-center space-x-2 text-gray-600">
+                    <i class="fas fa-users text-green-600 text-2xl"></i>
+                    <span class="font-medium">50K+ Happy Customers</span>
+                </div>
+                <div class="flex items-center space-x-2 text-gray-600">
+                    <i class="fas fa-star text-green-600 text-2xl"></i>
+                    <span class="font-medium">4.8/5 Average Rating</span>
+                </div>
+                <div class="flex items-center space-x-2 text-gray-600">
+                    <i class="fas fa-shield-alt text-green-600 text-2xl"></i>
+                    <span class="font-medium">Secure Shopping</span>
                 </div>
             </div>
         </div>
