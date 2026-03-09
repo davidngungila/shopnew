@@ -50,6 +50,7 @@ Route::get('/', function () {
 // Protected Routes (Require Authentication)
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/advanced', [DashboardController::class, 'advanced'])->name('dashboard.advanced');
     
     // Global Search
     Route::get('/search', [SearchController::class, 'search'])->name('search');
