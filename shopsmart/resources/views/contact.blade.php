@@ -95,9 +95,7 @@
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="flex items-center">
-                                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-bag text-white text-lg"></i>
-                                </div>
+                                <img src="{{ asset('logo.png') }}" alt="ShopSmart" class="h-10 w-auto mr-3">
                                 <div>
                                     <h1 class="text-2xl font-bold text-gray-900">ShopSmart</h1>
                                     <p class="text-xs text-gray-500 hidden sm:block">Your Trusted Shopping Partner</p>

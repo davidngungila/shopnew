@@ -190,9 +190,7 @@
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
                             <div class="flex items-center">
-                                <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center mr-3">
-                                    <i class="fas fa-shopping-bag text-white text-lg"></i>
-                                </div>
+                                <img src="{{ asset('logo.png') }}" alt="ShopSmart" class="h-10 w-auto mr-3">
                                 <div>
                                     <h1 class="text-2xl font-bold text-gray-900">ShopSmart</h1>
                                     <p class="text-xs text-gray-500 hidden sm:block">Your Trusted Shopping Partner</p>
@@ -209,29 +207,6 @@
 
                         <a href="/about" class="text-gray-700 hover:text-green-600 font-medium transition">About</a>
                         <a href="/contact" class="text-gray-700 hover:text-green-600 font-medium transition">Contact</a>
-                        
-                        <div class="relative group">
-                            <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
-                                <span>More</span>
-                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                            </button>
-                            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                <div class="py-2">
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-blog mr-2"></i>Blog
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-question-circle mr-2"></i>FAQs
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-file-alt mr-2"></i>Terms & Conditions
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-lock mr-2"></i>Privacy Policy
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Search Bar -->
@@ -241,6 +216,7 @@
                                 type="text" 
                                 x-model="searchQuery" 
                                 @input="searchProducts()" 
+                                @click="showSearchSuggestions = true"
                                 @focus="showSearchSuggestions = true"
                                 @blur="setTimeout(() => showSearchSuggestions = false, 200)"
                                 placeholder="Search products, brands, categories..." 
@@ -249,7 +225,7 @@
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                             
                             <!-- Search Suggestions Dropdown -->
-                            <div x-show="showSearchSuggestions && searchQuery" x-cloak class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200">
+                            <div x-show="showSearchSuggestions" x-cloak class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
                                 <div class="p-2">
                                     <template x-for="suggestion in searchSuggestions.slice(0, 5)" :key="suggestion">
                                         <div class="px-3 py-2 hover:bg-green-50 rounded cursor-pointer flex items-center">
@@ -257,6 +233,9 @@
                                             <span x-text="suggestion"></span>
                                         </div>
                                     </template>
+                                    <div x-show="searchSuggestions.length === 0" class="px-3 py-2 text-gray-500 text-sm">
+                                        Start typing to see suggestions...
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -278,12 +257,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Wishlist -->
-                        <button class="relative p-2 text-gray-700 hover:text-green-600 transition">
-                            <i class="fas fa-heart text-xl"></i>
-                            <span x-show="wishlist.length > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" x-text="wishlist.length"></span>
-                        </button>
 
                         <!-- Cart -->
                         <button @click="toggleCart()" class="relative p-2 text-gray-700 hover:text-green-600 transition">
@@ -308,9 +281,6 @@
                                     </a>
                                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
                                         <i class="fas fa-box mr-2"></i>My Orders
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-heart mr-2"></i>My Wishlist
                                     </a>
                                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
                                         <i class="fas fa-cog mr-2"></i>Settings
@@ -365,10 +335,6 @@
 
                 <!-- Mobile User Actions -->
                 <div class="px-4 py-3 border-t border-gray-200 flex justify-around">
-                    <button class="flex flex-col items-center text-gray-700 hover:text-green-600">
-                        <i class="fas fa-heart text-lg"></i>
-                        <span class="text-xs mt-1">Wishlist</span>
-                    </button>
                     <button @click="toggleCart()" class="flex flex-col items-center text-gray-700 hover:text-green-600">
                         <i class="fas fa-shopping-cart text-lg"></i>
                         <span class="text-xs mt-1">Cart</span>
@@ -1029,7 +995,6 @@
                 products: [],
                 categories: [],
                 cart: [],
-                wishlist: [],
                 searchQuery: '',
                 searchSuggestions: [],
                 sortBy: 'name',
