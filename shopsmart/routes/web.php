@@ -51,6 +51,7 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/advanced', [DashboardController::class, 'advanced'])->name('dashboard.advanced');
+    Route::get('/dashboard/professional', [DashboardController::class, 'professional'])->name('dashboard.professional');
     
     // Global Search
     Route::get('/search', [SearchController::class, 'search'])->name('search');
