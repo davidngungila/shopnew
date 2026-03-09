@@ -140,7 +140,7 @@ class DashboardController extends Controller
             $totalExpenses = Expense::where('created_at', '>=', $thisMonth)->sum('amount') ?? 0;
             $netProfit = $thisMonthSales - $totalExpenses;
 
-            return view('dashboard.index', compact(
+            return view('dashboard', compact(
                 'now', 'todaySales', 'salesGrowth', 'todayOrders', 'pendingOrders',
                 'totalCustomers', 'newCustomersToday', 'activeCustomers',
                 'totalProducts', 'lowStockCount', 'outOfStockCount', 'activeProducts',
@@ -152,7 +152,7 @@ class DashboardController extends Controller
         } catch (\Exception $e) {
             \Log::error('Dashboard error: ' . $e->getMessage());
             // Return default values if there's an error
-            return view('dashboard.index', [
+            return view('dashboard', [
                 'now' => Carbon::now('Africa/Dar_es_Salaam'),
                 'todaySales' => 0, 'salesGrowth' => 0, 'todayOrders' => 0, 'pendingOrders' => 0,
                 'totalCustomers' => 0, 'newCustomersToday' => 0, 'activeCustomers' => 0,
