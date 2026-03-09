@@ -110,7 +110,7 @@
                     <!-- Right Side Actions -->
                     <div class="flex items-center space-x-4">
                         <div class="relative">
-                            <input type="text" x-model="searchQuery" @input="searchProducts()" placeholder="Search products..." 
+                            <input type="text" x-model="searchQuery" @input="searchProducts()" placeholder="Search..." 
                                    class="w-64 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                             <i class="fas fa-search absolute right-3 top-3 text-gray-400"></i>
                         </div>

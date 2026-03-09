@@ -219,7 +219,7 @@
                                 @click="showSearchSuggestions = true"
                                 @focus="showSearchSuggestions = true"
                                 @blur="setTimeout(() => showSearchSuggestions = false, 200)"
-                                placeholder="Search products, brands, categories..." 
+                                placeholder="Search..." 
                                 class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
                             >
                             <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -326,7 +326,7 @@
                             type="text" 
                             x-model="searchQuery" 
                             @input="searchProducts()" 
-                            placeholder="Search products..." 
+                            placeholder="Search..." 
                             class="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                         >
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
