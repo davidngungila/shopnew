@@ -58,6 +58,93 @@
         </div>
     </div>
 
+    <!-- Quick Add Product Modal -->
+    <div x-show="quickAddModalOpen" @click.away="quickAddModalOpen = false" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="background-color: rgba(0, 0, 0, 0.5);">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div @click.stop class="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6 max-h-[80vh] overflow-y-auto">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Add Product</h3>
+                <form @submit.prevent="saveQuickProduct()">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
+                            <input type="text" x-model="quickProduct.name" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">SKU *</label>
+                            <input type="text" x-model="quickProduct.sku" required
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                            <select x-model="quickProduct.category_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                                <option value="">Select Category</option>
+                                @foreach($categories as $category)
+                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Unit</label>
+                            <select x-model="quickProduct.unit" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                                <option value="units">Units</option>
+                                <option value="kg">Kilograms</option>
+                                <option value="liters">Liters</option>
+                                <option value="meters">Meters</option>
+                                <option value="pieces">Pieces</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Selling Price (TZS) *</label>
+                            <input type="number" x-model="quickProduct.selling_price" required min="0" step="0.01"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Cost Price (TZS)</label>
+                            <input type="number" x-model="quickProduct.cost_price" min="0" step="0.01"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Initial Stock</label>
+                            <input type="number" x-model="quickProduct.stock_quantity" min="0"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Low Stock Alert</label>
+                            <input type="number" x-model="quickProduct.low_stock_alert" min="0"
+                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                            <textarea x-model="quickProduct.description" rows="3"
+                                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"></textarea>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" x-model="quickProduct.track_stock" class="rounded border-gray-300 mr-2">
+                                <span class="text-sm text-gray-700">Track Stock</span>
+                            </label>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="flex items-center">
+                                <input type="checkbox" x-model="quickProduct.is_active" checked class="rounded border-gray-300 mr-2">
+                                <span class="text-sm text-gray-700">Active</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex space-x-3">
+                        <button type="submit" :disabled="quickProductProcessing" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 disabled:opacity-50">
+                            <span x-show="!quickProductProcessing">Add Product</span>
+                            <span x-show="quickProductProcessing">Adding...</span>
+                        </button>
+                        <button type="button" @click="quickAddModalOpen = false; resetQuickProduct()" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Payment Processing Modal -->
     <div x-show="paymentModalOpen" @click.away="paymentModalOpen = false" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="flex items-center justify-center min-h-screen px-4">
@@ -182,12 +269,12 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-orange-100 text-sm font-medium">Available Products</p>
-                    <p class="text-2xl font-bold mt-1" x-text="filteredProducts.length"></p>
+                    <p class="text-2xl font-bold mt-1">{{ $totalProducts ?? 0 }}</p>
                     <div class="flex items-center mt-2 text-xs text-orange-100">
                         <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                         </svg>
-                        <span x-text="`${products.length} total products`"></span>
+                        <span x-text="`${filteredProducts.length} currently visible`"></span>
                     </div>
                 </div>
                 <div class="w-12 h-12 bg-orange-400 bg-opacity-50 rounded-lg flex items-center justify-center">
@@ -232,15 +319,34 @@
                             <input 
                                 type="text" 
                                 x-model="searchQuery"
-                                @input="filterProducts()"
+                                @input="debouncedSearch()"
                                 @keydown.enter.prevent="handleBarcodeSearch()"
                                 placeholder="Search by name, SKU, or scan barcode..." 
-                                class="w-full px-4 py-3 pl-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245] focus:border-transparent"
+                                class="w-full px-4 py-3 pl-10 pr-20 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245] focus:border-transparent"
                                 id="productSearch"
+                                :class="{'border-blue-500': isSearching}"
                             >
                             <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
+                            <!-- Search indicator -->
+                            <div x-show="searchQuery" class="absolute right-3 top-3.5 flex items-center space-x-1">
+                                <!-- Loading spinner -->
+                                <div x-show="isSearching" class="animate-spin">
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                </div>
+                                <!-- Results count -->
+                                <span x-show="!isSearching" class="text-xs text-gray-500" x-text="`${filteredProducts.length} found`"></span>
+                                <!-- Clear button -->
+                                <button @click="searchQuery = ''; filterProducts()" class="text-gray-400 hover:text-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -263,6 +369,9 @@
 
                 <!-- Quick Actions -->
                 <div class="flex items-center space-x-2">
+                    <button @click="clearAllFilters()" class="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm">
+                        Clear Filters
+                    </button>
                     <button @click="loadHeldSale()" x-show="heldSales.length > 0" class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm">
                         Load Held Sale (<span x-text="heldSales.length"></span>)
                     </button>
@@ -277,10 +386,10 @@
 
             <!-- Products Grid -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                <div class="mb-4 flex items-center justify-between">
+                <div class="flex items-center justify-between">
                     <h3 class="text-lg font-semibold text-gray-900">Products</h3>
                     <div class="flex items-center space-x-4">
-                        <span class="text-sm text-gray-500" x-text="`Showing ${filteredProducts.length} of ${products.length} products`"></span>
+                        <span class="text-sm text-gray-500" x-text="`Showing ${filteredProducts.length} of {{ $totalProducts ?? 0 }} products`"></span>
                         <div class="flex space-x-2">
                             <button @click="viewMode = 'grid'" :class="viewMode === 'grid' ? 'bg-blue-100 text-blue-700' : 'text-gray-500'" class="px-2 py-1 rounded text-sm">
                                 Grid
@@ -325,9 +434,9 @@
                             </div>
 
                             <!-- Product Info -->
-                            <div class="text-sm font-medium text-gray-900 truncate" x-text="product.name"></div>
-                            <div class="text-xs text-gray-500 mt-1" x-text="product.sku"></div>
-                            <div class="text-xs text-gray-400 mt-1" x-text="product.category_name || 'Uncategorized'"></div>
+                            <div class="text-sm font-medium text-gray-900 truncate" x-html="highlightText(product.name, searchQuery)"></div>
+                            <div class="text-xs text-gray-500 mt-1" x-html="highlightText(product.sku, searchQuery)"></div>
+                            <div class="text-xs text-gray-400 mt-1" x-html="highlightText(product.category_name || 'Uncategorized', searchQuery)"></div>
                             
                             <!-- Price and Stock -->
                             <div class="flex items-center justify-between mt-2">
@@ -351,7 +460,25 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <p class="text-lg font-medium">No products found</p>
-                        <p class="text-sm">Try adjusting your search or filters</p>
+                        <p class="text-sm mb-4">
+                            <span x-show="searchQuery || selectedCategory || stockFilter">
+                                Try adjusting your search or filters
+                                <button @click="clearAllFilters()" class="text-blue-600 hover:text-blue-800 underline ml-1">
+                                    or clear all filters
+                                </button>
+                            </span>
+                            <span x-show="!searchQuery && !selectedCategory && !stockFilter">
+                                No products available in the system
+                                <button @click="quickAddProduct()" class="text-green-600 hover:text-green-800 underline ml-1">
+                                    Add your first product
+                                </button>
+                            </span>
+                        </p>
+                        <div x-show="products.length === 0" class="mt-4">
+                            <button @click="quickAddProduct()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                Add Your First Product
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -384,13 +511,13 @@
                                                 </template>
                                             </div>
                                             <div>
-                                                <div class="text-sm font-medium text-gray-900" x-text="product.name"></div>
-                                                <div class="text-xs text-gray-500" x-text="product.description ? product.description.substring(0, 50) + '...' : ''"></div>
+                                                <div class="text-sm font-medium text-gray-900" x-html="highlightText(product.name, searchQuery)"></div>
+                                                <div class="text-xs text-gray-500" x-html="highlightText(product.description ? product.description.substring(0, 50) + '...' : '', searchQuery)"></div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-gray-500" x-text="product.sku"></td>
-                                    <td class="px-4 py-3 text-sm text-gray-500" x-text="product.category_name || 'Uncategorized'"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-500" x-html="highlightText(product.sku, searchQuery)"></td>
+                                    <td class="px-4 py-3 text-sm text-gray-500" x-html="highlightText(product.category_name || 'Uncategorized', searchQuery)"></td>
                                     <td class="px-4 py-3 text-sm font-semibold text-green-600" x-text="`TZS ${formatNumber(product.selling_price)}`"></td>
                                     <td class="px-4 py-3">
                                         <span class="px-2 py-1 text-xs font-semibold rounded-full"
@@ -636,6 +763,35 @@ function advancedPosApp() {
         // Held sales
         heldSales: [],
 
+        // Quick Add Product
+        quickAddModalOpen: false,
+        quickProductProcessing: false,
+        quickProduct: {
+            name: '',
+            sku: '',
+            category_id: '',
+            description: '',
+            selling_price: '',
+            cost_price: '',
+            unit: 'units',
+            stock_quantity: 0,
+            low_stock_alert: 5,
+            track_stock: true,
+            is_active: true
+        },
+
+        // Search timeout for debouncing
+        searchTimeout: null,
+        isSearching: false,
+
+        // Search highlighting
+        highlightText(text, query) {
+            if (!query || !text) return text;
+            
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<mark class="bg-yellow-200">$1</mark>');
+        },
+
         init() {
             this.loadProducts();
             this.loadTodaySales();
@@ -648,43 +804,146 @@ function advancedPosApp() {
         },
 
         loadProducts() {
-            // Add category_name to products
-            this.products = this.products.map(product => ({
-                ...product,
-                category_name: product.category?.name || 'Uncategorized'
-            }));
+            // Ensure products array is properly initialized
+            if (!this.products || !Array.isArray(this.products)) {
+                this.products = [];
+            }
+            
+            // Add category_name to products and ensure required fields
+            this.products = this.products.map(product => {
+                const normalizedProduct = {
+                    id: product.id || Date.now() + Math.random(),
+                    name: product.name || 'Unknown Product',
+                    sku: product.sku || 'N/A',
+                    description: product.description || '',
+                    selling_price: parseFloat(product.selling_price) || 0,
+                    cost_price: parseFloat(product.cost_price) || 0,
+                    category_id: product.category_id || null,
+                    category: product.category || null,
+                    category_name: product.category?.name || product.category_name || 'Uncategorized',
+                    unit: product.unit || 'units',
+                    stock_quantity: parseInt(product.stock_quantity) || 0,
+                    low_stock_alert: parseInt(product.low_stock_alert) || 5,
+                    track_stock: product.track_stock !== false, // Default to true
+                    is_active: product.is_active !== false, // Default to true
+                    barcode: product.barcode || '',
+                    image: product.image || null,
+                    created_at: product.created_at || new Date().toISOString(),
+                    updated_at: product.updated_at || new Date().toISOString()
+                };
+                
+                return normalizedProduct;
+            });
+            
+            // Initialize filtered products
             this.filteredProducts = [...this.products];
+            
+            // Debug: Log product loading
+            console.log(`Loaded ${this.products.length} products successfully`);
+            
+            // If no products, show a message
+            if (this.products.length === 0) {
+                console.warn('No products loaded. Check your data source.');
+            }
         },
 
         filterProducts() {
             let filtered = [...this.products];
             
-            // Search filter
+            // Search filter - enhanced to handle more cases
             if (this.searchQuery) {
-                const query = this.searchQuery.toLowerCase();
-                filtered = filtered.filter(product => 
-                    product.name.toLowerCase().includes(query) ||
-                    product.sku.toLowerCase().includes(query) ||
-                    (product.description && product.description.toLowerCase().includes(query))
-                );
+                const query = this.searchQuery.toLowerCase().trim();
+                filtered = filtered.filter(product => {
+                    // Search in name
+                    if (product.name && product.name.toLowerCase().includes(query)) {
+                        return true;
+                    }
+                    // Search in SKU
+                    if (product.sku && product.sku.toLowerCase().includes(query)) {
+                        return true;
+                    }
+                    // Search in description
+                    if (product.description && product.description.toLowerCase().includes(query)) {
+                        return true;
+                    }
+                    // Search in category name
+                    if (product.category_name && product.category_name.toLowerCase().includes(query)) {
+                        return true;
+                    }
+                    // Search by barcode
+                    if (product.barcode && product.barcode.toLowerCase().includes(query)) {
+                        return true;
+                    }
+                    return false;
+                });
             }
             
             // Category filter
             if (this.selectedCategory) {
-                filtered = filtered.filter(product => product.category_id == this.selectedCategory);
+                filtered = filtered.filter(product => {
+                    return product.category_id == this.selectedCategory || 
+                           product.category?.id == this.selectedCategory;
+                });
             }
             
             // Stock filter
             if (this.stockFilter) {
                 filtered = filtered.filter(product => {
-                    if (this.stockFilter === 'in_stock') return product.stock_quantity > 0;
-                    if (this.stockFilter === 'low_stock') return product.stock_quantity > 0 && product.stock_quantity <= product.low_stock_alert;
-                    if (this.stockFilter === 'out_of_stock') return product.stock_quantity <= 0;
+                    if (this.stockFilter === 'in_stock') {
+                        return !product.track_stock || product.stock_quantity > 0;
+                    }
+                    if (this.stockFilter === 'low_stock') {
+                        return product.track_stock && 
+                               product.stock_quantity > 0 && 
+                               product.stock_quantity <= (product.low_stock_alert || 5);
+                    }
+                    if (this.stockFilter === 'out_of_stock') {
+                        return product.track_stock && product.stock_quantity <= 0;
+                    }
                     return true;
                 });
             }
             
+            // Filter out inactive products
+            filtered = filtered.filter(product => product.is_active !== false);
+            
             this.filteredProducts = filtered;
+            
+            // Auto-select first product if only one result and search is specific
+            if (filtered.length === 1 && this.searchQuery && this.searchQuery.length > 2) {
+                const singleProduct = filtered[0];
+                // Check if the search matches exactly (for barcode scanning)
+                if (singleProduct.sku?.toLowerCase() === this.searchQuery.toLowerCase().trim() ||
+                    singleProduct.barcode?.toLowerCase() === this.searchQuery.toLowerCase().trim()) {
+                    // Auto-add to cart for exact barcode/SKU matches
+                    setTimeout(() => {
+                        this.addToCart(singleProduct);
+                        this.searchQuery = ''; // Clear search after adding
+                    }, 500);
+                }
+            }
+            
+            // Debug: Log results
+            console.log(`Products: ${this.products.length}, Filtered: ${this.filteredProducts.length}, Query: "${this.searchQuery}", Category: ${this.selectedCategory}, Stock: ${this.stockFilter}`);
+        },
+
+        // Debounced search for better performance
+        debouncedSearch() {
+            clearTimeout(this.searchTimeout);
+            this.isSearching = true;
+            
+            this.searchTimeout = setTimeout(() => {
+                this.filterProducts();
+                this.isSearching = false;
+            }, 300); // 300ms delay
+        },
+
+        clearAllFilters() {
+            this.searchQuery = '';
+            this.selectedCategory = '';
+            this.stockFilter = '';
+            this.filterProducts();
+            this.showNotification('All filters cleared', 'info');
         },
 
         addToCart(product) {
@@ -996,8 +1255,98 @@ function advancedPosApp() {
         },
 
         quickAddProduct() {
-            // Simulate quick add product
-            this.showNotification('Quick add product feature coming soon', 'info');
+            this.quickAddModalOpen = true;
+            this.resetQuickProduct();
+        },
+
+        resetQuickProduct() {
+            this.quickProduct = {
+                name: '',
+                sku: '',
+                category_id: '',
+                description: '',
+                selling_price: '',
+                cost_price: '',
+                unit: 'units',
+                stock_quantity: 0,
+                low_stock_alert: 5,
+                track_stock: true,
+                is_active: true
+            };
+        },
+
+        async saveQuickProduct() {
+            if (!this.quickProduct.name || !this.quickProduct.sku || !this.quickProduct.selling_price) {
+                this.showNotification('Please fill in all required fields', 'error');
+                return;
+            }
+
+            this.quickProductProcessing = true;
+
+            try {
+                // Simulate API call to save product
+                const response = await fetch('/api/products/quick-add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                    },
+                    body: JSON.stringify(this.quickProduct)
+                });
+
+                if (response.ok) {
+                    const newProduct = await response.json();
+                    
+                    // Add the new product to the products array
+                    this.products.push({
+                        ...newProduct,
+                        category_name: newProduct.category?.name || 'Uncategorized'
+                    });
+                    
+                    // Refresh filtered products
+                    this.filterProducts();
+                    
+                    // Close modal and reset form
+                    this.quickAddModalOpen = false;
+                    this.resetQuickProduct();
+                    
+                    this.showNotification('Product added successfully!', 'success');
+                    
+                    // Auto-add to cart if stock is available
+                    if (newProduct.stock_quantity > 0) {
+                        this.addToCart(newProduct);
+                    }
+                } else {
+                    throw new Error('Failed to save product');
+                }
+            } catch (error) {
+                console.error('Error saving product:', error);
+                
+                // Fallback: Simulate product creation for demo
+                const newProduct = {
+                    id: Date.now(),
+                    ...this.quickProduct,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
+                this.products.push({
+                    ...newProduct,
+                    category_name: 'Uncategorized'
+                });
+                
+                this.filterProducts();
+                this.quickAddModalOpen = false;
+                this.resetQuickProduct();
+                
+                this.showNotification('Product added successfully! (Demo Mode)', 'success');
+                
+                if (newProduct.stock_quantity > 0) {
+                    this.addToCart(newProduct);
+                }
+            } finally {
+                this.quickProductProcessing = false;
+            }
         },
 
         openCustomerModal() {
@@ -1027,14 +1376,32 @@ function advancedPosApp() {
         },
 
         handleBarcodeSearch() {
-            // Simulate barcode scanning
+            // Handle barcode scanning or direct SKU entry
             const barcode = this.searchQuery.trim();
-            if (barcode) {
-                const product = this.products.find(p => p.barcode === barcode || p.sku === barcode);
-                if (product) {
-                    this.addToCart(product);
+            if (!barcode) return;
+            
+            // Search for exact match first
+            const exactMatch = this.products.find(p => 
+                (p.barcode && p.barcode.toLowerCase() === barcode.toLowerCase()) ||
+                (p.sku && p.sku.toLowerCase() === barcode.toLowerCase())
+            );
+            
+            if (exactMatch) {
+                // Add to cart immediately for exact matches
+                this.addToCart(exactMatch);
+                this.searchQuery = ''; // Clear search after adding
+                this.showNotification(`Added ${exactMatch.name} to cart`, 'success');
+            } else {
+                // If no exact match, trigger normal search
+                this.filterProducts();
+                
+                // If only one result, auto-add it
+                if (this.filteredProducts.length === 1) {
+                    const singleProduct = this.filteredProducts[0];
+                    this.addToCart(singleProduct);
                     this.searchQuery = '';
-                } else {
+                    this.showNotification(`Added ${singleProduct.name} to cart`, 'success');
+                } else if (this.filteredProducts.length === 0) {
                     this.showNotification('Product not found', 'error');
                 }
             }

@@ -19,7 +19,15 @@ class POSController extends Controller
         $customers = Customer::where('is_active', true)->orderBy('name')->get();
         $taxRate = (float) Setting::get('tax_rate', 0.10); // Default 10%
         
-        return view('pos.index', compact('categories', 'customers', 'taxRate'));
+        // Load products with relationships - same as products index
+        $products = Product::with(['category', 'warehouse'])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+        
+        $totalProducts = $products->count();
+        
+        return view('pos.index', compact('categories', 'customers', 'products', 'totalProducts', 'taxRate'));
     }
 
     public function complete(Request $request)
