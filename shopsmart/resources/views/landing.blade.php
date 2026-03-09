@@ -201,12 +201,12 @@
 
                     <!-- Desktop Navigation -->
                     <div class="hidden lg:flex items-center space-x-8">
-                        <a href="/products" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">Shop</a>
+                        <a href="/products" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1 px-3 py-2 rounded-lg hover:bg-green-50">Shop</a>
                         
-                        <a href="/services" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">Services</a>
+                        <a href="/services" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1 px-3 py-2 rounded-lg hover:bg-green-50">Services</a>
 
-                        <a href="/about" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">About</a>
-                        <a href="/contact" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">Contact</a>
+                        <a href="/about" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1 px-3 py-2 rounded-lg hover:bg-green-50">About</a>
+                        <a href="/contact" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1 px-3 py-2 rounded-lg hover:bg-green-50">Contact</a>
                     </div>
 
                     <!-- Right Side Actions -->
