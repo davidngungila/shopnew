@@ -201,44 +201,12 @@
 
                     <!-- Desktop Navigation -->
                     <div class="hidden lg:flex items-center space-x-8">
-                        <a href="/products" class="text-gray-700 hover:text-green-600 font-medium transition">Shop</a>
+                        <a href="/products" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">Shop</a>
                         
-                        <a href="/services" class="text-gray-700 hover:text-green-600 font-medium transition">Services</a>
+                        <a href="/services" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">Services</a>
 
-                        <a href="/about" class="text-gray-700 hover:text-green-600 font-medium transition">About</a>
-                        <a href="/contact" class="text-gray-700 hover:text-green-600 font-medium transition">Contact</a>
-                    </div>
-
-                    <!-- Search Bar -->
-                    <div class="hidden md:flex items-center flex-1 max-w-lg mx-8">
-                        <div class="relative w-full">
-                            <input 
-                                type="text" 
-                                x-model="searchQuery" 
-                                @input="searchProducts()" 
-                                @click="showSearchSuggestions = true"
-                                @focus="showSearchSuggestions = true"
-                                @blur="setTimeout(() => showSearchSuggestions = false, 200)"
-                                placeholder="Search..." 
-                                class="w-full px-4 py-2 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                            >
-                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                            
-                            <!-- Search Suggestions Dropdown -->
-                            <div x-show="showSearchSuggestions" x-cloak class="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 z-50">
-                                <div class="p-2">
-                                    <template x-for="suggestion in searchSuggestions.slice(0, 5)" :key="suggestion">
-                                        <div class="px-3 py-2 hover:bg-green-50 rounded cursor-pointer flex items-center">
-                                            <i class="fas fa-search text-gray-400 mr-2"></i>
-                                            <span x-text="suggestion"></span>
-                                        </div>
-                                    </template>
-                                    <div x-show="searchSuggestions.length === 0" class="px-3 py-2 text-gray-500 text-sm">
-                                        Start typing to see suggestions...
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/about" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">About</a>
+                        <a href="/contact" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">Contact</a>
                     </div>
 
                     <!-- Right Side Actions -->
@@ -996,7 +964,6 @@
                 categories: [],
                 cart: [],
                 searchQuery: '',
-                searchSuggestions: [],
                 sortBy: 'name',
                 viewMode: 'grid',
                 selectedCategory: null,
@@ -1004,7 +971,6 @@
                 showCheckout: false,
                 showSuccess: false,
                 showMobileMenu: false,
-                showSearchSuggestions: false,
                 processing: false,
                 orderId: '',
                 paymentMethod: 'card',
@@ -1180,40 +1146,6 @@
                     setInterval(() => {
                         this.loadLiveStats();
                     }, 30000);
-                    
-                    // Update search suggestions based on query
-                    this.$watch('searchQuery', (value) => {
-                        if (value.length > 2) {
-                            this.generateSearchSuggestions(value);
-                        } else {
-                            this.searchSuggestions = [];
-                        }
-                    });
-                },
-                
-                generateSearchSuggestions(query) {
-                    // Generate search suggestions from products
-                    const suggestions = [];
-                    const lowerQuery = query.toLowerCase();
-                    
-                    this.products.forEach(product => {
-                        if (product.name.toLowerCase().includes(lowerQuery)) {
-                            suggestions.push(product.name);
-                        }
-                        if (product.description.toLowerCase().includes(lowerQuery)) {
-                            suggestions.push(product.description.substring(0, 50) + '...');
-                        }
-                    });
-                    
-                    // Add category suggestions
-                    this.categories.forEach(category => {
-                        if (category.name.toLowerCase().includes(lowerQuery)) {
-                            suggestions.push(category.name + ' category');
-                        }
-                    });
-                    
-                    // Remove duplicates and limit to 10 suggestions
-                    this.searchSuggestions = [...new Set(suggestions)].slice(0, 10);
                 },
                 
                 toggleMobileMenu() {
@@ -1307,14 +1239,6 @@
                     ];
                 },
                 
-                searchProducts() {
-                    // Search functionality is handled by computed property
-                },
-                
-                sortProducts() {
-                    // Sort functionality is handled by computed property
-                },
-                
                 filterByCategory(categoryId) {
                     this.selectedCategory = this.selectedCategory === categoryId ? null : categoryId;
                     this.scrollToProducts();
@@ -1322,10 +1246,6 @@
                 
                 scrollToProducts() {
                     document.getElementById('products').scrollIntoView({ behavior: 'smooth' });
-                },
-                
-                toggleCart() {
-                    this.showCart = !this.showCart;
                 },
                 
                 addToCart(product) {
