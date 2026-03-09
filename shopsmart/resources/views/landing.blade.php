@@ -149,33 +149,6 @@
         .feature-card:nth-child(2) { animation: float-card 4s ease-in-out infinite 1s; }
         .feature-card:nth-child(3) { animation: float-card 4s ease-in-out infinite 2s; }
         .feature-card:nth-child(4) { animation: float-card 4s ease-in-out infinite 3s; }
-        
-        /* Animated button border */
-        @keyframes spin-slow {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        @keyframes spin-reverse {
-            from { transform: rotate(360deg); }
-            to { transform: rotate(0deg); }
-        }
-        
-        .animate-spin-slow {
-            animation: spin-slow 3s linear infinite;
-        }
-        
-        .animate-spin-reverse {
-            animation: spin-reverse 2s linear infinite;
-        }
-        
-        .group:hover .animate-spin-slow {
-            animation-duration: 1.5s;
-        }
-        
-        .group:hover .animate-spin-reverse {
-            animation-duration: 1s;
-        }
     </style>
 </head>
 <body class="bg-gray-50" x-data="landingPage()">
@@ -228,12 +201,12 @@
 
                     <!-- Desktop Navigation -->
                     <div class="hidden lg:flex items-center space-x-8">
-                        <a href="/products" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">Shop</a>
+                        <a href="/products" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">Shop</a>
                         
-                        <a href="/services" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">Services</a>
+                        <a href="/services" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">Services</a>
 
-                        <a href="/about" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">About</a>
-                        <a href="/contact" class="text-gray-700 hover:text-green-600 font-medium transition border-b-2 border-transparent hover:border-green-600 pb-1">Contact</a>
+                        <a href="/about" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">About</a>
+                        <a href="/contact" class="text-gray-700 hover:text-green-600 text-lg font-bold transition border-b-2 border-transparent hover:border-green-600 pb-1">Contact</a>
                     </div>
 
                     <!-- Right Side Actions -->
@@ -342,13 +315,10 @@
             </div>
         </nav>
 
-        <!-- Animated CTA Button -->
-        <div class="bg-gradient-to-r from-green-600 to-green-700 text-white py-3">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <button class="relative inline-flex items-center px-8 py-3 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition-all duration-300 transform hover:scale-105 overflow-hidden group">
-                    <div class="absolute inset-0 border-2 border-green-600 rounded-full animate-spin-slow"></div>
-                    <div class="absolute inset-0 border-2 border-green-400 rounded-full animate-spin-reverse"></div>
-                </button>
+        <!-- Small Decorative Line -->
+        <div class="bg-gradient-to-r from-green-600 to-green-700 py-1">
+            <div class="max-w-7xl mx-auto">
+                <div class="h-0.5 bg-white opacity-50"></div>
             </div>
         </div>
     </header>
