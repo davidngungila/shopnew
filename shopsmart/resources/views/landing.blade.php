@@ -149,6 +149,33 @@
         .feature-card:nth-child(2) { animation: float-card 4s ease-in-out infinite 1s; }
         .feature-card:nth-child(3) { animation: float-card 4s ease-in-out infinite 2s; }
         .feature-card:nth-child(4) { animation: float-card 4s ease-in-out infinite 3s; }
+        
+        /* Animated button border */
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-reverse {
+            from { transform: rotate(360deg); }
+            to { transform: rotate(0deg); }
+        }
+        
+        .animate-spin-slow {
+            animation: spin-slow 3s linear infinite;
+        }
+        
+        .animate-spin-reverse {
+            animation: spin-reverse 2s linear infinite;
+        }
+        
+        .group:hover .animate-spin-slow {
+            animation-duration: 1.5s;
+        }
+        
+        .group:hover .animate-spin-reverse {
+            animation-duration: 1s;
+        }
     </style>
 </head>
 <body class="bg-gray-50" x-data="landingPage()">
@@ -315,27 +342,17 @@
             </div>
         </nav>
 
-        <!-- Live Stats Bar -->
-        <div class="bg-green-50 border-b border-green-100">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-wrap justify-center items-center py-2 text-xs sm:text-sm space-x-4 sm:space-x-8">
-                    <div class="flex items-center text-green-700">
-                        <i class="fas fa-users mr-2"></i>
-                        <span><span x-text="liveStats.customers"></span> Happy Customers</span>
-                    </div>
-                    <div class="flex items-center text-green-700">
-                        <i class="fas fa-box mr-2"></i>
-                        <span><span x-text="liveStats.products"></span> Products Available</span>
-                    </div>
-                    <div class="flex items-center text-green-700">
-                        <i class="fas fa-truck mr-2"></i>
-                        <span><span x-text="liveStats.ordersToday"></span> Orders Today</span>
-                    </div>
-                    <div class="flex items-center text-green-700">
-                        <i class="fas fa-star mr-2"></i>
-                        <span><span x-text="liveStats.rating"></span> Average Rating</span>
-                    </div>
-                </div>
+        <!-- Animated CTA Button -->
+        <div class="bg-gradient-to-r from-green-600 to-green-700 text-white py-3">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <button class="relative inline-flex items-center px-8 py-3 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition-all duration-300 transform hover:scale-105 overflow-hidden group">
+                    <span class="relative z-10 flex items-center">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Start Shopping Now
+                    </span>
+                    <div class="absolute inset-0 border-2 border-green-600 rounded-full animate-spin-slow"></div>
+                    <div class="absolute inset-0 border-2 border-green-400 rounded-full animate-spin-reverse"></div>
+                </button>
             </div>
         </div>
     </header>
@@ -978,14 +995,6 @@
                 customerEmail: '',
                 currentTime: '',
                 
-                // Live Statistics
-                liveStats: {
-                    customers: 0,
-                    products: 0,
-                    ordersToday: 0,
-                    rating: 0
-                },
-                
                 // Customer Information
                 customerInfo: {
                     firstName: '',
@@ -1108,7 +1117,6 @@
                     this.loadCategories();
                     this.loadFromLocalStorage();
                     this.updateCurrentTime();
-                    this.loadLiveStats();
                     this.setupAutoUpdates();
                 },
                 
@@ -1123,29 +1131,11 @@
                         });
                     };
                     updateTime();
-                    setInterval(updateTime, 60000); // Update every minute
-                },
-                
-                async loadLiveStats() {
-                    // Simulate loading real data from API
-                    try {
-                        // In real app, this would be an API call
-                        this.liveStats = {
-                            customers: 52467,
-                            products: 10234,
-                            ordersToday: 156,
-                            rating: 4.8
-                        };
-                    } catch (error) {
-                        console.error('Error loading live stats:', error);
-                    }
+                    setInterval(updateTime, 60000);
                 },
                 
                 setupAutoUpdates() {
-                    // Update live stats every 30 seconds
-                    setInterval(() => {
-                        this.loadLiveStats();
-                    }, 30000);
+                    // Auto-updates can be added here as needed
                 },
                 
                 toggleMobileMenu() {
