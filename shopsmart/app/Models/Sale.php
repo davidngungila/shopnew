@@ -11,7 +11,7 @@ class Sale extends Model
     protected $fillable = [
         'invoice_number', 'customer_id', 'user_id', 'warehouse_id',
         'subtotal', 'discount', 'tax', 'total', 'payment_method',
-        'status', 'notes'
+        'status', 'notes', 'payment_status', 'due_date'
     ];
 
     protected $casts = [
@@ -19,6 +19,7 @@ class Sale extends Model
         'discount' => 'decimal:2',
         'tax' => 'decimal:2',
         'total' => 'decimal:2',
+        'due_date' => 'date',
     ];
 
     public function customer(): BelongsTo

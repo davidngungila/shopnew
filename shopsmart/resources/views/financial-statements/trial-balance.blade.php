@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Trial Balance')
+@section('title', '🔟 Trial Balance')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Trial Balance</h1>
-            <p class="text-gray-600 mt-1">Account balances summary</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">🔟 Trial Balance</h1>
+            <p class="text-gray-600 mt-1">Checks accounting accuracy.</p>
         </div>
         <div class="flex gap-2">
             <input type="date" name="as_of_date" value="{{ $asOfDate ?? now()->toDateString() }}" onchange="window.location.href='{{ route('financial-statements.trial-balance') }}?as_of_date='+this.value" class="px-4 py-2 border border-gray-300 rounded-lg">

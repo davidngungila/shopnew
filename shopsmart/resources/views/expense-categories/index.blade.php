@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Expense Categories')
+@section('title', '3️⃣ Expense Categories')
 
 @section('content')
 <div class="space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Expense Categories</h1>
-            <p class="text-gray-600 mt-1">Manage expense categories</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">3️⃣ Expense Categories</h1>
+            <p class="text-gray-600 mt-1">Used to classify expenses.</p>
         </div>
         <div class="flex gap-2">
             <a href="{{ route('expense-categories.pdf', request()->query()) }}" target="_blank" class="px-4 py-2 text-white rounded-lg flex items-center space-x-2" style="background-color: #009245;" onmouseover="this.style.backgroundColor='#007a38'" onmouseout="this.style.backgroundColor='#009245'">

@@ -16,6 +16,9 @@
         [x-cloak] { display: none !important; }
     </style>
     
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
  <body class="bg-gray-50 overflow-x-hidden">
@@ -55,14 +58,19 @@
         <aside 
             id="sidebar" 
             :class="mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'"
-            class="w-64 bg-white border-r border-gray-200 fixed h-screen overflow-y-auto z-30 lg:translate-x-0 transition-transform duration-300 ease-in-out"
+            class="w-64 bg-white border-r border-gray-200 fixed h-screen z-30 lg:translate-x-0 transition-transform duration-300 ease-in-out"
             @click.stop
         >
-            <div class="p-4">
-                <div class="flex items-center space-x-3 mb-8">
-                    <img src="{{ asset('logo.png') }}" alt="ShopSmart Logo" class="h-10 w-auto">
-                    <span class="text-xl font-bold text-gray-900">ShopSmart</span>
+            <!-- Fixed Header -->
+            <div class="p-4 border-b border-gray-200 bg-white sticky top-0 z-10">
+                <div class="flex items-center space-x-3">
+                    <img src="{{ asset('logo.png') }}" alt="ShopSmart Logo" class="h-10 w-auto pointer-events-none">
+                    <span class="text-xl font-bold text-gray-900 pointer-events-none">ShopSmart</span>
                 </div>
+            </div>
+            
+            <!-- Scrollable Navigation -->
+            <div class="p-4 overflow-y-auto" style="height: calc(100vh - 88px);">
                 
                 <nav class="space-y-1" x-data="{ 
                     openMenus: {
@@ -300,7 +308,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                 </svg>
-                                <span>Overview</span>
+                                <span>Financial Overview</span>
                             </a>
                             <a href="{{ route('chart-of-accounts.index') }}" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-sm {{ request()->routeIs('chart-of-accounts.*') ? 'bg-green-50 text-[#009245]' : 'text-gray-600 hover:bg-gray-50' }}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -342,7 +350,7 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                 </svg>
-                                <span>P&L Statement</span>
+                                <span>Profit & Loss Statement</span>
                             </a>
                             <a href="{{ route('financial-statements.balance-sheet') }}" class="flex items-center space-x-3 px-4 py-2 rounded-lg text-sm {{ request()->routeIs('financial-statements.balance-sheet') ? 'bg-green-50 text-[#009245]' : 'text-gray-600 hover:bg-gray-50' }}">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
