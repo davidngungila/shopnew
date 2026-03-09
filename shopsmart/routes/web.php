@@ -36,6 +36,10 @@ use Illuminate\Support\Facades\Auth;
 // Public Routes (No Authentication Required)
 Route::get('/landing', [LandingController::class, 'index'])->name('landing');
 Route::get('/shop', [LandingController::class, 'index'])->name('shop');
+Route::get('/products', function() { return view('products'); })->name('products');
+Route::get('/services', function() { return view('services'); })->name('services');
+Route::get('/about', function() { return view('about'); })->name('about');
+Route::get('/contact', function() { return view('contact'); })->name('contact');
 Route::get('/search-products', [LandingController::class, 'search'])->name('landing.search');
 Route::get('/category/{id}/products', [LandingController::class, 'getCategoryProducts'])->name('landing.category.products');
 Route::get('/product/{id}/details', [LandingController::class, 'getProductDetails'])->name('landing.product.details');

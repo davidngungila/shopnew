@@ -203,55 +203,12 @@
 
                     <!-- Desktop Navigation -->
                     <div class="hidden lg:flex items-center space-x-8">
-                        <div class="relative group">
-                            <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
-                                <span>Shop</span>
-                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                            </button>
-                            <!-- Dropdown Menu -->
-                            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                <div class="py-2">
-                                    <a href="#products" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-th-large mr-2"></i>All Products
-                                    </a>
-                                    <a href="#categories" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-list mr-2"></i>Categories
-                                    </a>
-                                    <a href="#deals" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-fire mr-2"></i>Hot Deals
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-tag mr-2"></i>Offers
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/products" class="text-gray-700 hover:text-green-600 font-medium transition">Shop</a>
                         
-                        <div class="relative group">
-                            <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
-                                <span>Services</span>
-                                <i class="fas fa-chevron-down ml-1 text-xs"></i>
-                            </button>
-                            <div class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                <div class="py-2">
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-truck mr-2"></i>Fast Delivery
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-shield-alt mr-2"></i>Secure Payment
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-undo mr-2"></i>Easy Returns
-                                    </a>
-                                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
-                                        <i class="fas fa-headset mr-2"></i>24/7 Support
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                        <a href="/services" class="text-gray-700 hover:text-green-600 font-medium transition">Services</a>
 
-                        <a href="#about" class="text-gray-700 hover:text-green-600 font-medium transition">About</a>
-                        <a href="#contact" class="text-gray-700 hover:text-green-600 font-medium transition">Contact</a>
+                        <a href="/about" class="text-gray-700 hover:text-green-600 font-medium transition">About</a>
+                        <a href="/contact" class="text-gray-700 hover:text-green-600 font-medium transition">Contact</a>
                         
                         <div class="relative group">
                             <button class="flex items-center text-gray-700 hover:text-green-600 font-medium transition">
@@ -378,19 +335,16 @@
             <!-- Mobile Menu -->
             <div x-show="showMobileMenu" x-cloak class="lg:hidden border-t border-gray-200">
                 <div class="px-4 py-2 space-y-1">
-                    <a href="#products" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                    <a href="/products" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
                         <i class="fas fa-th-large mr-2"></i>All Products
                     </a>
-                    <a href="#categories" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
-                        <i class="fas fa-list mr-2"></i>Categories
+                    <a href="/services" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                        <i class="fas fa-concierge-bell mr-2"></i>Services
                     </a>
-                    <a href="#deals" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
-                        <i class="fas fa-fire mr-2"></i>Hot Deals
-                    </a>
-                    <a href="#about" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                    <a href="/about" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
                         <i class="fas fa-info-circle mr-2"></i>About
                     </a>
-                    <a href="#contact" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
+                    <a href="/contact" class="block px-3 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-md">
                         <i class="fas fa-phone mr-2"></i>Contact
                     </a>
                 </div>
