@@ -346,10 +346,6 @@
         <div class="bg-gradient-to-r from-green-600 to-green-700 text-white py-3">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <button class="relative inline-flex items-center px-8 py-3 bg-white text-green-600 font-bold rounded-full hover:bg-green-50 transition-all duration-300 transform hover:scale-105 overflow-hidden group">
-                    <span class="relative z-10 flex items-center">
-                        <i class="fas fa-rocket mr-2"></i>
-                        Start Shopping Now
-                    </span>
                     <div class="absolute inset-0 border-2 border-green-600 rounded-full animate-spin-slow"></div>
                     <div class="absolute inset-0 border-2 border-green-400 rounded-full animate-spin-reverse"></div>
                 </button>
