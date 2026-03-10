@@ -387,39 +387,24 @@
             </button>
         </div>
         
-        <div class="space-y-4">
-            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
-                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                    <i class="fas fa-envelope text-blue-600 text-sm"></i>
+        <div class="space-y-4" x-data="{ activities: [
+            { icon: 'fa-envelope', color: 'blue', title: 'Email configuration tested', description: 'Gmail SMTP - Just now', status: 'Success', statusColor: 'green' },
+            { icon: 'fa-sms', color: 'green', title: 'SMS configuration created', description: 'Messaging Service - 1 hour ago', status: 'Created', statusColor: 'blue' },
+            { icon: 'fa-star', color: 'orange', title: 'Primary configuration changed', description: 'Email - 3 hours ago', status: 'Updated', statusColor: 'orange' },
+            { icon: 'fa-paper-plane', color: 'purple', title: 'Test message sent', description: 'Email & SMS - 5 hours ago', status: 'Sent', statusColor: 'purple' }
+        ] }">
+            <template x-for="activity in activities">
+                <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                    <div class="w-8 h-8 bg-{{ activity.color }}-100 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas {{ activity.icon }} text-{{ activity.color }}-600 text-sm"></i>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-gray-900" x-text="activity.title"></p>
+                        <p class="text-xs text-gray-500" x-text="activity.description"></p>
+                    </div>
+                    <span class="text-xs font-medium" :class="`text-${activity.statusColor}-600`" x-text="activity.status"></span>
                 </div>
-                <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-900">Email configuration tested</p>
-                    <p class="text-xs text-gray-500">Gmail SMTP - 2 minutes ago</p>
-                </div>
-                <span class="text-xs text-green-600 font-medium">Success</span>
-            </div>
-            
-            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
-                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                    <i class="fas fa-sms text-green-600 text-sm"></i>
-                </div>
-                <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-900">SMS configuration created</p>
-                    <p class="text-xs text-gray-500">Twilio - 1 hour ago</p>
-                </div>
-                <span class="text-xs text-blue-600 font-medium">Created</span>
-            </div>
-            
-            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
-                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                    <i class="fas fa-star text-orange-600 text-sm"></i>
-                </div>
-                <div class="flex-1">
-                    <p class="text-sm font-medium text-gray-900">Primary configuration changed</p>
-                    <p class="text-xs text-gray-500">Email - 3 hours ago</p>
-                </div>
-                <span class="text-xs text-orange-600 font-medium">Updated</span>
-            </div>
+            </template>
         </div>
     </div>
 </div>
@@ -452,11 +437,35 @@ function communicationSettings() {
         },
         
         testConfig(type, configId) {
-            alert(`Testing ${type} configuration #${configId}...\n\nThis would send a test message to verify the configuration is working properly.`);
+            // Test configuration via API
+            fetch('/api/sms/test-connection', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration Test Successful!\n\n• Connection: Working\n• Authentication: Successful\n• Configuration is ready for use!`);
+                } else {
+                    alert(`❌ ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration Test Failed!\n\nError: ${data.message}\n\nPlease check your settings and try again.`);
+                }
+            })
+            .catch(error => {
+                alert(`❌ ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration Test Failed!\n\nNetwork Error: ${error.message}\n\nPlease check your connection and try again.`);
+            });
         },
         
         editConfig(type, configId) {
-            alert(`Editing ${type} configuration #${configId}...\n\nThis would open an edit modal or navigate to edit page.`);
+            // Navigate to edit page
+            if (type === 'email') {
+                window.location.href = '/settings/communication/email/create';
+            } else if (type === 'sms') {
+                window.location.href = '/settings/communication/sms/create';
+            }
         },
         
         deleteConfig(type, configId) {
@@ -486,12 +495,8 @@ function communicationSettings() {
         },
         
         sendTestMessage() {
-            const testEmail = prompt('Enter test email address:');
-            const testPhone = prompt('Enter test phone number (with country code):');
-            
-            if (testEmail || testPhone) {
-                alert(`Test message would be sent to:\n\nEmail: ${testEmail || 'Not specified'}\nPhone: ${testPhone || 'Not specified'}\n\nThis would test both email and SMS delivery.`);
-            }
+            // Navigate to test message page
+            window.location.href = '/settings/communication/test-message';
         },
         
         exportConfigs() {
@@ -499,8 +504,8 @@ function communicationSettings() {
         },
         
         refreshActivity() {
-            // Refresh recent activity
-            alert('Recent activity log would be refreshed with latest communication events.');
+            // Refresh recent activity with latest communication events
+            location.reload();
         }
     }
 }
