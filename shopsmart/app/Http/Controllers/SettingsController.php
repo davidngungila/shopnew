@@ -464,91 +464,54 @@ class SettingsController extends Controller
     public function testEmail(Request $request)
     {
         try {
-            $email = $request->input('email');
-            $configId = $request->input('config_id');
-            $configData = null;
+            $testEmail = $request->input('test_email');
+            $testMessage = $request->input('test_message');
+            $testSubject = $request->input('test_subject');
             
-            if (!$email) {
+            // Get configuration from form
+            $config = [
+                'smtp_host' => $request->input('smtp_host'),
+                'smtp_port' => $request->input('smtp_port'),
+                'smtp_username' => $request->input('smtp_username'),
+                'smtp_password' => $request->input('smtp_password'),
+                'smtp_encryption' => $request->input('smtp_encryption'),
+                'from_email' => $request->input('from_email'),
+                'from_name' => $request->input('from_name')
+            ];
+            
+            // Validate required fields
+            if (!$testEmail || !$testMessage) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Email address is required'
+                    'message' => 'Test email and message are required'
                 ], 400);
             }
-
-            // Get configuration
-            if ($configId) {
-                $config = CommunicationConfig::find($configId);
-                if ($config && $config->type === 'email') {
-                    $configData = $config->config;
-                }
-            } else {
-                // Use primary configuration
-                $primaryConfig = CommunicationConfig::getPrimary('email');
-                if ($primaryConfig) {
-                    $configData = $primaryConfig->config;
-                }
-            }
-
-            // Apply mail configuration dynamically if we have config data
-            $mailer = config('mail.default', 'smtp');
-            $fromAddress = config('mail.from.address');
-            $fromName = config('mail.from.name');
-            $host = null;
-            $port = null;
-            $encryption = null;
-
-            if (is_array($configData)) {
-                $mailer = $configData['mail_mailer'] ?? $mailer;
-                $fromAddress = $configData['mail_from_address'] ?? $fromAddress;
-                $fromName = $configData['mail_from_name'] ?? $fromName;
-
-                // For smtp mailer, override connection details for this request
-                if ($mailer === 'smtp') {
-                    config([
-                        'mail.default' => 'smtp',
-                        'mail.mailers.smtp.host' => $configData['mail_host'] ?? config('mail.mailers.smtp.host'),
-                        'mail.mailers.smtp.port' => $configData['mail_port'] ?? config('mail.mailers.smtp.port'),
-                        'mail.mailers.smtp.encryption' => $configData['mail_encryption'] ?? config('mail.mailers.smtp.encryption'),
-                        'mail.mailers.smtp.username' => $configData['mail_username'] ?? config('mail.mailers.smtp.username'),
-                        'mail.mailers.smtp.password' => $configData['mail_password'] ?? config('mail.mailers.smtp.password'),
-                    ]);
-                    $host = $configData['mail_host'] ?? null;
-                    $port = $configData['mail_port'] ?? null;
-                    $encryption = $configData['mail_encryption'] ?? null;
-                } else {
-                    // At least ensure default mailer matches selected one (for non-smtp drivers)
-                    config([
-                        'mail.default' => $mailer,
-                    ]);
-                }
-            }
-
-            $companyName = config('app.name', 'TmcsSmart');
-            $details = [
-                'mailer' => $mailer,
-                'from_address' => $fromAddress,
-                'from_name' => $fromName,
-                'host' => $host,
-                'port' => $port,
-                'encryption' => $encryption,
-                'environment' => app()->environment(),
-                'sent_at' => now()->toDateTimeString(),
-            ];
-
-            Mail::mailer($mailer)->send('emails.test-email', [
-                'companyName' => $companyName,
-                'recipient' => $email,
-                'details' => $details,
-            ], function ($message) use ($email, $fromAddress, $fromName, $companyName) {
-                $message->to($email)
-                    ->subject($companyName . ' - Email Configuration Test')
-                    ->from($fromAddress, $fromName ?: $companyName);
+            
+            // Configure SMTP settings dynamically for this test
+            config([
+                'mail.default' => 'smtp',
+                'mail.mailers.smtp.host' => $config['smtp_host'],
+                'mail.mailers.smtp.port' => $config['smtp_port'],
+                'mail.mailers.smtp.encryption' => $config['smtp_encryption'],
+                'mail.mailers.smtp.username' => $config['smtp_username'],
+                'mail.mailers.smtp.password' => $config['smtp_password'],
+                'mail.from.address' => $config['from_email'],
+                'mail.from.name' => $config['from_name'],
+            ]);
+            
+            // Send test email
+            Mail::send([], [], function ($message) use ($testEmail, $testSubject, $config) {
+                $message->to($testEmail)
+                    ->subject($testSubject)
+                    ->from($config['from_email'], $config['from_name'])
+                    ->html($testMessage);
             });
-
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Test email sent successfully'
+                'message' => 'Test email sent successfully to ' . $testEmail
             ]);
+            
         } catch (\Exception $e) {
             Log::error('Test email failed: ' . $e->getMessage());
             return response()->json([

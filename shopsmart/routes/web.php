@@ -228,7 +228,8 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::put('/sms/update', [SettingsController::class, 'smsUpdate'])->name('sms.update');
         Route::post('/test-sms', [SettingsController::class, 'testSMS'])->name('test-sms');
         Route::delete('/{id}', [SettingsController::class, 'destroy'])->name('destroy');
-        Route::post('/test-email', [SettingsController::class, 'testEmail'])->name('test-email');
+        Route::post('/email/store', [SettingsController::class, 'emailStore'])->name('email.store');
+        Route::post('/email/test', [SettingsController::class, 'testEmail'])->name('email.test');
     });
     
     // Test endpoints

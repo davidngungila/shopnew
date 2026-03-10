@@ -115,16 +115,19 @@
             <!-- SMTP Password -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                    <i class="fas fa-lock mr-1 text-red-500"></i>SMTP Password
+                    <i class="fas fa-lock mr-1 text-red-500"></i>SMTP Password (App Password)
                 </label>
                 <div class="relative">
                     <input :type="showPassword ? 'text' : 'password'" x-model="config.smtp_password" required
                            class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="Your SMTP password">
+                           placeholder="Use Gmail App Password (not regular password)">
                     <button type="button" @click="showPassword = !showPassword" 
                             class="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700">
                         <i class="fas" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
                     </button>
+                </div>
+                <div class="mt-2 text-sm text-gray-500">
+                    <i class="fas fa-info-circle mr-1"></i>Use Gmail App Password, not regular password. <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-blue-600 hover:text-blue-800">Get App Password</a>
                 </div>
             </div>
             
@@ -255,27 +258,30 @@ window.emailConfigForm = {
         this.testStatus = '';
         this.testSuccess = false;
         
-        // Simulate testing email configuration
-        fetch('/api/sms/send', {
+        // Test email configuration using proper form submission
+        const formData = new FormData();
+        formData.append('test_email', this.testEmail);
+        formData.append('test_message', this.testMessage);
+        formData.append('test_subject', 'Test Email from ShopSmart');
+        formData.append('smtp_host', this.config.smtp_host);
+        formData.append('smtp_port', this.config.smtp_port);
+        formData.append('smtp_username', this.config.smtp_username);
+        formData.append('smtp_password', this.config.smtp_password);
+        formData.append('smtp_encryption', this.config.smtp_encryption);
+        formData.append('from_email', this.config.from_email);
+        formData.append('from_name', this.config.from_name);
+        formData.append('_token', '{{ csrf_token() }}');
+        
+        fetch('/settings/communication/email/test', {
             method: 'POST',
-            headers: {
-                'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                to: this.testEmail,
-                message: this.testMessage,
-                subject: 'Test Email from ShopSmart',
-                reference: 'email_config_test_' + Date.now()
-            })
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
             this.testing = false;
             if (data.success) {
                 this.testSuccess = true;
-                this.testStatus = '✅ Email configuration test successful! Message sent to ' + this.testEmail + '. You can now save the configuration.';
+                this.testStatus = '✅ Email configuration test successful! Message sent to ' + this.testEmail + '. You can now save configuration.';
             } else {
                 this.testSuccess = false;
                 this.testStatus = '❌ Email configuration test failed: ' + (data.message || 'Unknown error');
