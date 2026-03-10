@@ -410,7 +410,8 @@ function userManagement() {
         },
         
         exportUsers() {
-            window.location.href = '{{ route('settings.users.export') }}';
+            // For now, just show an alert - export route would need to be created
+            alert('User export functionality would be implemented here');
         },
         
         sortBy(field) {

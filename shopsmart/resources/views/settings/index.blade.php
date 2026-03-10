@@ -415,8 +415,8 @@
 function settingsDashboard() {
     return {
         exportSettings() {
-            // Export settings functionality
-            window.location.href = '{{ route('settings.export') }}';
+            // Export settings functionality - use backup route for now
+            window.location.href = '{{ route('settings.backup') }}';
         },
         importSettings() {
             // Import settings functionality
@@ -424,12 +424,12 @@ function settingsDashboard() {
         },
         clearCache() {
             if (confirm('Are you sure you want to clear all caches?')) {
-                window.location.href = '{{ route('settings.clear-cache') }}';
+                window.location.href = '{{ route('settings.backup.clear-cache') }}';
             }
         },
         optimizeDb() {
             if (confirm('Are you sure you want to optimize the database? This may take a few minutes.')) {
-                window.location.href = '{{ route('settings.optimize-db') }}';
+                window.location.href = '{{ route('settings.backup.optimize-db') }}';
             }
         },
         viewAllActivity() {
