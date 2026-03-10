@@ -20,7 +20,7 @@
             <a href="{{ route('settings.communication.sms.create') }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>New SMS Config
             </a>
-            <a href="{{ route('settings.index') }}" class="px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors" style="background-color: #6b7280;">
+            <a href="{{ route('settings.communication.index') }}" class="px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors" style="background-color: #6b7280;">
                 <i class="fas fa-arrow-left mr-2"></i>Back to Settings
             </a>
         </div>
