@@ -1,58 +1,137 @@
 @extends('layouts.app')
 
-@section('title', 'Backup & Maintenance')
+@section('title', 'Backup & System Maintenance')
 
 @section('content')
-<div class="space-y-6" x-data="{ activeTab: 'backup' }">
+<div class="space-y-6" x-data="backupSystem()">
+    <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Backup & Maintenance</h1>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Backup & System Maintenance</h1>
             <p class="text-gray-600 mt-1">Manage backups, system health, and maintenance tasks</p>
         </div>
-        <a href="{{ route('settings.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-            </svg>
-            Back to Settings
-        </a>
+        <div class="flex gap-2">
+            <button @click="scheduleBackup()" class="px-4 py-2 text-white rounded-lg hover:bg-green-700 transition-colors" style="background-color: #009245;">
+                <i class="fas fa-clock mr-2"></i>Schedule Backup
+            </button>
+            <a href="{{ route('settings.index') }}" class="px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors" style="background-color: #6b7280;">
+                <i class="fas fa-arrow-left mr-2"></i>Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Messages -->
+    @if(session('success'))
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+            <p class="text-green-800">{{ session('success') }}</p>
+        </div>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+            <p class="text-red-800">{{ session('error') }}</p>
+        </div>
+    </div>
+    @endif
+
+    <!-- System Health Overview -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">System Health</p>
+                    <p class="text-2xl font-bold text-green-600">Excellent</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-heartbeat text-green-500"></i> 
+                        All systems operational
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-heartbeat text-green-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Database Size</p>
+                    <p class="text-2xl font-bold text-blue-600">2.4 GB</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-database text-blue-500"></i> 
+                        Growing slowly
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-database text-blue-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Last Backup</p>
+                    <p class="text-2xl font-bold text-purple-600">2h</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-clock text-purple-500"></i> 
+                        Automated success
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-clock text-purple-600"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Storage Used</p>
+                    <p class="text-2xl font-bold text-orange-600">68%</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-hdd text-orange-500"></i> 
+                        6.8 GB of 10 GB
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-hdd text-orange-600"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Tabs Navigation -->
-    <div class="border-b border-gray-200">
-        <nav class="-mb-px flex space-x-8 overflow-x-auto">
-            <button @click="activeTab = 'backup'" 
-                :class="activeTab === 'backup' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                </svg>
-                Database Backup
-            </button>
-            <button @click="activeTab = 'automation'" 
-                :class="activeTab === 'automation' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Automation
-            </button>
-            <button @click="activeTab = 'maintenance'" 
-                :class="activeTab === 'maintenance' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-                Maintenance
-            </button>
-            <button @click="activeTab = 'logs'" 
-                :class="activeTab === 'logs' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
-                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                System Logs
-            </button>
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="border-b border-gray-200">
+            <nav class="-mb-px flex space-x-8 overflow-x-auto px-6">
+                <button @click="activeTab = 'backup'" 
+                        :class="activeTab === 'backup' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-database mr-2"></i>Database Backup
+                </button>
+                <button @click="activeTab = 'automation'" 
+                        :class="activeTab === 'automation' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-robot mr-2"></i>Automation
+                </button>
+                <button @click="activeTab = 'maintenance'" 
+                        :class="activeTab === 'maintenance' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-tools mr-2"></i>Maintenance
+                </button>
+                <button @click="activeTab = 'logs'" 
+                        :class="activeTab === 'logs' ? 'border-green-500 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                        class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                    <i class="fas fa-file-alt mr-2"></i>System Logs
+                </button>
+            </nav>
+        </div>
             <button @click="activeTab = 'system'" 
                 :class="activeTab === 'system' ? 'border-purple-500 text-purple-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
                 class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors">
