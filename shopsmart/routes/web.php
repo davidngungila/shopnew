@@ -233,6 +233,7 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     
     Route::get('/backup', [SettingsController::class, 'backup'])->name('backup');
     Route::post('/backup/create', [SettingsController::class, 'createBackup'])->name('backup.create');
+    Route::post('/backup/schedule', [SettingsController::class, 'scheduleBackup'])->name('backup.schedule');
     Route::post('/backup/automation', [SettingsController::class, 'updateAutomation'])->name('backup.automation');
     Route::post('/backup/clear-cache', [SettingsController::class, 'clearCache'])->name('backup.clear-cache');
     Route::post('/backup/clear-views', [SettingsController::class, 'clearViews'])->name('backup.clear-views');
