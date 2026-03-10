@@ -142,25 +142,48 @@ class MessagingService
             ];
 
             Log::info('Sending SMS', [
-                'payload' => $payload
+                'url' => $this->baseUrl . '/text/single',
+                'payload' => $payload,
+                'headers' => [
+                    'Authorization: Bearer ' . $this->bearerToken,
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ]
             ]);
 
-            $response = Http::timeout(30)
-                ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->bearerToken,
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json'
-                ])
-                ->post($this->baseUrl . '/text/single', $payload);
+            // Try with exact CURL-like approach
+            $ch = curl_init();
+            
+            curl_setopt_array($ch, array(
+                CURLOPT_URL => $this->baseUrl . '/text/single',
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 30,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => json_encode($payload),
+                CURLOPT_HTTPHEADER => array(
+                    'Authorization: Bearer ' . $this->bearerToken,
+                    'Content-Type: application/json',
+                    'Accept: application/json'
+                ),
+            ));
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $error = curl_error($ch);
+            curl_close($ch);
 
             Log::info('SMS API response', [
-                'status' => $response->status(),
-                'successful' => $response->successful(),
-                'body' => $response->body()
+                'http_code' => $httpCode,
+                'response' => $response,
+                'curl_error' => $error
             ]);
 
-            if ($response->successful()) {
-                $data = $response->json();
+            if ($httpCode >= 200 && $httpCode < 300) {
+                $data = json_decode($response, true);
                 
                 Log::info('SMS sent successfully', [
                     'to' => $to,
@@ -172,25 +195,32 @@ class MessagingService
             } else {
                 Log::error('Failed to send SMS', [
                     'to' => $to,
-                    'status' => $response->status(),
-                    'response' => $response->body()
+                    'http_code' => $httpCode,
+                    'response' => $response,
+                    'curl_error' => $error
                 ]);
                 
                 return [
                     'error' => 'Failed to send SMS',
-                    'status' => $response->status(),
-                    'response' => $response->body()
+                    'status' => $httpCode,
+                    'response' => $response,
+                    'curl_error' => $error
                 ];
             }
         } catch (\Exception $e) {
             Log::error('Exception sending SMS', [
                 'to' => $to,
                 'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
             
             return [
-                'error' => 'Failed to send SMS: ' . $e->getMessage()
+                'error' => 'Failed to send SMS: ' . $e->getMessage(),
+                'exception' => true,
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ];
         }
     }
