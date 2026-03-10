@@ -464,20 +464,43 @@ class SettingsController extends Controller
     public function testEmail(Request $request)
     {
         try {
-            $testEmail = $request->input('test_email');
-            $testMessage = $request->input('test_message');
-            $testSubject = $request->input('test_subject');
+            // Handle both JSON and form input
+            $testEmail = $request->input('test_email') ?? $request->input('recipient');
+            $testMessage = $request->input('test_message') ?? $request->input('message');
+            $testSubject = $request->input('test_subject') ?? $request->input('subject') ?? 'Test Email from ShopSmart';
+            $configId = $request->input('config_id');
             
-            // Get configuration from form
-            $config = [
-                'smtp_host' => $request->input('smtp_host'),
-                'smtp_port' => $request->input('smtp_port'),
-                'smtp_username' => $request->input('smtp_username'),
-                'smtp_password' => $request->input('smtp_password'),
-                'smtp_encryption' => $request->input('smtp_encryption'),
-                'from_email' => $request->input('from_email'),
-                'from_name' => $request->input('from_name')
-            ];
+            // Get configuration from form or from database
+            if ($configId) {
+                $configRecord = CommunicationConfig::find($configId);
+                if (!$configRecord || $configRecord->type !== 'email') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Email configuration not found'
+                    ], 404);
+                }
+                
+                $config = [
+                    'smtp_host' => $configRecord->config['mail_host'] ?? '',
+                    'smtp_port' => $configRecord->config['mail_port'] ?? 587,
+                    'smtp_username' => $configRecord->config['mail_username'] ?? '',
+                    'smtp_password' => $configRecord->config['mail_password'] ?? '',
+                    'smtp_encryption' => $configRecord->config['mail_encryption'] ?? 'TLS',
+                    'from_email' => $configRecord->config['mail_from_address'] ?? '',
+                    'from_name' => $configRecord->config['mail_from_name'] ?? 'ShopSmart'
+                ];
+            } else {
+                // Get configuration from form (for create page testing)
+                $config = [
+                    'smtp_host' => $request->input('smtp_host'),
+                    'smtp_port' => $request->input('smtp_port'),
+                    'smtp_username' => $request->input('smtp_username'),
+                    'smtp_password' => $request->input('smtp_password'),
+                    'smtp_encryption' => $request->input('smtp_encryption'),
+                    'from_email' => $request->input('from_email'),
+                    'from_name' => $request->input('from_name')
+                ];
+            }
             
             // Validate required fields
             if (!$testEmail || !$testMessage) {
@@ -487,20 +510,31 @@ class SettingsController extends Controller
                 ], 400);
             }
             
+            // Validate email format
+            if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid email address format'
+                ], 400);
+            }
+            
             // Configure SMTP settings dynamically for this test
             config([
                 'mail.default' => 'smtp',
                 'mail.mailers.smtp.host' => $config['smtp_host'],
                 'mail.mailers.smtp.port' => $config['smtp_port'],
-                'mail.mailers.smtp.encryption' => $config['smtp_encryption'],
+                'mail.mailers.smtp.encryption' => strtolower($config['smtp_encryption']),
                 'mail.mailers.smtp.username' => $config['smtp_username'],
                 'mail.mailers.smtp.password' => $config['smtp_password'],
                 'mail.from.address' => $config['from_email'],
                 'mail.from.name' => $config['from_name'],
             ]);
             
+            // Clear any existing mail instances
+            app('mailer')->getSymfonyTransport()->reset();
+            
             // Send test email
-            Mail::send([], [], function ($message) use ($testEmail, $testSubject, $testMessage, $config) {
+            Mail::send([], [], function ($message) use ($testEmail, $testSubject, $config) {
                 $message->to($testEmail)
                     ->subject($testSubject)
                     ->from($config['from_email'], $config['from_name'])
@@ -509,14 +543,26 @@ class SettingsController extends Controller
             
             return response()->json([
                 'success' => true,
-                'message' => 'Test email sent successfully to ' . $testEmail
+                'message' => 'Test email sent successfully to ' . $testEmail,
+                'details' => [
+                    'recipient' => $testEmail,
+                    'subject' => $testSubject,
+                    'from_email' => $config['from_email'],
+                    'from_name' => $config['from_name']
+                ]
             ]);
             
         } catch (\Exception $e) {
             Log::error('Test email failed: ' . $e->getMessage());
+            
+            // Return proper JSON error response
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send test email: ' . $e->getMessage()
+                'message' => 'Failed to send test email: ' . $e->getMessage(),
+                'details' => [
+                    'error_type' => get_class($e),
+                    'error_message' => $e->getMessage()
+                ]
             ], 500);
         }
     }
@@ -524,120 +570,143 @@ class SettingsController extends Controller
     public function testSMS(Request $request)
     {
         try {
-            $phone = $request->input('phone');
+            // Handle both JSON and form input
+            $phone = $request->input('phone') ?? $request->input('recipient');
+            $message = $request->input('message');
             $configId = $request->input('config_id');
             
-            if (!$phone) {
+            // Get advanced options
+            $scheduleTime = $request->input('scheduleTime', 'now');
+            $multipleNumbers = $request->input('multipleNumbers', '');
+            $referenceId = $request->input('referenceId', 'sms_test_' . time());
+            
+            if (!$phone || !$message) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Phone number is required'
+                    'message' => 'Phone number and message are required'
+                ], 400);
+            }
+
+            // Validate phone format (Tanzania format)
+            $phone = preg_replace('/\D/', '', $phone);
+            if (!preg_match('/^255\d{9}$/', $phone)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid phone number format. Use format: 255XXXXXXXXX'
                 ], 400);
             }
 
             // Get configuration
             if ($configId) {
                 $config = CommunicationConfig::find($configId);
-                if ($config && $config->type === 'sms' && $config->is_active) {
-                    $configData = $config->config;
-                    $provider = $configData['sms_provider'] ?? 'twilio';
-                    $apiKey = $configData['sms_api_key'] ?? '';
-                    $apiSecret = $configData['sms_api_secret'] ?? '';
-                    $from = $configData['sms_from'] ?? '';
-                } else {
+                if (!$config || $config->type !== 'sms') {
                     return response()->json([
                         'success' => false,
-                        'message' => 'SMS configuration not found or inactive'
-                    ], 400);
+                        'message' => 'SMS configuration not found'
+                    ], 404);
                 }
+                
+                $configData = $config->config;
             } else {
                 // Use primary configuration
                 $primaryConfig = CommunicationConfig::getPrimary('sms');
-                if ($primaryConfig && $primaryConfig->is_active) {
-                    $configData = $primaryConfig->config;
-                    $provider = $configData['sms_provider'] ?? 'twilio';
-                    $apiKey = $configData['sms_api_key'] ?? '';
-                    $apiSecret = $configData['sms_api_secret'] ?? '';
-                    $from = $configData['sms_from'] ?? '';
-                } else {
+                if (!$primaryConfig) {
                     return response()->json([
                         'success' => false,
                         'message' => 'No active SMS configuration found'
                     ], 400);
                 }
+                
+                $configData = $primaryConfig->config;
             }
 
-            if (empty($apiKey) || empty($apiSecret)) {
+            // Use Messaging Service for actual SMS sending
+            $messagingService = new \App\Services\MessagingService();
+            
+            // Prepare recipients
+            $recipients = [$phone];
+            if (!empty($multipleNumbers)) {
+                $additionalNumbers = array_map('trim', explode(',', $multipleNumbers));
+                foreach ($additionalNumbers as $number) {
+                    $cleanNumber = preg_replace('/\D/', '', $number);
+                    if (preg_match('/^255\d{9}$/', $cleanNumber)) {
+                        $recipients[] = $cleanNumber;
+                    }
+                }
+            }
+            
+            // Send SMS based on schedule time
+            if ($scheduleTime === 'now') {
+                // Send immediately
+                $result = $messagingService->sendMultipleSMS([
+                    'from' => $configData['username'] ?? 'ShopSmart',
+                    'messages' => array_map(function($recipient) use ($message, $configData, $referenceId) {
+                        return [
+                            'to' => $recipient,
+                            'text' => $message,
+                            'reference' => $referenceId
+                        ];
+                    }, $recipients)
+                ]);
+            } else {
+                // Schedule SMS (for demo purposes, we'll send immediately with a note)
+                $result = $messagingService->sendMultipleSMS([
+                    'from' => $configData['username'] ?? 'ShopSmart',
+                    'messages' => array_map(function($recipient) use ($message, $configData, $referenceId, $scheduleTime) {
+                        return [
+                            'to' => $recipient,
+                            'text' => $message . " (Scheduled: $scheduleTime)",
+                            'reference' => $referenceId
+                        ];
+                    }, $recipients)
+                ]);
+            }
+            
+            if ($result['success']) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Test SMS sent successfully',
+                    'details' => [
+                        'recipients' => $recipients,
+                        'message_count' => count($result['messages'] ?? []),
+                        'total_cost' => $result['total_cost'] ?? 0,
+                        'currency' => 'TZS',
+                        'reference_id' => $referenceId,
+                        'schedule_time' => $scheduleTime
+                    ]
+                ]);
+            } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'SMS API credentials are not configured'
-                ], 400);
+                    'message' => $result['message'] ?? 'Failed to send test SMS',
+                    'details' => $result['details'] ?? []
+                ], 500);
             }
-
-            // Here you would implement actual SMS sending logic based on provider
-            // For now, we'll just log it
-            Log::info('Test SMS would be sent', [
-                'provider' => $provider,
-                'to' => $phone,
-                'from' => $from
-            ]);
-
-            // TODO: Implement actual SMS sending based on provider
-            // Example for Twilio:
-            // $client = new \Twilio\Rest\Client($apiKey, $apiSecret);
-            // $client->messages->create($phone, ['from' => $from, 'body' => 'Test SMS from ShopSmart']);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Test SMS sent successfully (logged)'
-            ]);
+            
         } catch (\Exception $e) {
             Log::error('Test SMS failed: ' . $e->getMessage());
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send test SMS: ' . $e->getMessage()
+                'message' => 'Failed to send test SMS: ' . $e->getMessage(),
+                'details' => [
+                    'error_type' => get_class($e),
+                    'error_message' => $e->getMessage()
+                ]
             ], 500);
         }
     }
 
-    // Update Email Configuration
-    public function emailUpdate(Request $request, $id)
+    // Edit Email Configuration
+    public function emailEdit($id)
     {
-        try {
-            $config = CommunicationConfig::findOrFail($id);
-            
-            if ($config->type !== 'email') {
-                return back()->with('error', 'Configuration not found.');
-            }
-            
-            $validated = $request->validate([
-                'smtp_host' => 'required|string',
-                'smtp_port' => 'required|integer',
-                'smtp_username' => 'required|email',
-                'smtp_password' => 'required|string',
-                'smtp_encryption' => 'required|string|in:TLS,SSL,none',
-                'from_email' => 'required|email',
-                'from_name' => 'required|string|max:255'
-            ]);
-
-            $config->update([
-                'config' => [
-                    'mail_mailer' => 'smtp',
-                    'mail_host' => $validated['smtp_host'],
-                    'mail_port' => $validated['smtp_port'],
-                    'mail_username' => $validated['smtp_username'],
-                    'mail_password' => $validated['smtp_password'],
-                    'mail_encryption' => $validated['smtp_encryption'],
-                    'mail_from_address' => $validated['from_email'],
-                    'mail_from_name' => $validated['from_name']
-                ]
-            ]);
-
-            return redirect()->route('settings.communication.index')->with('success', 'Email configuration updated successfully!');
-            
-        } catch (\Exception $e) {
-            Log::error('Email configuration update failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to update email configuration: ' . $e->getMessage())->withInput();
+        $config = CommunicationConfig::findOrFail($id);
+        
+        if ($config->type !== 'email') {
+            return redirect()->route('settings.communication.index')->with('error', 'Configuration not found.');
         }
+        
+        return view('settings.communication.email-edit', compact('config'));
     }
 
     // Store Email Configuration
