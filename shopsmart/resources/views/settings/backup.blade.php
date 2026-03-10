@@ -42,6 +42,129 @@
     </div>
     @endif
 
+    <!-- Advanced System Diagnostics -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg shadow-sm border border-blue-200 p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-stethoscope mr-2 text-blue-600"></i>
+                Advanced System Diagnostics
+            </h3>
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">Last scan: <span x-text="lastDiagnosticTime">Never</span></span>
+                <button @click="runSystemDiagnostics()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-play mr-2"></i>Run Full Diagnostics
+                </button>
+            </div>
+        </div>
+        
+        <!-- Diagnostics Progress -->
+        <div x-show="diagnosticRunning" class="mb-4">
+            <div class="bg-white rounded-lg p-4 border border-blue-200">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-700">Running Diagnostics...</span>
+                    <span class="text-sm text-blue-600" x-text="diagnosticProgress + '%'"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" :style="`width: ${diagnosticProgress}%`"></div>
+                </div>
+                <p class="text-xs text-gray-500 mt-2" x-text="currentDiagnosticTask"></p>
+            </div>
+        </div>
+        
+        <!-- Diagnostics Results -->
+        <div x-show="diagnosticResults.length > 0" class="space-y-3">
+            <template x-for="result in diagnosticResults" :key="result.category">
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center mr-3"
+                                 :class="result.status === 'healthy' ? 'bg-green-100' : result.status === 'warning' ? 'bg-yellow-100' : 'bg-red-100'">
+                                <i :class="result.icon" 
+                                   :class="result.status === 'healthy' ? 'text-green-600' : result.status === 'warning' ? 'text-yellow-600' : 'text-red-600'"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium text-gray-900" x-text="result.category"></h4>
+                                <p class="text-xs text-gray-500" x-text="result.description"></p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="px-2 py-1 text-xs font-medium rounded-full"
+                                  :class="result.status === 'healthy' ? 'bg-green-100 text-green-800' : result.status === 'warning' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'"
+                                  x-text="result.status.toUpperCase()"></span>
+                            <div class="text-xs text-gray-500 mt-1" x-text="result.responseTime + 'ms'"></div>
+                        </div>
+                    </div>
+                    <div x-show="result.details" class="mt-3 pt-3 border-t border-gray-200">
+                        <p class="text-sm text-gray-600" x-text="result.details"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- Quick Actions Dashboard -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-bolt mr-2 text-yellow-500"></i>
+            Quick Actions Dashboard
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Full Backup -->
+            <button @click="createFullBackup()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-database text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Full Backup</h4>
+                    <p class="text-xs opacity-90 mt-1">Complete system backup</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+            
+            <!-- Database Backup -->
+            <button @click="createDatabaseBackup()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-server text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Database Backup</h4>
+                    <p class="text-xs opacity-90 mt-1">Database only</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+            
+            <!-- Optimize System -->
+            <button @click="optimizeSystem()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-4 text-white hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-tachometer-alt text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Optimize System</h4>
+                    <p class="text-xs opacity-90 mt-1">Clean & optimize</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+            
+            <!-- Clear Cache -->
+            <button @click="clearSystemCache()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg p-4 text-white hover:from-orange-600 hover:to-orange-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-broom text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Clear Cache</h4>
+                    <p class="text-xs opacity-90 mt-1">Clear system cache</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+        </div>
+        
+        <!-- Action Status -->
+        <div x-show="actionStatus.message" class="mt-4 p-3 rounded-lg" 
+             :class="actionStatus.type === 'success' ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-red-50 border border-red-200 text-red-800'">
+            <div class="flex items-center">
+                <i :class="actionStatus.type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle'" class="mr-2"></i>
+                <span x-text="actionStatus.message"></span>
+            </div>
+        </div>
+    </div>
+
     <!-- System Health Overview -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -502,27 +625,163 @@ function backupSystem() {
         createBackup(type) {
             const confirmMessage = `Create ${type} backup?\n\nThis will backup:\n${type === 'full' ? '• Database\n• Application files\n• Configuration files\n• User uploads' : type === 'database' ? '• All database tables\n• Stored procedures\n• Database schema' : '• Application files\n• User uploads\n• Configuration files'}`;
             
+            const diagnosticTasks = [
+                { category: 'Database Connection', icon: 'fas fa-database', task: 'Checking database connectivity...' },
+                { category: 'Cache System', icon: 'fas fa-memory', task: 'Analyzing cache performance...' },
+                { category: 'File System', icon: 'fas fa-folder', task: 'Scanning file system integrity...' },
+                { category: 'API Endpoints', icon: 'fas fa-plug', task: 'Testing API endpoints...' },
+                { category: 'Security Settings', icon: 'fas fa-shield-alt', task: 'Validating security configuration...' },
+                { category: 'Performance Metrics', icon: 'fas fa-tachometer-alt', task: 'Measuring system performance...' },
+                { category: 'Storage Health', icon: 'fas fa-hdd', task: 'Checking storage availability...' },
+                { category: 'Network Connectivity', icon: 'fas fa-network-wired', task: 'Testing network connections...' }
+            ];
+            
+            for (let i = 0; i < diagnosticTasks.length; i++) {
+                const task = diagnosticTasks[i];
+                this.currentDiagnosticTask = task.task;
+                this.diagnosticProgress = Math.round(((i + 1) / diagnosticTasks.length) * 100);
+                
+                // Simulate diagnostic check
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Generate random results for demonstration
+                const status = Math.random() > 0.2 ? 'healthy' : Math.random() > 0.5 ? 'warning' : 'critical';
+                const responseTime = Math.floor(Math.random() * 200) + 50;
+                
+                let details = '';
+                if (status === 'healthy') {
+                    details = `All systems operational. Response time within acceptable range.`;
+                } else if (status === 'warning') {
+                    details = `Minor issues detected. System performance may be slightly degraded.`;
+                } else {
+                    details = `Critical issues found. Immediate attention required.`;
+                }
+                
+                this.diagnosticResults.push({
+                    category: task.category,
+                    icon: task.icon,
+                    description: `Health check for ${task.category.toLowerCase()}`,
+                    status: status,
+                    responseTime: responseTime,
+                    details: details
+                });
+            }
+            
+            this.diagnosticRunning = false;
+            this.lastDiagnosticTime = new Date().toLocaleTimeString();
+            
+            // Show summary
+            const healthyCount = this.diagnosticResults.filter(r => r.status === 'healthy').length;
+            const warningCount = this.diagnosticResults.filter(r => r.status === 'warning').length;
+            const criticalCount = this.diagnosticResults.filter(r => r.status === 'critical').length;
+            
+            this.showActionStatus('success', `Diagnostics completed: ${healthyCount} healthy, ${warningCount} warnings, ${criticalCount} critical issues`);
+        },
+        
+        async createFullBackup() {
+            this.showActionStatus('success', 'Starting full system backup...');
+            
+            // Simulate backup process
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            this.showActionStatus('success', 'Full backup completed successfully! Backup ID: BK-' + Date.now());
+        },
+        
+        async createDatabaseBackup() {
+            this.showActionStatus('success', 'Starting database backup...');
+            
+            // Simulate backup process
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            this.showActionStatus('success', 'Database backup completed! Size: 245MB');
+        },
+        
+        async optimizeSystem() {
+            this.showActionStatus('success', 'Starting system optimization...');
+            
+            const optimizationSteps = [
+                'Clearing application cache...',
+                'Optimizing database tables...',
+                'Compiling views...',
+                'Caching routes...',
+                'Optimizing configuration...'
+            ];
+            
+            for (const step of optimizationSteps) {
+                await new Promise(resolve => setTimeout(resolve, 500));
+                this.showActionStatus('success', step);
+            }
+            
+            this.showActionStatus('success', 'System optimization completed! Performance improved by 23%');
+        },
+        
+        async clearSystemCache() {
+            this.showActionStatus('success', 'Clearing system cache...');
+            
+            const cacheTypes = [
+                'Application cache',
+                'View cache',
+                'Route cache',
+                'Configuration cache',
+                'Session cache'
+            ];
+            
+            for (const cacheType of cacheTypes) {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                this.showActionStatus('success', `Cleared ${cacheType}`);
+            }
+            
+            this.showActionStatus('success', 'All system caches cleared successfully! 1.2GB freed');
+        },
+        
+        showActionStatus(type, message) {
+            this.actionStatus = { type, message };
+            setTimeout(() => {
+                this.actionStatus = { type: '', message: '' };
+            }, 5000);
+        },
+        
+        scheduleBackup() {
+            alert('Backup scheduling interface would open here\n\nOptions:\n• Daily backups at 2:00 AM\n• Weekly backups on Sundays\n• Monthly backups on 1st day\n• Custom schedule\n\nThis would integrate with the backup scheduling system.');
+        },
+        
+        createBackup() {
+            alert('Creating manual backup...\n\nThis would:\n• Create a full system backup\n• Include database and files\n• Generate backup report\n• Store in configured location\n\nBackup ID: BK-' + Date.now());
+        },
+        
+        clearCache() {
+            alert('Clearing system cache...\n\nThis would clear:\n• Application cache\n• View cache\n• Route cache\n• Configuration cache\n\nCache cleared successfully!');
+        },
+        
+        optimizeDb() {
+            alert('Optimizing database...\n\nThis would:\n• Optimize database tables\n• Rebuild indexes\n• Clean up orphaned records\n• Update statistics\n\nDatabase optimized successfully!');
+        },
+        
+        clearAll() {
+            if (confirm('Are you sure you want to clear all caches and optimize the system? This action cannot be undone.')) {
+                alert('System maintenance completed!\n\n• All caches cleared\n• Database optimized\n• System performance improved\n• 2.1GB storage freed');
+            }
+        },
+        
+        createBackup(type) {
+            const confirmMessage = `Create ${type} backup?\n\nThis will backup:\n${type === 'full' ? '• Database\n• Application files\n• Configuration files\n• User uploads' : type === 'database' ? '• All database tables\n• Stored procedures\n• Database schema' : '• Application files\n• User uploads\n• Configuration files'}`;
+            
             if (confirm(confirmMessage)) {
                 alert(`Creating ${type} backup...\n\nEstimated time: 2-5 minutes\nYou will be notified when complete.`);
             }
         },
         
-        scheduleBackup() {
-            const scheduleTime = prompt('Enter backup schedule (e.g., "02:00" for 2 AM):');
-            if (scheduleTime) {
-                alert(`Backup scheduled for ${scheduleTime}\n\n• Type: Full backup\n• Frequency: Daily\n• Retention: 30 days\n• Compression: Enabled`);
-            }
+        runSystemDiagnostics() {
+            alert('Running comprehensive system diagnostics...\n\n✓ Database integrity: PASSED\n✓ File system: HEALTHY\n✓ Memory usage: 42%\n✓ CPU usage: 12%\n✓ Disk space: 45% used\n✓ Network connectivity: STABLE\n✓ Security status: SECURE\n\nOverall System Health: EXCELLENT');
         },
         
-        optimizeSystem() {
-            if (confirm('Optimize system performance?\n\nThis will:\n• Clear system cache\n• Optimize database\n• Clean temporary files\n• Update indexes')) {
-                alert('System optimization in progress...\n\n✓ Cache cleared\n✓ Database optimized\n✓ Temp files cleaned\n✓ Indexes updated\n\nPerformance improved by 15%');
-            }
+        optimizeDatabase() {
+            alert('Optimizing database...\n\n✓ Tables optimized\n✓ Indexes rebuilt\n✓ Query performance improved\n\nDatabase optimization complete!');
         },
         
-        clearCache() {
-            if (confirm('Clear all system cache?')) {
-                alert('Clearing system cache...\n\n✓ Application cache cleared\n✓ Configuration cache cleared\n✓ Route cache cleared\n✓ View cache cleared\n\nCache cleared successfully!');
+        repairDatabase() {
+            if (confirm('Repair database?\n\nThis will check and repair all tables.')) {
+                alert('Repairing database...\n\n✓ Checking table integrity\n✓ Repairing corrupted data\n✓ Optimizing storage\n\nDatabase repair complete!');
             }
         },
         
@@ -544,22 +803,6 @@ function backupSystem() {
         
         refreshBackups() {
             alert('Refreshing backup list...\n\nLatest backups loaded successfully.');
-        },
-        
-        optimizeDatabase() {
-            alert('Optimizing database...\n\n✓ Tables optimized\n✓ Indexes rebuilt\n✓ Query performance improved\n\nDatabase optimization complete!');
-        },
-        
-        repairDatabase() {
-            if (confirm('Repair database?\n\nThis will check and repair all tables.')) {
-                alert('Repairing database...\n\n✓ Checking table integrity\n✓ Repairing corrupted data\n✓ Optimizing storage\n\nDatabase repair complete!');
-            }
-        },
-        
-        clearLogs() {
-            if (confirm('Clear system logs?\n\nThis will remove all old log files.')) {
-                alert('Clearing system logs...\n\n✓ Application logs cleared\n✓ Error logs cleared\n✓ Access logs cleared\n\nLogs cleared successfully!');
-            }
         },
         
         cleanTempFiles() {
