@@ -616,14 +616,25 @@ class SettingsController extends Controller
             // Ensure we return JSON response
             header('Content-Type: application/json');
             
+            // Debug: Log incoming request data
+            Log::info('SMS Test Request', [
+                'phone' => $phone,
+                'recipient' => $request->input('recipient'),
+                'message' => $message,
+                'config_id' => $configId,
+                'all_inputs' => $request->all()
+            ]);
+            
             if (!$phone || !$message) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Phone number and message are required',
                     'debug' => [
                         'phone' => $phone,
+                        'recipient' => $request->input('recipient'),
                         'message' => $message,
-                        'config_id' => $configId
+                        'config_id' => $configId,
+                        'all_inputs' => $request->all()
                     ]
                 ], 400);
             }
@@ -658,6 +669,12 @@ class SettingsController extends Controller
                 }
                 
                 $configData = $config->config;
+                
+                // Debug: Log configuration data
+                Log::info('SMS Configuration Found', [
+                    'config_id' => $configId,
+                    'config_data' => $configData
+                ]);
             } else {
                 // Use primary configuration
                 $primaryConfig = CommunicationConfig::getPrimary('sms');
@@ -672,6 +689,24 @@ class SettingsController extends Controller
                 }
                 
                 $configData = $primaryConfig->config;
+                
+                // Debug: Log primary configuration
+                Log::info('SMS Primary Configuration', [
+                    'config_data' => $configData
+                ]);
+            }
+
+            // Validate configuration has required fields
+            if (empty($configData['username']) && empty($configData['sms_api_key'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SMS configuration incomplete. Missing API credentials.',
+                    'debug' => [
+                        'has_username' => !empty($configData['username']),
+                        'has_api_key' => !empty($configData['sms_api_key']),
+                        'config_keys' => array_keys($configData)
+                    ]
+                ], 400);
             }
 
             // Use Messaging Service for actual SMS sending
