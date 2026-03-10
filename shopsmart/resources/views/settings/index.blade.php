@@ -424,12 +424,38 @@ function settingsDashboard() {
         },
         clearCache() {
             if (confirm('Are you sure you want to clear all caches?')) {
-                window.location.href = '{{ route('settings.backup.clear-cache') }}';
+                // Create a form and submit via POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('settings.backup.clear-cache') }}';
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         },
         optimizeDb() {
             if (confirm('Are you sure you want to optimize the database? This may take a few minutes.')) {
-                window.location.href = '{{ route('settings.backup.optimize-db') }}';
+                // Create a form and submit via POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route('settings.backup.optimize-db') }}';
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         },
         viewAllActivity() {
