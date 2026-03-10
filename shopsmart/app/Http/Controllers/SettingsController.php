@@ -424,13 +424,21 @@ class SettingsController extends Controller
             $testSubject = $request->input('test_subject') ?? $request->input('subject') ?? 'Test Email from ShopSmart';
             $configId = $request->input('config_id');
             
+            // Ensure we return JSON response
+            header('Content-Type: application/json');
+            
             // Get configuration from form or from database
             if ($configId) {
                 $configRecord = CommunicationConfig::find($configId);
                 if (!$configRecord || $configRecord->type !== 'email') {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Email configuration not found'
+                        'message' => 'Email configuration not found',
+                        'debug' => [
+                            'config_id' => $configId,
+                            'found' => $configRecord ? true : false,
+                            'type' => $configRecord ? $configRecord->type : null
+                        ]
                     ], 404);
                 }
                 
@@ -460,7 +468,12 @@ class SettingsController extends Controller
             if (!$testEmail || !$testMessage) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Test email and message are required'
+                    'message' => 'Test email and message are required',
+                    'debug' => [
+                        'test_email' => $testEmail,
+                        'test_message' => $testMessage,
+                        'config_id' => $configId
+                    ]
                 ], 400);
             }
             
@@ -468,7 +481,11 @@ class SettingsController extends Controller
             if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid email address format'
+                    'message' => 'Invalid email address format',
+                    'debug' => [
+                        'test_email' => $testEmail,
+                        'valid_format' => false
+                    ]
                 ], 400);
             }
             
@@ -485,7 +502,11 @@ class SettingsController extends Controller
             ]);
             
             // Clear any existing mail instances
-            app('mailer')->getSymfonyTransport()->reset();
+            try {
+                app('mailer')->getSymfonyTransport()->reset();
+            } catch (\Exception $e) {
+                // Continue even if reset fails
+            }
             
             // Send test email
             Mail::send([], [], function ($message) use ($testEmail, $testSubject, $config) {
@@ -513,9 +534,12 @@ class SettingsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send test email: ' . $e->getMessage(),
-                'details' => [
+                'debug' => [
                     'error_type' => get_class($e),
-                    'error_message' => $e->getMessage()
+                    'error_message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => collect($e->getTrace())->take(3)->toArray()
                 ]
             ], 500);
         }
@@ -534,10 +558,18 @@ class SettingsController extends Controller
             $multipleNumbers = $request->input('multipleNumbers', '');
             $referenceId = $request->input('referenceId', 'sms_test_' . time());
             
+            // Ensure we return JSON response
+            header('Content-Type: application/json');
+            
             if (!$phone || !$message) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Phone number and message are required'
+                    'message' => 'Phone number and message are required',
+                    'debug' => [
+                        'phone' => $phone,
+                        'message' => $message,
+                        'config_id' => $configId
+                    ]
                 ], 400);
             }
 
@@ -546,7 +578,12 @@ class SettingsController extends Controller
             if (!preg_match('/^255\d{9}$/', $phone)) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid phone number format. Use format: 255XXXXXXXXX'
+                    'message' => 'Invalid phone number format. Use format: 255XXXXXXXXX',
+                    'debug' => [
+                        'original_phone' => $request->input('phone') ?? $request->input('recipient'),
+                        'cleaned_phone' => $phone,
+                        'valid_format' => false
+                    ]
                 ], 400);
             }
 
@@ -556,7 +593,12 @@ class SettingsController extends Controller
                 if (!$config || $config->type !== 'sms') {
                     return response()->json([
                         'success' => false,
-                        'message' => 'SMS configuration not found'
+                        'message' => 'SMS configuration not found',
+                        'debug' => [
+                            'config_id' => $configId,
+                            'found' => $config ? true : false,
+                            'type' => $config ? $config->type : null
+                        ]
                     ], 404);
                 }
                 
@@ -567,7 +609,10 @@ class SettingsController extends Controller
                 if (!$primaryConfig) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'No active SMS configuration found'
+                        'message' => 'No active SMS configuration found',
+                        'debug' => [
+                            'primary_config' => $primaryConfig ? true : false
+                        ]
                     ], 400);
                 }
                 
@@ -633,7 +678,10 @@ class SettingsController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => $result['message'] ?? 'Failed to send test SMS',
-                    'details' => $result['details'] ?? []
+                    'debug' => [
+                        'result' => $result,
+                        'details' => $result['details'] ?? []
+                    ]
                 ], 500);
             }
             
@@ -643,9 +691,12 @@ class SettingsController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to send test SMS: ' . $e->getMessage(),
-                'details' => [
+                'debug' => [
                     'error_type' => get_class($e),
-                    'error_message' => $e->getMessage()
+                    'error_message' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => collect($e->getTrace())->take(3)->toArray()
                 ]
             ], 500);
         }
