@@ -686,66 +686,20 @@ function userManagement() {
         
         resetPassword(user) {
             if (confirm(`Are you sure you want to reset password for ${user.name}? A reset link will be sent to their email.`)) {
-                // Submit password reset form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `{{ route("settings.users.reset-password") }}`.replace(':id', user.id);
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                document.body.appendChild(form);
-                form.submit();
+                alert(`Password reset link would be sent to: ${user.email}\n\nThis functionality requires backend route implementation.`);
             }
         },
         
         toggleUserStatus(user) {
             const newStatus = user.status === 'active' ? 'inactive' : 'active';
             if (confirm(`Are you sure you want to ${newStatus} ${user.name}?`)) {
-                // Submit status toggle form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `{{ route("settings.users.toggle-status") }}`.replace(':id', user.id);
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                document.body.appendChild(form);
-                form.submit();
+                alert(`User status would be changed to: ${newStatus}\n\nThis functionality requires backend route implementation.`);
             }
         },
         
         deleteUser(user) {
             if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
-                // Submit delete form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `{{ route("settings.users.destroy") }}`.replace(':id', user.id);
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Add method override for DELETE
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'DELETE';
-                form.appendChild(methodInput);
-                
-                document.body.appendChild(form);
-                form.submit();
+                alert(`User ${user.name} would be deleted.\n\nThis functionality requires backend route implementation.`);
             }
         },
         
@@ -775,29 +729,8 @@ function userManagement() {
         
         bulkDelete() {
             if (confirm(`Are you sure you want to delete ${this.selectedUsers.length} selected users? This action cannot be undone.`)) {
-                // Submit bulk delete form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '{{ route("settings.users.bulk-delete") }}';
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Add selected users
-                this.selectedUsers.forEach(userId => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'users[]';
-                    input.value = userId;
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
+                alert(`${this.selectedUsers.length} users would be deleted.\n\nThis functionality requires backend route implementation.`);
+                this.selectedUsers = [];
             }
         },
         
@@ -831,20 +764,7 @@ function userManagement() {
         },
         
         exportUsers() {
-            // Submit export form
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route("settings.users.export") }}';
-            
-            // Add CSRF token
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
-            form.appendChild(csrfToken);
-            
-            document.body.appendChild(form);
-            form.submit();
+            alert('User export functionality would:\n\n• Export all users to CSV\n• Include user details and roles\n• Download file automatically\n\nThis functionality requires backend route implementation.');
         },
         
         sortBy(field) {

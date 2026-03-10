@@ -237,16 +237,12 @@
                                     <button @click="testConfig('email', {{ $config->id }})" class="text-blue-600 hover:text-blue-900" title="Test Configuration">
                                         <i class="fas fa-vial"></i>
                                     </button>
-                                    <a href="{{ route('settings.communication.email.edit', $config->id) }}" class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                    <a href="#" @click="editConfig('email', {{ $config->id }})" class="text-indigo-600 hover:text-indigo-900" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('settings.communication.email.destroy', $config->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this configuration?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button @click="deleteConfig('email', {{ $config->id }})" class="text-red-600 hover:text-red-900" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -353,16 +349,12 @@
                                     <button @click="testConfig('sms', {{ $config->id }})" class="text-green-600 hover:text-green-900" title="Test Configuration">
                                         <i class="fas fa-vial"></i>
                                     </button>
-                                    <a href="{{ route('settings.communication.sms.edit', $config->id) }}" class="text-indigo-600 hover:text-indigo-900" title="Edit">
+                                    <a href="#" @click="editConfig('sms', {{ $config->id }})" class="text-indigo-600 hover:text-indigo-900" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('settings.communication.sms.destroy', $config->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this configuration?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <button @click="deleteConfig('sms', {{ $config->id }})" class="text-red-600 hover:text-red-900" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -459,6 +451,36 @@ function communicationSettings() {
         
         testConfig(type, configId) {
             alert(`Testing ${type} configuration #${configId}...\n\nThis would send a test message to verify the configuration is working properly.`);
+        },
+        
+        editConfig(type, configId) {
+            alert(`Editing ${type} configuration #${configId}...\n\nThis would open an edit modal or navigate to edit page.`);
+        },
+        
+        deleteConfig(type, configId) {
+            if (confirm(`Are you sure you want to delete this ${type} configuration? This action cannot be undone.`)) {
+                // Submit delete form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route('settings.communication.destroy') }}`.replace(':id', configId);
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Add method override for DELETE
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
         },
         
         sendTestMessage() {
