@@ -387,12 +387,14 @@
             </button>
         </div>
         
-        <div class="space-y-4" x-data="{ activities: [
-            { icon: 'fa-envelope', color: 'blue', title: 'Email configuration tested', description: 'Gmail SMTP - Just now', status: 'Success', statusColor: 'green' },
-            { icon: 'fa-sms', color: 'green', title: 'SMS configuration created', description: 'Messaging Service - 1 hour ago', status: 'Created', statusColor: 'blue' },
-            { icon: 'fa-star', color: 'orange', title: 'Primary configuration changed', description: 'Email - 3 hours ago', status: 'Updated', statusColor: 'orange' },
-            { icon: 'fa-paper-plane', color: 'purple', title: 'Test message sent', description: 'Email & SMS - 5 hours ago', status: 'Sent', statusColor: 'purple' }
-        ] }">
+        <div class="space-y-4" x-data="{ 
+            activities: [
+                { icon: 'fa-envelope', color: 'blue', title: 'Email configuration tested', description: 'Gmail SMTP - Just now', status: 'Success', statusColor: 'green' },
+                { icon: 'fa-sms', color: 'green', title: 'SMS configuration created', description: 'Messaging Service - 1 hour ago', status: 'Created', statusColor: 'blue' },
+                { icon: 'fa-star', color: 'orange', title: 'Primary configuration changed', description: 'Email - 3 hours ago', status: 'Updated', statusColor: 'orange' },
+                { icon: 'fa-paper-plane', color: 'purple', title: 'Test message sent', description: 'Email & SMS - 5 hours ago', status: 'Sent', statusColor: 'purple' }
+            ]
+        }">
             <template x-for="activity in activities">
                 <div class="flex items-center p-4 bg-gray-50 rounded-lg">
                     <div class="w-8 h-8 bg-{{ activity.color }}-100 rounded-full flex items-center justify-center mr-4">
