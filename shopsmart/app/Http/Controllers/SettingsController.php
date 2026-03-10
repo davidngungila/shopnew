@@ -727,7 +727,10 @@ class SettingsController extends Controller
             }
 
             // Use Messaging Service for actual SMS sending
-            $messagingService = new \App\Services\MessagingService();
+            $messagingService = new \App\Services\MessagingService(
+                $configData['sms_api_secret'], // Use actual token from config
+                $configData['sms_from'] ?? 'TANZANIATIP' // Use actual sender ID from config
+            );
             
             // For testing, let's try with hardcoded values first
             Log::info('Attempting SMS send with hardcoded values', [

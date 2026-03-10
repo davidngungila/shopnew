@@ -12,12 +12,12 @@ class MessagingService
     private $baseUrl;
     private $fromNumber;
 
-    public function __construct()
+    public function __construct($bearerToken = null, $fromNumber = null)
     {
-        // Hardcoded API configuration for messaging-service.co.tz
-        $this->bearerToken = 'cedcce9becad866f59beac1fd5a235bc';
+        // Allow dynamic configuration (for SMS testing with actual config)
+        $this->bearerToken = $bearerToken ?? 'cedcce9becad866f59beac1fd5a235bc';
         $this->baseUrl = 'https://messaging-service.co.tz/api/sms/v2';
-        $this->fromNumber = 'TANZANIATIP';
+        $this->fromNumber = $fromNumber ?? 'TANZANIATIP';
     }
 
     /**
