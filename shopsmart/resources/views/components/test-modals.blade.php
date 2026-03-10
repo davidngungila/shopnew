@@ -269,19 +269,18 @@ window.emailTestModal = {
     sendTestEmail() {
         this.sending = true;
         
-        // Simulate sending email
-        fetch('/api/sms/send', {
+        // Use the actual email test endpoint
+        fetch('{{ route("settings.communication.test-email") }}', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
-                to: this.testEmail,
-                message: this.testMessage,
-                subject: this.testSubject,
-                reference: 'email_test_' + Date.now()
+                test_email: this.testEmail,
+                test_message: this.testMessage,
+                test_subject: this.testSubject,
+                config_id: {{ isset($config) && $config ? $config->id : 'null' }}
             })
         })
         .then(response => response.json())
@@ -289,10 +288,14 @@ window.emailTestModal = {
             this.sending = false;
             if (data.success) {
                 this.statusType = 'success';
-                this.statusMessage = 'Email sent successfully to ' + this.testEmail + '!';
+                this.statusMessage = '✅ Test email sent successfully to ' + this.testEmail + '!';
+                if (data.details) {
+                    this.statusMessage += '\n📧 Subject: ' + (data.details.subject || 'N/A');
+                    this.statusMessage += '\n📋 From: ' + (data.details.from_email || 'N/A');
+                }
             } else {
                 this.statusType = 'error';
-                this.statusMessage = 'Failed to send email: ' + (data.message || 'Unknown error');
+                this.statusMessage = '❌ Failed to send email: ' + (data.message || 'Unknown error');
             }
         })
         .catch(error => {
