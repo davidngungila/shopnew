@@ -781,7 +781,6 @@ class SettingsController extends Controller
                     ]
                 ], 500);
             }
-            
         } catch (\Exception $e) {
             Log::error('Test SMS failed: ' . $e->getMessage());
             
