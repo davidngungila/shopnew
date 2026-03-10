@@ -250,199 +250,25 @@ class SettingsController extends Controller
         }
     }
 
-    public function scheduleBackup(Request $request)
+    public function smsProvider()
     {
-        try {
-            $validated = $request->validate([
-                'backup_frequency' => 'required|in:daily,weekly,monthly,disabled',
-                'backup_time' => 'nullable|string',
-                'backup_type' => 'nullable|in:database,full',
-                'retention_days' => 'nullable|integer|min:1|max:365',
-                'email_notifications' => 'boolean',
-            ]);
-
-            // Save backup schedule settings
-            foreach ($validated as $key => $value) {
-                Setting::set($key, is_bool($value) ? ($value ? '1' : '0') : $value, 'backup', is_bool($value) ? 'boolean' : 'text');
-            }
-
-            // If backup is enabled, create a scheduled task
-            if ($validated['backup_frequency'] !== 'disabled') {
-                $scheduleTime = $validated['backup_time'] ?? '02:00';
-                $backupType = $validated['backup_type'] ?? 'database';
-                
-                // Log the backup schedule configuration
-                Log::info('Backup scheduled', [
-                    'frequency' => $validated['backup_frequency'],
-                    'time' => $scheduleTime,
-                    'type' => $backupType,
-                    'retention_days' => $validated['retention_days'] ?? 30,
-                    'email_notifications' => $validated['email_notifications'] ?? false
-                ]);
-            }
-
-            return back()->with('success', 'Backup schedule configured successfully!');
-        } catch (\Exception $e) {
-            Log::error('Backup schedule failed: ' . $e->getMessage());
-            return back()->with('error', 'Failed to configure backup schedule: ' . $e->getMessage());
-        }
-    }
-
-    public function updateAutomation(Request $request)
-    {
-        $validated = $request->validate([
-            'auto_backup' => 'boolean',
-            'backup_frequency' => 'nullable|in:daily,weekly,monthly',
-            'backup_time' => 'nullable|string',
-            'retention_days' => 'nullable|integer|min:1|max:365',
-            'auto_backup_type' => 'nullable|in:database,full',
-            'backup_email_notifications' => 'boolean',
-        ]);
-
-        foreach ($validated as $key => $value) {
-            Setting::set($key, is_bool($value) ? ($value ? '1' : '0') : $value, 'backup', is_bool($value) ? 'boolean' : 'text');
-        }
-
-        return back()->with('success', 'Automated backup settings updated successfully.');
-    }
-
-    public function clearCache()
-    {
-        try {
-            Artisan::call('cache:clear');
-            return back()->with('success', 'Application cache cleared successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to clear cache: ' . $e->getMessage());
-        }
-    }
-
-    public function clearViews()
-    {
-        try {
-            Artisan::call('view:clear');
-            return back()->with('success', 'Compiled views cache cleared successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to clear views: ' . $e->getMessage());
-        }
-    }
-
-    public function clearRoutes()
-    {
-        try {
-            Artisan::call('route:clear');
-            return back()->with('success', 'Route cache cleared successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to clear routes: ' . $e->getMessage());
-        }
-    }
-
-    public function clearConfig()
-    {
-        try {
-            Artisan::call('config:clear');
-            return back()->with('success', 'Configuration cache cleared successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to clear config: ' . $e->getMessage());
-        }
-    }
-
-    public function optimizeDb()
-    {
-        try {
-            $tables = DB::select('SHOW TABLES');
-            $database = DB::getDatabaseName();
-            $tableKey = 'Tables_in_' . $database;
-            
-            foreach ($tables as $table) {
-                $tableName = $table->$tableKey;
-                DB::statement("OPTIMIZE TABLE `{$tableName}`");
-            }
-            
-            return back()->with('success', 'Database optimized successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to optimize database: ' . $e->getMessage());
-        }
-    }
-
-    public function clearAll()
-    {
-        try {
-            Artisan::call('cache:clear');
-            Artisan::call('view:clear');
-            Artisan::call('route:clear');
-            Artisan::call('config:clear');
-            return back()->with('success', 'All caches cleared successfully.');
-        } catch (\Exception $e) {
-            return back()->with('error', 'Failed to clear caches: ' . $e->getMessage());
-        }
-    }
-
-    // Communication Configurations - List
-    public function communicationIndex()
-    {
-        $emailConfigs = CommunicationConfig::where('type', 'email')->orderBy('is_primary', 'desc')->orderBy('name', 'asc')->get();
-        $smsConfigs = CommunicationConfig::where('type', 'sms')->orderBy('is_primary', 'desc')->orderBy('name', 'asc')->get();
-        return view('settings.communication.index', compact('emailConfigs', 'smsConfigs'));
-    }
-
-    // Email Configuration - Create
-    public function emailCreate()
-    {
-        return view('settings.communication.email');
-    }
-
-    // Email Configuration - Store
-    public function emailStore(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'mail_mailer' => 'nullable|in:smtp,sendmail,mailgun,ses,postmark,resend,log,array',
-            'mail_from_address' => 'required|email|max:255',
-            'mail_from_name' => 'nullable|string|max:255',
-            'mail_host' => 'nullable|string|max:255',
-            'mail_port' => 'nullable|integer|min:1|max:65535',
-            'mail_encryption' => 'nullable|in:tls,ssl,',
-            'mail_username' => 'nullable|string|max:255',
-            'mail_password' => 'nullable|string|max:255',
-        ]);
-
-        $config = [
-            'mail_mailer' => $validated['mail_mailer'] ?? 'smtp',
-            'mail_from_address' => $validated['mail_from_address'],
-            'mail_from_name' => $validated['mail_from_name'] ?? '',
-            'mail_host' => $validated['mail_host'] ?? '',
-            'mail_port' => $validated['mail_port'] ?? '',
-            'mail_encryption' => $validated['mail_encryption'] ?? 'tls',
-            'mail_username' => $validated['mail_username'] ?? '',
-            'mail_password' => $validated['mail_password'] ?? '',
+        // Load SMS provider configuration from database or use default
+        $smsProvider = [
+            'name' => 'Primary SMS Gateway',
+            'description' => 'Primary SMS gateway provider configured from system settings',
+            'status' => 'active',
+            'is_primary' => true,
+            'bearer_token' => 'f9a89f439206e27169ead766463ca92c',
+            'password' => '',
+            'from' => 'FEEDTAN',
+            'api_url' => 'https://messaging-service.co.tz/link/sms/v1/text/single'
         ];
-
-        $communicationConfig = CommunicationConfig::create([
-            'name' => $validated['name'],
-            'type' => 'email',
-            'description' => $validated['description'] ?? null,
-            'is_active' => $validated['is_active'] ?? true,
-            'is_primary' => false,
-            'config' => $config,
-        ]);
-
-        return redirect()->route('settings.communication.index')->with('success', 'Email configuration created successfully.');
+        
+        return view('settings.communication.sms-provider', compact('smsProvider'));
     }
 
     // Email Configuration - Edit
     public function emailEdit($id)
-    {
-        $config = CommunicationConfig::findOrFail($id);
-        if ($config->type !== 'email') {
-            return redirect()->route('settings.communication.index')->with('error', 'Invalid configuration type.');
-        }
-        return view('settings.communication.email', compact('config'));
-    }
-
-    // Email Configuration - Update
-    public function emailUpdate(Request $request, $id)
     {
         $config = CommunicationConfig::findOrFail($id);
         if ($config->type !== 'email') {
@@ -574,7 +400,7 @@ class SettingsController extends Controller
         if (!empty($validated['sms_api_secret'])) {
             $configData['sms_api_secret'] = $validated['sms_api_secret'];
         }
-
+        
         $config->update([
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,

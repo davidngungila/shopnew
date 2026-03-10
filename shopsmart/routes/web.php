@@ -223,6 +223,9 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::post('/email', [SettingsController::class, 'emailStore'])->name('email.store');
         Route::get('/sms/create', [SettingsController::class, 'smsCreate'])->name('sms.create');
         Route::post('/sms', [SettingsController::class, 'smsStore'])->name('sms.store');
+        Route::get('/sms/provider', [SettingsController::class, 'smsProvider'])->name('sms.provider');
+        Route::get('/sms/edit', [SettingsController::class, 'smsEdit'])->name('sms.edit');
+        Route::put('/sms/update', [SettingsController::class, 'smsUpdate'])->name('sms.update');
         Route::post('/{id}/set-primary', [SettingsController::class, 'setPrimary'])->name('set-primary');
         Route::delete('/{id}', [SettingsController::class, 'destroy'])->name('destroy');
         Route::post('/test-email', [SettingsController::class, 'testEmail'])->name('test-email');
