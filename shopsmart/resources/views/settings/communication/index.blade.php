@@ -606,26 +606,250 @@ function communicationSettings() {
         },
         
         testConfig(type, configId) {
-            // Test configuration via API
-            fetch('/api/sms/test-connection', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+            // Show test popup with progress
+            this.showTestPopup(type, configId);
+        },
+        
+        showTestPopup(type, configId) {
+            // Create popup HTML
+            const popupHtml = `
+                <div id="testPopup" class="fixed inset-0 z-50 overflow-y-auto" style="display: block;">
+                    <div class="flex items-center justify-center min-h-screen px-4">
+                        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">
+                                    <i class="fas fa-${type === 'email' ? 'envelope text-blue-600' : 'sms text-green-600'} mr-2"></i>
+                                    Test ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration
+                                </h3>
+                                <button onclick="this.closest('#testPopup').remove()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Progress Section -->
+                            <div id="progressSection" class="mb-6">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-medium text-gray-700">Testing Connection...</span>
+                                    <span id="progressPercent" class="text-sm font-medium text-blue-600">0%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                </div>
+                                <div id="progressStatus" class="mt-2 text-xs text-gray-500">Initializing test...</div>
+                            </div>
+                            
+                            <!-- Input Section (hidden initially) -->
+                            <div id="inputSection" class="hidden space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-${type === 'email' ? 'envelope' : 'phone'} mr-1 text-gray-500"></i>
+                                        ${type === 'email' ? 'Test Email Address' : 'Test Phone Number'}
+                                    </label>
+                                    <input type="${type === 'email' ? 'email' : 'tel'}" 
+                                           id="testRecipient" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                           placeholder="${type === 'email' ? 'test@example.com' : '255712345678'}">
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        ${type === 'email' ? 'Enter email address to send test message' : 'Format: 255XXXXXXXXX'}
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-comment mr-1 text-gray-500"></i>
+                                        Test Message
+                                    </label>
+                                    <textarea id="testMessage" rows="3" 
+                                              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                              placeholder="Enter your test message here..."></textarea>
+                                    <div class="mt-1 text-xs text-gray-500">
+                                        <span id="charCount">0</span>/160 characters
+                                    </div>
+                                </div>
+                                
+                                <div class="flex justify-end space-x-3">
+                                    <button onclick="this.closest('#testPopup').remove()" 
+                                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                                        <i class="fas fa-times mr-2"></i>Cancel
+                                    </button>
+                                    <button onclick="sendTestMessage('${type}', ${configId})" 
+                                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        <i class="fas fa-paper-plane mr-2"></i>Send Test
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add popup to page
+            document.body.insertAdjacentHTML('beforeend', popupHtml);
+            
+            // Start progress animation
+            this.animateProgress(type, configId);
+        },
+        
+        animateProgress(type, configId) {
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressStatus = document.getElementById('progressStatus');
+            const progressSection = document.getElementById('progressSection');
+            const inputSection = document.getElementById('inputSection');
+            
+            const statusMessages = [
+                'Initializing test...',
+                'Connecting to server...',
+                'Validating configuration...',
+                'Testing authentication...',
+                'Checking connectivity...',
+                'Verifying settings...',
+                'Finalizing connection...',
+                'Connection established!'
+            ];
+            
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                
+                progressBar.style.width = progress + '%';
+                progressPercent.textContent = Math.round(progress) + '%';
+                
+                const statusIndex = Math.floor((progress / 100) * statusMessages.length);
+                progressStatus.textContent = statusMessages[Math.min(statusIndex, statusMessages.length - 1)];
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        progressSection.classList.add('hidden');
+                        inputSection.classList.remove('hidden');
+                        this.setupMessageCounter();
+                    }, 500);
                 }
+            }, 200);
+        },
+        
+        setupMessageCounter() {
+            const messageInput = document.getElementById('testMessage');
+            const charCount = document.getElementById('charCount');
+            
+            messageInput.addEventListener('input', () => {
+                const length = messageInput.value.length;
+                charCount.textContent = length;
+                if (length > 160) {
+                    charCount.classList.add('text-red-600');
+                } else {
+                    charCount.classList.remove('text-red-600');
+                }
+            });
+        },
+        
+        sendTestMessage(type, configId) {
+            const recipient = document.getElementById('testRecipient').value;
+            const message = document.getElementById('testMessage').value;
+            
+            if (!recipient || !message) {
+                alert('Please fill in both recipient and message fields.');
+                return;
+            }
+            
+            // Validate recipient format
+            if (type === 'email' && !this.isValidEmail(recipient)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            if (type === 'sms' && !this.isValidPhone(recipient)) {
+                alert('Please enter a valid phone number in format: 255XXXXXXXXX');
+                return;
+            }
+            
+            // Show sending progress
+            const inputSection = document.getElementById('inputSection');
+            inputSection.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="inline-flex items-center justify-center w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin">
+                        <span class="sr-only">Sending...</span>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-600">Sending test ${type}...</p>
+                </div>
+            `;
+            
+            // Send test message
+            fetch(`/settings/communication/test-${type}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    recipient: recipient,
+                    message: message,
+                    config_id: configId
+                })
             })
             .then(response => response.json())
             .then(data => {
+                const popup = document.getElementById('testPopup');
+                const content = popup.querySelector('.bg-white > div:last-child');
+                
                 if (data.success) {
-                    alert(`✅ ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration Test Successful!\n\n• Connection: Working\n• Authentication: Successful\n• Configuration is ready for use!`);
+                    content.innerHTML = `
+                        <div class="text-center py-6">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
+                                <i class="fas fa-check text-green-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">Test Successful!</h4>
+                            <p class="text-gray-600 mb-4">Test ${type} sent successfully to ${recipient}</p>
+                            <button onclick="this.closest('#testPopup').remove()" 
+                                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                <i class="fas fa-check mr-2"></i>Done
+                            </button>
+                        </div>
+                    `;
                 } else {
-                    alert(`❌ ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration Test Failed!\n\nError: ${data.message}\n\nPlease check your settings and try again.`);
+                    content.innerHTML = `
+                        <div class="text-center py-6">
+                            <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+                                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-gray-900 mb-2">Test Failed</h4>
+                            <p class="text-gray-600 mb-4">${data.message || 'Failed to send test message'}</p>
+                            <button onclick="this.closest('#testPopup').remove()" 
+                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                <i class="fas fa-times mr-2"></i>Close
+                            </button>
+                        </div>
+                    `;
                 }
             })
             .catch(error => {
-                alert(`❌ ${type.charAt(0).toUpperCase() + type.slice(1)} Configuration Test Failed!\n\nNetwork Error: ${error.message}\n\nPlease check your connection and try again.`);
+                const popup = document.getElementById('testPopup');
+                const content = popup.querySelector('.bg-white > div:last-child');
+                
+                content.innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+                            <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Network Error</h4>
+                        <p class="text-gray-600 mb-4">Failed to send test message: ${error.message}</p>
+                        <button onclick="this.closest('#testPopup').remove()" 
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            <i class="fas fa-times mr-2"></i>Close
+                        </button>
+                    </div>
+                `;
             });
+        },
+        
+        isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        },
+        
+        isValidPhone(phone) {
+            return /^255\d{9}$/.test(phone.replace(/\D/g, ''));
         },
         
         editConfig(type, configId) {
@@ -822,6 +1046,12 @@ function communicationSettings() {
             location.reload();
         }
     }
+}
+
+// Global function for popup send button
+function sendTestMessage(type, configId) {
+    const communication = window.communicationSettings();
+    communication.sendTestMessage(type, configId);
 }
 </script>
 @endsection
