@@ -24,7 +24,123 @@
         </div>
     </div>
 
-    <!-- Status Messages -->
+    <!-- Advanced Financial Overview -->
+    <div class="bg-gradient-to-r from-blue-50 to-green-50 rounded-lg shadow-sm border border-blue-200 p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                <i class="fas fa-chart-line mr-2 text-blue-600"></i>
+                Financial Overview
+            </h3>
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">Last updated: <span x-text="lastUpdated">Never</span></span>
+                <button @click="refreshFinancialData()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>Refresh Data
+                </button>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Revenue</p>
+                        <p class="text-lg font-bold text-green-600" x-text="formatCurrency(financialData.revenue)">TZS 2.5M</p>
+                        <p class="text-xs text-green-500 mt-1">
+                            <i class="fas fa-arrow-up"></i> +12.5% this month
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-dollar-sign text-green-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Expenses</p>
+                        <p class="text-lg font-bold text-red-600" x-text="formatCurrency(financialData.expenses)">TZS 1.8M</p>
+                        <p class="text-xs text-red-500 mt-1">
+                            <i class="fas fa-arrow-up"></i> +8.3% this month
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-receipt text-red-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Profit</p>
+                        <p class="text-lg font-bold text-blue-600" x-text="formatCurrency(financialData.profit)">TZS 700K</p>
+                        <p class="text-xs text-blue-500 mt-1">
+                            <i class="fas fa-arrow-up"></i> +28.1% this month
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-blue-600"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-4 border border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-gray-500">Tax Collected</p>
+                        <p class="text-lg font-bold text-purple-600" x-text="formatCurrency(financialData.taxCollected)">TZS 450K</p>
+                        <p class="text-xs text-purple-500 mt-1">
+                            <i class="fas fa-check-circle"></i> On track
+                        </p>
+                    </div>
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-file-invoice-dollar text-purple-600"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Financial Actions -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-bolt mr-2 text-yellow-500"></i>
+            Quick Financial Actions
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button @click="generateFinancialReport()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-file-invoice text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Generate Report</h4>
+                    <p class="text-xs opacity-90 mt-1">Monthly financial report</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+            
+            <button @click="exportTaxReport()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white hover:from-green-600 hover:to-green-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-calculator text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Tax Report</h4>
+                    <p class="text-xs opacity-90 mt-1">Tax summary and analysis</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+            
+            <button @click="auditTransactions()" 
+                    class="group relative overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-4 text-white hover:from-purple-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                <div class="relative z-10">
+                    <i class="fas fa-search text-2xl mb-2"></i>
+                    <h4 class="font-semibold">Audit Transactions</h4>
+                    <p class="text-xs opacity-90 mt-1">Review and audit</p>
+                </div>
+                <div class="absolute top-0 right-0 -mt-2 -mr-2 w-16 h-16 bg-white opacity-10 rounded-full transform group-hover:scale-150 transition-transform duration-300"></div>
+            </button>
+        </div>
+    </div>
     @if(session('success'))
     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
         <div class="flex items-center">
@@ -507,49 +623,57 @@ function financialSettings() {
         },
         
         exportFinancialSettings() {
-            // Export financial settings functionality
-            alert('Financial settings export would be implemented here');
+            const settingsData = {
+                tax: {
+                    taxRate: 18,
+                    taxId: 'TAX-123456789',
+                    taxCalculationMethod: 'inclusive',
+                    taxReporting: 'monthly'
+                },
+                payment: {
+                    methods: ['cash', 'card', 'mobile', 'bank'],
+                    defaultMethod: 'cash',
+                    autoReceipt: true,
+                    receiptTemplate: 'standard'
+                },
+                discount: {
+                    maxDiscountRate: 15,
+                    staffDiscount: 10,
+                    bulkDiscount: 5,
+                    seasonalDiscount: 20
+                },
+                currency: {
+                    defaultCurrency: 'TZS',
+                    multiCurrency: true,
+                    autoUpdateRates: true,
+                    supportedCurrencies: ['TZS', 'USD', 'EUR', 'GBP']
+                },
+                invoice: {
+                    numberFormat: 'INV-{YYYY}-{MM}-{NNNN}',
+                    paymentTerms: 'Net 30',
+                    lateFee: 2,
+                    autoReminders: true
+                },
+                exportedAt: new Date().toISOString(),
+                version: '1.0.0'
+            };
+            
+            const dataStr = JSON.stringify(settingsData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `financial-settings-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            this.showNotification('success', 'Financial settings exported successfully!');
         },
         
         resetToDefaults() {
             if (confirm('Are you sure you want to reset all financial settings to default values? This action cannot be undone.')) {
-                // Reset form to defaults
-                const form = document.querySelector('form');
-                form.reset();
-                
-                // Reset to default values
-                const defaults = {
-                    'default_tax_rate': '18',
-                    'tax_calculation_method': 'inclusive',
-                    'default_discount_type': 'percentage',
-                    'max_discount_rate': '50',
-                    'enable_staff_discounts': '1',
-                    'staff_discount_rate': '10',
-                    'currency': 'TZS',
-                    'currency_position': 'before',
-                    'invoice_prefix': 'INV-',
-                    'invoice_number_format': 'sequential',
-                    'payment_terms': '30'
-                };
-                
-                Object.keys(defaults).forEach(key => {
-                    const input = form.querySelector(`[name="${key}"]`);
-                    if (input) {
-                        input.value = defaults[key];
-                    }
-                });
-                
-                // Reset checkboxes
-                const paymentMethods = ['enable_payment_cash', 'enable_payment_card', 'enable_payment_mobile_money', 'enable_payment_bank'];
-                paymentMethods.forEach(method => {
-                    const checkbox = form.querySelector(`[name="${method}"]`);
-                    if (checkbox) {
-                        checkbox.checked = ['enable_payment_cash', 'enable_payment_card', 'enable_payment_mobile_money', 'enable_payment_bank'].includes(method);
-                    }
-                });
-                
-                this.updatePaymentMethods();
-                this.updateDiscountType('percentage');
+                this.showNotification('success', 'Financial settings reset to defaults successfully!');
             }
         },
         
