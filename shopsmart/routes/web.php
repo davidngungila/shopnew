@@ -225,6 +225,8 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::post('/sms', [SettingsController::class, 'smsStore'])->name('sms.store');
         Route::post('/{id}/set-primary', [SettingsController::class, 'setPrimary'])->name('set-primary');
         Route::delete('/{id}', [SettingsController::class, 'destroy'])->name('destroy');
+        Route::post('/test-email', [SettingsController::class, 'testEmail'])->name('test-email');
+        Route::post('/test-sms', [SettingsController::class, 'testSMS'])->name('test-sms');
     });
     
     // Test endpoints
