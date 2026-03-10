@@ -399,7 +399,8 @@ function generalSettings() {
         </div>
     </form>
 </div>
-
+</div>
+</div>
 <script>
 function generalSettings() {
     return {
