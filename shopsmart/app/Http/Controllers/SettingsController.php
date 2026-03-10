@@ -41,6 +41,11 @@ class SettingsController extends Controller
         return view('settings.communication.email-create', compact('emailProvider'));
     }
 
+    public function testMessage()
+    {
+        return view('settings.communication.test-message');
+    }
+
     public function communicationIndex()
     {
         // Get all communication configurations

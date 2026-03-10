@@ -11,6 +11,9 @@
             <p class="text-gray-600 mt-1">Manage email and SMS configurations</p>
         </div>
         <div class="flex gap-2">
+            <a href="{{ route('settings.communication.test-message') }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                <i class="fas fa-paper-plane mr-2"></i>Send Test Message
+            </a>
             <a href="{{ route('settings.communication.email.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>New Email Config
             </a>
