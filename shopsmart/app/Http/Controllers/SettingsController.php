@@ -706,13 +706,13 @@ class SettingsController extends Controller
             }
 
             // Validate configuration has required fields
-            if (empty($configData['username']) && empty($configData['sms_api_key'])) {
+            if (empty($configData['sms_api_secret'])) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'SMS configuration incomplete. Missing API credentials.',
+                    'message' => 'SMS configuration incomplete. Missing API Secret.',
                     'debug' => [
-                        'has_username' => !empty($configData['username']),
-                        'has_api_key' => !empty($configData['sms_api_key']),
+                        'has_sms_api_secret' => !empty($configData['sms_api_secret']),
+                        'has_sms_from' => !empty($configData['sms_from']),
                         'config_keys' => array_keys($configData)
                     ]
                 ], 400);
@@ -735,31 +735,8 @@ class SettingsController extends Controller
             
             // Send SMS based on schedule time
             try {
-                if ($scheduleTime === 'now') {
-                    // Send immediately with timeout
-                    $result = $messagingService->sendMultipleSms([
-                        'from' => $configData['username'] ?? 'ShopSmart',
-                        'messages' => array_map(function($recipient) use ($message, $configData, $referenceId) {
-                            return [
-                                'to' => $recipient,
-                                'text' => $message,
-                                'reference' => $referenceId
-                            ];
-                        }, $recipients)
-                    ]);
-                } else {
-                    // Schedule SMS (for demo purposes, we'll send immediately with a note)
-                    $result = $messagingService->sendMultipleSms([
-                        'from' => $configData['username'] ?? 'ShopSmart',
-                        'messages' => array_map(function($recipient) use ($message, $configData, $referenceId, $scheduleTime) {
-                            return [
-                                'to' => $recipient,
-                                'text' => $message . " (Scheduled: $scheduleTime)",
-                                'reference' => $referenceId
-                            ];
-                        }, $recipients)
-                    ]);
-                }
+                // For single SMS test, use the single SMS API
+                $result = $messagingService->sendSms($phone, $message, $referenceId);
                 
                 // Debug: Log the result
                 Log::info('SMS Send Result', [
@@ -775,12 +752,9 @@ class SettingsController extends Controller
                         'success' => true,
                         'message' => 'Test SMS sent successfully',
                         'details' => [
-                            'recipients' => $recipients,
-                            'message_count' => count($recipients),
-                            'total_cost' => $result['total_cost'] ?? 0,
-                            'currency' => 'TZS',
+                            'recipients' => [$phone],
+                            'message_count' => 1,
                             'reference_id' => $referenceId,
-                            'schedule_time' => $scheduleTime,
                             'api_response' => $result
                         ]
                     ]);
