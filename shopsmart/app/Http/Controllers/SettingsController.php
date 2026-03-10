@@ -418,14 +418,14 @@ class SettingsController extends Controller
     public function testEmail(Request $request)
     {
         try {
+            // Ensure we return JSON response from the start
+            header('Content-Type: application/json');
+            
             // Handle both JSON and form input
             $testEmail = $request->input('test_email') ?? $request->input('recipient');
             $testMessage = $request->input('test_message') ?? $request->input('message');
             $testSubject = $request->input('test_subject') ?? $request->input('subject') ?? 'Test Email from ShopSmart';
             $configId = $request->input('config_id');
-            
-            // Ensure we return JSON response
-            header('Content-Type: application/json');
             
             // Get configuration from form or from database
             if ($configId) {
@@ -489,6 +489,20 @@ class SettingsController extends Controller
                 ], 400);
             }
             
+            // Validate SMTP configuration
+            if (empty($config['smtp_host']) || empty($config['smtp_username']) || empty($config['smtp_password']) || empty($config['from_email'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Incomplete SMTP configuration',
+                    'debug' => [
+                        'smtp_host' => !empty($config['smtp_host']),
+                        'smtp_username' => !empty($config['smtp_username']),
+                        'smtp_password' => !empty($config['smtp_password']),
+                        'from_email' => !empty($config['from_email'])
+                    ]
+                ], 400);
+            }
+            
             // Configure SMTP settings dynamically for this test
             config([
                 'mail.default' => 'smtp',
@@ -508,24 +522,65 @@ class SettingsController extends Controller
                 // Continue even if reset fails
             }
             
-            // Send test email
-            Mail::send([], [], function ($message) use ($testEmail, $testSubject, $config) {
-                $message->to($testEmail)
-                    ->subject($testSubject)
-                    ->from($config['from_email'], $config['from_name'])
-                    ->html($testMessage);
-            });
-            
-            return response()->json([
-                'success' => true,
-                'message' => 'Test email sent successfully to ' . $testEmail,
-                'details' => [
-                    'recipient' => $testEmail,
-                    'subject' => $testSubject,
-                    'from_email' => $config['from_email'],
-                    'from_name' => $config['from_name']
-                ]
-            ]);
+            // Send test email with better error handling
+            try {
+                Mail::send([], [], function ($message) use ($testEmail, $testSubject, $config) {
+                    $message->to($testEmail)
+                        ->subject($testSubject)
+                        ->from($config['from_email'], $config['from_name'])
+                        ->html($testMessage);
+                });
+                
+                // Check if email was actually sent
+                $failedRecipients = Mail::failures();
+                
+                if (!empty($failedRecipients)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Email delivery failed for recipient(s)',
+                        'debug' => [
+                            'failed_recipients' => $failedRecipients,
+                            'test_email' => $testEmail
+                        ]
+                    ], 500);
+                }
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Test email sent successfully to ' . $testEmail,
+                    'details' => [
+                        'recipient' => $testEmail,
+                        'subject' => $testSubject,
+                        'from_email' => $config['from_email'],
+                        'from_name' => $config['from_name'],
+                        'smtp_host' => $config['smtp_host'],
+                        'smtp_port' => $config['smtp_port']
+                    ]
+                ]);
+                
+            } catch (\Swift_TransportException $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SMTP transport error: ' . $e->getMessage(),
+                    'debug' => [
+                        'error_type' => 'Swift_TransportException',
+                        'error_message' => $e->getMessage(),
+                        'smtp_host' => $config['smtp_host'],
+                        'smtp_port' => $config['smtp_port']
+                    ]
+                ], 500);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to send test email: ' . $e->getMessage(),
+                    'debug' => [
+                        'error_type' => get_class($e),
+                        'error_message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]
+                ], 500);
+            }
             
         } catch (\Exception $e) {
             Log::error('Test email failed: ' . $e->getMessage());
@@ -533,7 +588,7 @@ class SettingsController extends Controller
             // Return proper JSON error response
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to send test email: ' . $e->getMessage(),
+                'message' => 'Test email process failed: ' . $e->getMessage(),
                 'debug' => [
                     'error_type' => get_class($e),
                     'error_message' => $e->getMessage(),
