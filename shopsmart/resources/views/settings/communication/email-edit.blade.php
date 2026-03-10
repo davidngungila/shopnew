@@ -154,5 +154,5 @@
 
 @push('scripts')
 <!-- Include the test-modals component which contains the email test modal -->
-@endsection
+@endpush
 @endsection
