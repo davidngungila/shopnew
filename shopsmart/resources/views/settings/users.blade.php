@@ -624,7 +624,7 @@ function userManagement() {
                 // For new users, submit the form
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route("settings.users.store") }}';
+                form.action = '/settings/users';
                 
                 // Add CSRF token
                 const csrfToken = document.createElement('input');
@@ -650,7 +650,7 @@ function userManagement() {
                 // For existing users, submit update form
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `{{ route("settings.users.update") }}`.replace(':id', this.editingUser.id);
+                form.action = `/settings/users/${this.editingUser.id}`;
                 
                 // Add CSRF token
                 const csrfToken = document.createElement('input');
