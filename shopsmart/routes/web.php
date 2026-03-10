@@ -221,6 +221,7 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::get('/', [SettingsController::class, 'communicationIndex'])->name('index');
         Route::get('/email/create', [SettingsController::class, 'emailCreate'])->name('email.create');
         Route::get('/sms/create', [SettingsController::class, 'smsCreate'])->name('sms.create');
+        Route::post('/sms/store', [SettingsController::class, 'smsStore'])->name('sms.store');
         Route::get('/test-message', [SettingsController::class, 'testMessage'])->name('test-message');
         Route::get('/sms/provider', [SettingsController::class, 'smsProvider'])->name('sms.provider');
         Route::get('/sms/edit', [SettingsController::class, 'smsEdit'])->name('sms.edit');
