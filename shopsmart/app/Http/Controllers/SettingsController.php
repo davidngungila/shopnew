@@ -21,6 +21,15 @@ class SettingsController extends Controller
         return view('settings.index');
     }
 
+    public function communicationIndex()
+    {
+        // Get all communication configurations
+        $emailConfigs = CommunicationConfig::where('type', 'email')->get();
+        $smsConfigs = CommunicationConfig::where('type', 'sms')->get();
+        
+        return view('settings.communication.index', compact('emailConfigs', 'smsConfigs'));
+    }
+
     public function general()
     {
         $settings = Setting::getGroup('general');
