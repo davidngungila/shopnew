@@ -754,7 +754,7 @@ function userManagement() {
         },
         
         viewActivityLog() {
-            alert('Activity log would show:\n\n• User login/logout times\n• Password changes\n• Role modifications\n• Profile updates\n• System access attempts');
+            window.location.href = '{{ route("settings.activity-log") }}';
         },
         
         importUsers() {
