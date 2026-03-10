@@ -640,6 +640,16 @@ function communicationSettings() {
                             
                             <!-- Input Section (hidden initially) -->
                             <div id="inputSection" class="hidden space-y-4">
+                                <!-- Advanced Options Toggle -->
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-medium text-gray-900">Test Configuration</h4>
+                                    <button type="button" onclick="toggleAdvancedOptions()" 
+                                            class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                                        <i class="fas fa-cog mr-1"></i>Advanced Options
+                                    </button>
+                                </div>
+                                
+                                <!-- Basic Test Fields -->
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         <i class="fas fa-${type === 'email' ? 'envelope' : 'phone'} mr-1 text-gray-500"></i>
@@ -667,12 +677,111 @@ function communicationSettings() {
                                     </div>
                                 </div>
                                 
+                                <!-- Advanced Options (hidden by default) -->
+                                <div id="advancedOptions" class="hidden space-y-4 border-t pt-4">
+                                    <h5 class="text-sm font-medium text-gray-900">Advanced Test Options</h5>
+                                    
+                                    <!-- SMS Specific Options -->
+                                    ${type === 'sms' ? `
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-clock mr-1 text-gray-500"></i>
+                                                Schedule Time
+                                            </label>
+                                            <select id="scheduleTime" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="now">Send Now</option>
+                                                <option value="5min">In 5 minutes</option>
+                                                <option value="30min">In 30 minutes</option>
+                                                <option value="1hour">In 1 hour</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-users mr-1 text-gray-500"></i>
+                                                Multiple Numbers (comma separated)
+                                            </label>
+                                            <textarea id="multipleNumbers" rows="2" 
+                                                      class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                      placeholder="255712345678, 255716718040, 255758483019"></textarea>
+                                            <div class="mt-1 text-xs text-gray-500">
+                                                Send to multiple numbers at once
+                                            </div>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <!-- Email Specific Options -->
+                                    ${type === 'email' ? `
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-heading mr-1 text-gray-500"></i>
+                                                Subject Line
+                                            </label>
+                                            <input type="text" id="emailSubject" 
+                                                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                   placeholder="Test Email from ShopSmart">
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-code mr-1 text-gray-500"></i>
+                                                Email Type
+                                            </label>
+                                            <select id="emailType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="text">Plain Text</option>
+                                                <option value="html">HTML</option>
+                                                <option value="both">Text + HTML</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-paperclip mr-1 text-gray-500"></i>
+                                                Priority
+                                            </label>
+                                            <select id="emailPriority" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <option value="normal">Normal</option>
+                                                <option value="high">High</option>
+                                                <option value="urgent">Urgent</option>
+                                            </select>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <!-- Common Options -->
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-tag mr-1 text-gray-500"></i>
+                                            Reference ID
+                                        </label>
+                                        <input type="text" id="referenceId" 
+                                               class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                               placeholder="test_${type}_${Date.now()}">
+                                        <div class="mt-1 text-xs text-gray-500">
+                                            Unique identifier for tracking
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-sync mr-1 text-gray-500"></i>
+                                            Retry Attempts
+                                        </label>
+                                        <select id="retryAttempts" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="1">1 attempt</option>
+                                            <option value="2">2 attempts</option>
+                                            <option value="3">3 attempts</option>
+                                            <option value="5">5 attempts</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
                                 <div class="flex justify-end space-x-3">
                                     <button onclick="this.closest('#testPopup').remove()" 
                                             class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
                                         <i class="fas fa-times mr-2"></i>Cancel
                                     </button>
-                                    <button onclick="sendTestMessage('${type}', ${configId})" 
+                                    <button onclick="sendAdvancedTestMessage('${type}', ${configId})" 
                                             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                                         <i class="fas fa-paper-plane mr-2"></i>Send Test
                                     </button>
@@ -777,71 +886,167 @@ function communicationSettings() {
             `;
             
             // Send test message
+            this.sendActualTestMessage(type, configId, recipient, message, {});
+        },
+        
+        sendAdvancedTestMessage(type, configId) {
+            const recipient = document.getElementById('testRecipient').value;
+            const message = document.getElementById('testMessage').value;
+            
+            if (!recipient || !message) {
+                alert('Please fill in both recipient and message fields.');
+                return;
+            }
+            
+            // Validate recipient format
+            if (type === 'email' && !this.isValidEmail(recipient)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            if (type === 'sms' && !this.isValidPhone(recipient)) {
+                alert('Please enter a valid phone number in format: 255XXXXXXXXX');
+                return;
+            }
+            
+            // Collect advanced options
+            const advancedOptions = {
+                referenceId: document.getElementById('referenceId')?.value || `test_${type}_${Date.now()}`,
+                retryAttempts: document.getElementById('retryAttempts')?.value || '1'
+            };
+            
+            // Type-specific options
+            if (type === 'email') {
+                advancedOptions.subject = document.getElementById('emailSubject')?.value || 'Test Email from ShopSmart';
+                advancedOptions.emailType = document.getElementById('emailType')?.value || 'text';
+                advancedOptions.priority = document.getElementById('emailPriority')?.value || 'normal';
+            } else if (type === 'sms') {
+                advancedOptions.scheduleTime = document.getElementById('scheduleTime')?.value || 'now';
+                advancedOptions.multipleNumbers = document.getElementById('multipleNumbers')?.value || '';
+            }
+            
+            // Show sending progress
+            const inputSection = document.getElementById('inputSection');
+            inputSection.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="inline-flex items-center justify-center w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin">
+                        <span class="sr-only">Sending...</span>
+                    </div>
+                    <p class="mt-2 text-sm text-gray-600">Sending advanced test ${type}...</p>
+                    <div class="mt-2 text-xs text-gray-500">
+                        ${type === 'sms' && advancedOptions.multipleNumbers ? `Sending to ${advancedOptions.multipleNumbers.split(',').length + 1} recipients` : ''}
+                        ${type === 'email' ? `Priority: ${advancedOptions.priority}` : ''}
+                        ${type === 'sms' && advancedOptions.scheduleTime !== 'now' ? `Scheduled: ${advancedOptions.scheduleTime}` : ''}
+                    </div>
+                </div>
+            `;
+            
+            // Send advanced test message
+            this.sendActualTestMessage(type, configId, recipient, message, advancedOptions);
+        },
+        
+        sendActualTestMessage(type, configId, recipient, message, options) {
+            // Prepare payload
+            const payload = {
+                recipient: recipient,
+                message: message,
+                config_id: configId,
+                ...options
+            };
+            
+            // Send test message
             fetch(`/settings/communication/test-${type}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({
-                    recipient: recipient,
-                    message: message,
-                    config_id: configId
-                })
+                body: JSON.stringify(payload)
             })
             .then(response => response.json())
             .then(data => {
-                const popup = document.getElementById('testPopup');
-                const content = popup.querySelector('.bg-white > div:last-child');
-                
-                if (data.success) {
-                    content.innerHTML = `
-                        <div class="text-center py-6">
-                            <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
-                                <i class="fas fa-check text-green-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">Test Successful!</h4>
-                            <p class="text-gray-600 mb-4">Test ${type} sent successfully to ${recipient}</p>
-                            <button onclick="this.closest('#testPopup').remove()" 
-                                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                <i class="fas fa-check mr-2"></i>Done
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    content.innerHTML = `
-                        <div class="text-center py-6">
-                            <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
-                                <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-lg font-semibold text-gray-900 mb-2">Test Failed</h4>
-                            <p class="text-gray-600 mb-4">${data.message || 'Failed to send test message'}</p>
-                            <button onclick="this.closest('#testPopup').remove()" 
-                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                <i class="fas fa-times mr-2"></i>Close
-                            </button>
-                        </div>
-                    `;
-                }
+                this.showTestResult(type, recipient, data);
             })
             .catch(error => {
-                const popup = document.getElementById('testPopup');
-                const content = popup.querySelector('.bg-white > div:last-child');
+                this.showTestError(type, error);
+            });
+        },
+        
+        showTestResult(type, recipient, data) {
+            const popup = document.getElementById('testPopup');
+            const content = popup.querySelector('.bg-white > div:last-child');
+            
+            if (data.success) {
+                const successDetails = data.details || {};
+                let resultHtml = `
+                    <div class="text-center py-6">
+                        <div class="inline-flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-4">
+                            <i class="fas fa-check text-green-600 text-xl"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Test Successful!</h4>
+                        <p class="text-gray-600 mb-4">Test ${type} sent successfully</p>
+                `;
                 
+                // Add detailed results
+                if (successDetails.messageId) {
+                    resultHtml += `<div class="mb-3 p-3 bg-gray-50 rounded-lg text-left">
+                        <p class="text-sm font-medium text-gray-700">Message Details:</p>
+                        <p class="text-xs text-gray-600">Message ID: ${successDetails.messageId}</p>
+                        ${successDetails.price ? `<p class="text-xs text-gray-600">Cost: ${successDetails.price} TZS</p>` : ''}
+                        ${successDetails.status ? `<p class="text-gray-600 text-xs">Status: ${successDetails.status}</p>` : ''}
+                    </div>`;
+                }
+                
+                resultHtml += `
+                    <div class="text-sm text-gray-600 mb-4">
+                        <i class="fas fa-${type === 'email' ? 'envelope' : 'phone'} mr-1"></i>
+                        Sent to: ${recipient}
+                    </div>
+                    <button onclick="this.closest('#testPopup').remove()" 
+                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                        <i class="fas fa-check mr-2"></i>Done
+                    </button>
+                </div>`;
+                
+                content.innerHTML = resultHtml;
+            } else {
                 content.innerHTML = `
                     <div class="text-center py-6">
                         <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
                             <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                         </div>
-                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Network Error</h4>
-                        <p class="text-gray-600 mb-4">Failed to send test message: ${error.message}</p>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-2">Test Failed</h4>
+                        <p class="text-gray-600 mb-4">${data.message || 'Failed to send test message'}</p>
+                        <div class="text-sm text-gray-600 mb-4">
+                            <i class="fas fa-${type === 'email' ? 'envelope' : 'phone'} mr-1"></i>
+                            Attempted to send to: ${recipient}
+                        </div>
                         <button onclick="this.closest('#testPopup').remove()" 
                                 class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                             <i class="fas fa-times mr-2"></i>Close
                         </button>
                     </div>
                 `;
-            });
+            }
+        },
+        
+        showTestError(type, error) {
+            const popup = document.getElementById('testPopup');
+            const content = popup.querySelector('.bg-white > div:last-child');
+            
+            content.innerHTML = `
+                <div class="text-center py-6">
+                    <div class="inline-flex items-center justify-center w-12 h-12 bg-red-100 rounded-full mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2">Network Error</h4>
+                    <p class="text-gray-600 mb-4">Failed to send test message: ${error.message}</p>
+                    <button onclick="this.closest('#testPopup').remove()" 
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                        <i class="fas fa-times mr-2"></i>Close
+                    </button>
+                </div>
+            `;
         },
         
         isValidEmail(email) {
@@ -1052,6 +1257,20 @@ function communicationSettings() {
 function sendTestMessage(type, configId) {
     const communication = window.communicationSettings();
     communication.sendTestMessage(type, configId);
+}
+
+// Global function for advanced test send button
+function sendAdvancedTestMessage(type, configId) {
+    const communication = window.communicationSettings();
+    communication.sendAdvancedTestMessage(type, configId);
+}
+
+// Global function for advanced options toggle
+function toggleAdvancedOptions() {
+    const advancedOptions = document.getElementById('advancedOptions');
+    if (advancedOptions) {
+        advancedOptions.classList.toggle('hidden');
+    }
 }
 </script>
 @endsection
