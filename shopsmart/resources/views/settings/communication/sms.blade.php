@@ -106,20 +106,25 @@
                     </svg>
                     <span>Test SMS Configuration</span>
                 </h2>
-                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                    <div class="flex-1">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                    <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Test Phone Number</label>
                         <input type="tel" id="test_phone" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
                             placeholder="255716718040">
                     </div>
-                    <div class="flex items-end">
-                        <button type="button" onclick="testSMS()" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2">
-                            <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                            </svg>
-                            <span>Send Test SMS</span>
-                        </button>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Test Message</label>
+                        <input type="text" id="test_message" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
+                            placeholder="This is a test message from ShopSmart">
                     </div>
+                </div>
+                <div class="mt-4">
+                    <button type="button" onclick="testSMS()" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                        <span>Send Test SMS</span>
+                    </button>
                 </div>
             </div>
 
@@ -140,8 +145,15 @@
 <script>
     function testSMS() {
         const phone = document.getElementById('test_phone').value;
+        const message = document.getElementById('test_message').value;
+        
         if (!phone) {
             alert('Please enter a test phone number');
+            return;
+        }
+        
+        if (!message) {
+            alert('Please enter a test message');
             return;
         }
 
@@ -156,7 +168,11 @@
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
-            body: JSON.stringify({ phone: phone, config_id: {{ isset($config) && $config ? $config->id : 'null' }} })
+            body: JSON.stringify({ 
+                phone: phone, 
+                message: message,
+                config_id: {{ isset($config) && $config ? $config->id : 'null' }} 
+            })
         })
         .then(response => response.json())
         .then(data => {
