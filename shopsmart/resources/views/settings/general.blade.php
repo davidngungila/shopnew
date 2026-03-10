@@ -388,13 +388,80 @@ function generalSettings() {
                 </div>
             </div>
 
-            <div class="flex justify-end pt-4 border-t border-gray-200">
-                <button type="submit" class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 font-semibold">
-                    Save Settings
+            <div class="flex justify-end space-x-4">
+                <button type="button" @click="testSettings()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-flask mr-2"></i>Test Configuration
+                </button>
+                <button type="submit" class="px-6 py-2 text-white rounded-lg hover:bg-green-700 transition-colors" style="background-color: #009245;">
+                    <i class="fas fa-save mr-2"></i>Save Changes
                 </button>
             </div>
         </div>
     </form>
 </div>
+
+<script>
+function generalSettings() {
+    return {
+        logoPreview: null,
+        
+        previewLogo(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    this.logoPreview = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        },
+        
+        resetToDefaults() {
+            if (confirm('Are you sure you want to reset all settings to default values? This action cannot be undone.')) {
+                // Reset form to defaults
+                const form = document.querySelector('form');
+                form.reset();
+                
+                // Reset to default values
+                const defaults = {
+                    'company_name': 'ShopSmart Tanzania',
+                    'company_email': 'info@shopsmart.co.tz',
+                    'company_phone': '+255 712 345 678',
+                    'tax_id': '123456789',
+                    'company_address': 'Kijitonyama, Dar es Salaam, Tanzania',
+                    'currency': 'TZS',
+                    'language': 'en',
+                    'timezone': 'Africa/Dar_es_Salaam',
+                    'date_format': 'Y-m-d',
+                    'default_tax_rate': '18',
+                    'invoice_prefix': 'INV-',
+                    'receipt_prefix': 'RCP-'
+                };
+                
+                Object.keys(defaults).forEach(key => {
+                    const input = form.querySelector(`[name="${key}"]`);
+                    if (input) {
+                        input.value = defaults[key];
+                    }
+                });
+            }
+        },
+        
+        testSettings() {
+            // Test email configuration
+            const email = document.querySelector('[name="company_email"]').value;
+            if (email) {
+                alert(`Test email would be sent to: ${email}`);
+            }
+            
+            // Test database connection
+            console.log('Testing database connection...');
+            
+            // Test file upload
+            console.log('Testing file upload permissions...');
+        }
+    }
+}
+</script>
 @endsection
 

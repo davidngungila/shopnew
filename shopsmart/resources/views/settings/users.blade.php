@@ -420,14 +420,6 @@ function userManagement() {
 }
 </script>
 @endsection
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-@endsection
 
 
 

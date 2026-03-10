@@ -197,7 +197,7 @@
             </a>
 
             <!-- Communication -->
-            <a href="{{ route('settings.communication') }}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-pink-300 transition-all group">
+            <a href="{{ route('settings.communication.index') }}" class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md hover:border-pink-300 transition-all group">
                 <div class="flex items-center space-x-4">
                     <div class="w-12 h-12 bg-pink-100 rounded-lg flex items-center justify-center group-hover:bg-pink-200 transition-colors">
                         <i class="fas fa-envelope text-pink-600"></i>
