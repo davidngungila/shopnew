@@ -598,4 +598,47 @@ class SettingsController extends Controller
             ], 500);
         }
     }
+
+    // Store Email Configuration
+    public function emailStore(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'smtp_host' => 'required|string',
+                'smtp_port' => 'required|integer',
+                'smtp_username' => 'required|email',
+                'smtp_password' => 'required|string',
+                'smtp_encryption' => 'required|string|in:TLS,SSL,none',
+                'from_email' => 'required|email',
+                'from_name' => 'required|string|max:255'
+            ]);
+
+            // Create or update email configuration
+            $config = CommunicationConfig::updateOrCreate(
+                ['type' => 'email'],
+                [
+                    'name' => 'Primary Email Gateway',
+                    'description' => 'Primary email gateway configuration',
+                    'is_active' => true,
+                    'is_primary' => true,
+                    'config' => [
+                        'mail_mailer' => 'smtp',
+                        'mail_host' => $validated['smtp_host'],
+                        'mail_port' => $validated['smtp_port'],
+                        'mail_username' => $validated['smtp_username'],
+                        'mail_password' => $validated['smtp_password'],
+                        'mail_encryption' => $validated['smtp_encryption'],
+                        'mail_from_address' => $validated['from_email'],
+                        'mail_from_name' => $validated['from_name']
+                    ]
+                ]
+            );
+
+            return redirect()->route('settings.communication.index')->with('success', 'Email configuration saved successfully!');
+            
+        } catch (\Exception $e) {
+            Log::error('Email configuration save failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to save email configuration: ' . $e->getMessage())->withInput();
+        }
+    }
 }
