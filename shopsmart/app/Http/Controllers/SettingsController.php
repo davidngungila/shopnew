@@ -776,19 +776,6 @@ class SettingsController extends Controller
                             'phone' => $phone,
                             'message' => $message,
                             'reference_id' => $referenceId,
-                            'line' => $e->getLine(),
-                            'trace' => collect($e->getTrace())->take(3)->toArray()
-                    ]
-                ], 500);
-            }
-        }
-        } catch (\Exception $e) {
-            Log::error('Test SMS failed: ' . $e->getMessage());
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to send test SMS: ' . $e->getMessage(),
-                'debug' => [
                     'error_type' => get_class($e),
                     'error_message' => $e->getMessage(),
                     'file' => $e->getFile(),
@@ -797,6 +784,20 @@ class SettingsController extends Controller
                 ]
             ], 500);
         }
+    } catch (\Exception $e) {
+        Log::error('Test SMS failed: ' . $e->getMessage());
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to send test SMS: ' . $e->getMessage(),
+            'debug' => [
+                'error_type' => get_class($e),
+                'error_message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => collect($e->getTrace())->take(3)->toArray()
+            ]
+        ], 500);
     }
 
     // Edit Email Configuration
