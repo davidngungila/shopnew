@@ -325,18 +325,17 @@ window.smsTestModal = {
     sendTestSms() {
         this.sending = true;
         
-        // Simulate sending SMS
-        fetch('/api/sms/send', {
+        // Use the actual SMS test endpoint
+        fetch('{{ route("settings.communication.test-sms") }}', {
             method: 'POST',
             headers: {
-                'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
                 'Content-Type': 'application/json',
-                'Accept': 'application/json'
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             },
             body: JSON.stringify({
-                to: this.testPhone,
+                phone: this.testPhone,
                 message: this.testMessage,
-                reference: 'sms_test_' + Date.now()
+                config_id: {{ isset($config) && $config ? $config->id : 'null' }}
             })
         })
         .then(response => response.json())
@@ -344,10 +343,13 @@ window.smsTestModal = {
             this.sending = false;
             if (data.success) {
                 this.statusType = 'success';
-                this.statusMessage = 'SMS sent successfully to ' + this.testPhone + '!';
+                this.statusMessage = '✅ Test SMS sent successfully to ' + this.testPhone + '!';
+                if (data.details) {
+                    this.statusMessage += '\n📋 Reference: ' + (data.details.reference_id || 'N/A');
+                }
             } else {
                 this.statusType = 'error';
-                this.statusMessage = 'Failed to send SMS: ' + (data.message || 'Unknown error');
+                this.statusMessage = '❌ Failed to send SMS: ' + (data.message || 'Unknown error');
             }
         })
         .catch(error => {

@@ -106,25 +106,15 @@
                     </svg>
                     <span>Test SMS Configuration</span>
                 </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Test Phone Number</label>
-                        <input type="tel" id="test_phone" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="255716718040">
-                    </div>
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Test Message</label>
-                        <input type="text" id="test_message" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="This is a test message from ShopSmart">
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <button type="button" onclick="testSMS()" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2">
+                <div class="text-center">
+                    <button type="button" onclick="window.smsTestModal.show = true; window.smsTestModal.reset();" 
+                            class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2 mx-auto">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                         </svg>
-                        <span>Send Test SMS</span>
+                        <span>Open SMS Test Modal</span>
                     </button>
+                    <p class="text-xs text-gray-500 mt-2">Click to open the comprehensive SMS test modal with detailed progress tracking</p>
                 </div>
             </div>
 
@@ -142,55 +132,7 @@
 </div>
 
 @push('scripts')
-<script>
-    function testSMS() {
-        const phone = document.getElementById('test_phone').value;
-        const message = document.getElementById('test_message').value;
-        
-        if (!phone) {
-            alert('Please enter a test phone number');
-            return;
-        }
-        
-        if (!message) {
-            alert('Please enter a test message');
-            return;
-        }
-
-        const button = event.target.closest('button');
-        const originalText = button.innerHTML;
-        button.disabled = true;
-        button.innerHTML = '<svg class="animate-spin h-4 w-4 sm:h-5 sm:w-5 inline mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Sending...';
-
-        fetch('{{ route("settings.communication.test-sms") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ 
-                phone: phone, 
-                message: message,
-                config_id: {{ isset($config) && $config ? $config->id : 'null' }} 
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Test SMS sent successfully!');
-            } else {
-                alert('Error sending test SMS: ' + (data.message || 'Unknown error'));
-            }
-        })
-        .catch(error => {
-            alert('Error sending test SMS: ' + error.message);
-        })
-        .finally(() => {
-            button.disabled = false;
-            button.innerHTML = originalText;
-        });
-    }
-</script>
-@endpush
+<!-- Include the test-modals component which contains the SMS test modal -->
+@endsection
 @endsection
 
