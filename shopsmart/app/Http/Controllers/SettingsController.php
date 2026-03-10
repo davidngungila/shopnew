@@ -783,6 +783,22 @@ class SettingsController extends Controller
                     'trace' => collect($e->getTrace())->take(3)->toArray()
                 ]
             ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('SMS sending failed: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send SMS: ' . $e->getMessage(),
+                'debug' => [
+                    'error_type' => 'sms_sending_error',
+                    'phone' => $phone,
+                    'message' => $message,
+                    'reference_id' => $referenceId,
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ]
+            ], 500);
         }
     } catch (\Exception $e) {
         Log::error('Test SMS failed: ' . $e->getMessage());
@@ -798,6 +814,7 @@ class SettingsController extends Controller
                 'trace' => collect($e->getTrace())->take(3)->toArray()
             ]
         ], 500);
+        }
     }
 
     // Edit Email Configuration
