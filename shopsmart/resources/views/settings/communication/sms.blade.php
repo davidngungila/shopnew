@@ -134,6 +134,6 @@
 @push('scripts')
 <!-- Include the test-modals component which contains the SMS test modal -->
 @include('components.test-modals')
-@endsection
+@endpush
 @endsection
 
