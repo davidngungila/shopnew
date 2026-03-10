@@ -72,11 +72,11 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">SMS Provider <span class="text-gray-400">(Optional)</span></label>
                         <select name="sms_provider" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
                             <option value="twilio" {{ old('sms_provider', $config->config['sms_provider'] ?? 'twilio') == 'twilio' ? 'selected' : '' }}>Twilio</option>
-                            <option value="nexmo" {{ old('sms_provider', $config->config['sms_provider'] ?? '') == 'nexmo' ? 'selected' : '' }}>Vonage (Nexmo)</option>
-                            <option value="aws_sns" {{ old('sms_provider', $config->config['sms_provider'] ?? '') == 'aws_sns' ? 'selected' : '' }}>AWS SNS</option>
-                            <option value="messagebird" {{ old('sms_provider', $config->config['sms_provider'] ?? '') == 'messagebird' ? 'selected' : '' }}>MessageBird</option>
-                            <option value="plivo" {{ old('sms_provider', $config->config['sms_provider'] ?? '') == 'plivo' ? 'selected' : '' }}>Plivo</option>
-                            <option value="custom" {{ old('sms_provider', $config->config['sms_provider'] ?? '') == 'custom' ? 'selected' : '' }}>Custom API</option>
+                            <option value="nexmo" {{ old('sms_provider', $config->config['sms_provider'] ?? 'nexmo') == 'nexmo' ? 'selected' : '' }}>Vonage (Nexmo)</option>
+                            <option value="aws_sns" {{ old('sms_provider', $config->config['sms_provider'] ?? 'aws_sns') == 'aws_sns' ? 'selected' : '' }}>AWS SNS</option>
+                            <option value="messagebird" {{ old('sms_provider', $config->config['sms_provider'] ?? 'messagebird') == 'messagebird' ? 'selected' : '' }}>MessageBird</option>
+                            <option value="plivo" {{ old('sms_provider', $config->config['sms_provider'] ?? 'plivo') == 'plivo' ? 'selected' : '' }}>Plivo</option>
+                            <option value="custom" {{ old('sms_provider', $config->config['sms_provider'] ?? 'custom') == 'custom' ? 'selected' : '' }}>Custom API</option>
                         </select>
                     </div>
 
@@ -91,7 +91,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">API Secret / Auth Token <span class="text-gray-400">(Optional)</span></label>
                         <input type="password" name="sms_api_secret" value="{{ old('sms_api_secret', $config->config['sms_api_secret'] ?? '') }}"
                             class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="{{ isset($config) && $config->config['sms_api_secret'] ? '•••••••• (leave blank to keep current)' : '••••••••' }}">
+                            placeholder="{{ isset($config->config['sms_api_secret']) && $config->config['sms_api_secret'] ? '•••••••• (leave blank to keep current)' : '••••••••' }}">
                     </div>
 
                     <div>
