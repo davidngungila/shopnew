@@ -500,7 +500,7 @@ class SettingsController extends Controller
             ]);
             
             // Send test email
-            Mail::send([], [], function ($message) use ($testEmail, $testSubject, $config) {
+            Mail::send([], [], function ($message) use ($testEmail, $testSubject, $testMessage, $config) {
                 $message->to($testEmail)
                     ->subject($testSubject)
                     ->from($config['from_email'], $config['from_name'])
