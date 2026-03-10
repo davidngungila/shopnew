@@ -270,7 +270,7 @@ window.emailTestModal = {
         this.sending = true;
         
         // Use the actual email test endpoint
-        fetch('{{ route("settings.communication.test-email") }}', {
+        fetch('{{ route("settings.communication.email.test") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
