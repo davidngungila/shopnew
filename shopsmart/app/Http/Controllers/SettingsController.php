@@ -417,10 +417,10 @@ class SettingsController extends Controller
 
     public function testEmail(Request $request)
     {
+        // Capture any output that might interfere with JSON
+        ob_start();
+        
         try {
-            // Ensure we return JSON response from the start
-            header('Content-Type: application/json');
-            
             // Handle both JSON and form input
             $testEmail = $request->input('test_email') ?? $request->input('recipient');
             $testMessage = $request->input('test_message') ?? $request->input('message');
@@ -431,6 +431,7 @@ class SettingsController extends Controller
             if ($configId) {
                 $configRecord = CommunicationConfig::find($configId);
                 if (!$configRecord || $configRecord->type !== 'email') {
+                    ob_end_clean();
                     return response()->json([
                         'success' => false,
                         'message' => 'Email configuration not found',
@@ -466,6 +467,7 @@ class SettingsController extends Controller
             
             // Validate required fields
             if (!$testEmail || !$testMessage) {
+                ob_end_clean();
                 return response()->json([
                     'success' => false,
                     'message' => 'Test email and message are required',
@@ -479,6 +481,7 @@ class SettingsController extends Controller
             
             // Validate email format
             if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
+                ob_end_clean();
                 return response()->json([
                     'success' => false,
                     'message' => 'Invalid email address format',
@@ -491,6 +494,7 @@ class SettingsController extends Controller
             
             // Validate SMTP configuration
             if (empty($config['smtp_host']) || empty($config['smtp_username']) || empty($config['smtp_password']) || empty($config['from_email'])) {
+                ob_end_clean();
                 return response()->json([
                     'success' => false,
                     'message' => 'Incomplete SMTP configuration',
@@ -535,6 +539,7 @@ class SettingsController extends Controller
                 $failedRecipients = Mail::failures();
                 
                 if (!empty($failedRecipients)) {
+                    ob_end_clean();
                     return response()->json([
                         'success' => false,
                         'message' => 'Email delivery failed for recipient(s)',
@@ -545,6 +550,7 @@ class SettingsController extends Controller
                     ], 500);
                 }
                 
+                ob_end_clean();
                 return response()->json([
                     'success' => true,
                     'message' => 'Test email sent successfully to ' . $testEmail,
@@ -559,6 +565,7 @@ class SettingsController extends Controller
                 ]);
                 
             } catch (\Swift_TransportException $e) {
+                ob_end_clean();
                 return response()->json([
                     'success' => false,
                     'message' => 'SMTP transport error: ' . $e->getMessage(),
@@ -570,6 +577,7 @@ class SettingsController extends Controller
                     ]
                 ], 500);
             } catch (\Exception $e) {
+                ob_end_clean();
                 return response()->json([
                     'success' => false,
                     'message' => 'Failed to send test email: ' . $e->getMessage(),
@@ -583,9 +591,10 @@ class SettingsController extends Controller
             }
             
         } catch (\Exception $e) {
+            // Clean any output and return JSON error
+            ob_end_clean();
             Log::error('Test email failed: ' . $e->getMessage());
             
-            // Return proper JSON error response
             return response()->json([
                 'success' => false,
                 'message' => 'Test email process failed: ' . $e->getMessage(),
