@@ -21,6 +21,26 @@ class SettingsController extends Controller
         return view('settings.index');
     }
 
+    public function emailCreate()
+    {
+        // Load email provider configuration for creation
+        $emailProvider = [
+            'name' => 'Primary Email Gateway',
+            'description' => 'Primary email gateway provider configured from system settings',
+            'status' => 'active',
+            'is_primary' => true,
+            'smtp_host' => 'smtp.gmail.com',
+            'smtp_port' => '587',
+            'smtp_username' => 'noreply@shopsmart.com',
+            'smtp_password' => '',
+            'smtp_encryption' => 'tls',
+            'from_email' => 'noreply@shopsmart.com',
+            'from_name' => 'ShopSmart'
+        ];
+        
+        return view('settings.communication.email-create', compact('emailProvider'));
+    }
+
     public function communicationIndex()
     {
         // Get all communication configurations
