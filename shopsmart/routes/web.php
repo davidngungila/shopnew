@@ -220,12 +220,14 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     Route::prefix('communication')->name('communication.')->group(function () {
         Route::get('/', [SettingsController::class, 'communicationIndex'])->name('index');
         Route::get('/email/create', [SettingsController::class, 'emailCreate'])->name('email.create');
+        Route::get('/email/edit/{id}', [SettingsController::class, 'emailEdit'])->name('email.edit');
+        Route::put('/email/update/{id}', [SettingsController::class, 'emailUpdate'])->name('email.update');
         Route::get('/sms/create', [SettingsController::class, 'smsCreate'])->name('sms.create');
+        Route::get('/sms/edit/{id}', [SettingsController::class, 'smsEdit'])->name('sms.edit');
+        Route::put('/sms/update/{id}', [SettingsController::class, 'smsUpdate'])->name('sms.update');
         Route::post('/sms/store', [SettingsController::class, 'smsStore'])->name('sms.store');
         Route::get('/test-message', [SettingsController::class, 'testMessage'])->name('test-message');
         Route::get('/sms/provider', [SettingsController::class, 'smsProvider'])->name('sms.provider');
-        Route::get('/sms/edit', [SettingsController::class, 'smsEdit'])->name('sms.edit');
-        Route::put('/sms/update', [SettingsController::class, 'smsUpdate'])->name('sms.update');
         Route::post('/test-sms', [SettingsController::class, 'testSMS'])->name('test-sms');
         Route::delete('/{id}', [SettingsController::class, 'destroy'])->name('destroy');
         Route::post('/email/store', [SettingsController::class, 'emailStore'])->name('email.store');

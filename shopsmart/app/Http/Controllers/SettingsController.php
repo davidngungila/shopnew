@@ -599,6 +599,47 @@ class SettingsController extends Controller
         }
     }
 
+    // Update Email Configuration
+    public function emailUpdate(Request $request, $id)
+    {
+        try {
+            $config = CommunicationConfig::findOrFail($id);
+            
+            if ($config->type !== 'email') {
+                return back()->with('error', 'Configuration not found.');
+            }
+            
+            $validated = $request->validate([
+                'smtp_host' => 'required|string',
+                'smtp_port' => 'required|integer',
+                'smtp_username' => 'required|email',
+                'smtp_password' => 'required|string',
+                'smtp_encryption' => 'required|string|in:TLS,SSL,none',
+                'from_email' => 'required|email',
+                'from_name' => 'required|string|max:255'
+            ]);
+
+            $config->update([
+                'config' => [
+                    'mail_mailer' => 'smtp',
+                    'mail_host' => $validated['smtp_host'],
+                    'mail_port' => $validated['smtp_port'],
+                    'mail_username' => $validated['smtp_username'],
+                    'mail_password' => $validated['smtp_password'],
+                    'mail_encryption' => $validated['smtp_encryption'],
+                    'mail_from_address' => $validated['from_email'],
+                    'mail_from_name' => $validated['from_name']
+                ]
+            ]);
+
+            return redirect()->route('settings.communication.index')->with('success', 'Email configuration updated successfully!');
+            
+        } catch (\Exception $e) {
+            Log::error('Email configuration update failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to update email configuration: ' . $e->getMessage())->withInput();
+        }
+    }
+
     // Store Email Configuration
     public function emailStore(Request $request)
     {
