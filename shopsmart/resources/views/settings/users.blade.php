@@ -14,6 +14,9 @@
             <button @click="showAddUserModal()" class="px-4 py-2 text-white rounded-lg hover:bg-green-700 transition-colors" style="background-color: #009245;">
                 <i class="fas fa-user-plus mr-2"></i>Add User
             </button>
+            <button @click="importUsers()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-file-import mr-2"></i>Import
+            </button>
             <button @click="exportUsers()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                 <i class="fas fa-download mr-2"></i>Export
             </button>
@@ -33,13 +36,22 @@
     </div>
     @endif
 
+    @if(session('error'))
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-circle text-red-600 mr-3"></i>
+            <p class="text-red-800">{{ session('error') }}</p>
+        </div>
+    </div>
+    @endif
+
     <!-- User Statistics -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500">Total Users</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ $users->total() }}</p>
+                    <p class="text-2xl font-bold text-blue-600">{{ $users->total() ?? 0 }}</p>
                     <p class="text-xs text-gray-500 mt-1">
                         <i class="fas fa-users text-blue-500"></i> 
                         Registered accounts
@@ -100,6 +112,56 @@
         </div>
     </div>
 
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+            <span class="text-sm text-gray-500">Common user management tasks</span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button @click="bulkActivate()" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-user-check text-green-600"></i>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-sm font-medium text-gray-900">Bulk Activate</h3>
+                    <p class="text-xs text-gray-500">Activate selected users</p>
+                </div>
+            </button>
+
+            <button @click="bulkDeactivate()" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-user-times text-orange-600"></i>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-sm font-medium text-gray-900">Bulk Deactivate</h3>
+                    <p class="text-xs text-gray-500">Deactivate selected users</p>
+                </div>
+            </button>
+
+            <button @click="sendBulkEmail()" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-envelope text-blue-600"></i>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-sm font-medium text-gray-900">Send Email</h3>
+                    <p class="text-xs text-gray-500">Email all users</p>
+                </div>
+            </button>
+
+            <button @click="viewActivityLog()" class="flex items-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                    <i class="fas fa-history text-purple-600"></i>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-sm font-medium text-gray-900">Activity Log</h3>
+                    <p class="text-xs text-gray-500">View user activities</p>
+                </div>
+            </button>
+        </div>
+    </div>
+
     <!-- Filters and Search -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div class="flex flex-col sm:flex-row gap-4">
@@ -124,15 +186,38 @@
                 <option value="inactive">Inactive</option>
                 <option value="suspended">Suspended</option>
             </select>
+            <select x-model="dateFilter" @change="filterUsers()" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+            </select>
         </div>
     </div>
 
     <!-- Users Table -->
     <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <input type="checkbox" @change="toggleSelectAll()" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                <span class="text-sm text-gray-600">Select All</span>
+            </div>
+            <div x-show="selectedUsers.length > 0" class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600" x-text="`${selectedUsers.length} selected`"></span>
+                <button @click="bulkDelete()" class="px-3 py-1 bg-red-100 text-red-700 rounded-lg text-sm hover:bg-red-200 transition-colors">
+                    <i class="fas fa-trash mr-1"></i>Delete Selected
+                </button>
+            </div>
+        </div>
+        
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <input type="checkbox" @change="toggleSelectAll()" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <div class="flex items-center space-x-1">
                                 <span>User</span>
@@ -152,6 +237,9 @@
                     @forelse($users ?? [] as $user)
                     <tr class="hover:bg-gray-50 transition-colors" x-show="matchesFilter({{ $user->toJson() }})">
                         <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" :value="{{ $user->id }}" @change="toggleUserSelection({{ $user->id }})" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 h-10 w-10">
                                     <div class="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center">
@@ -161,6 +249,11 @@
                                 <div class="ml-4">
                                     <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
                                     <div class="text-sm text-gray-500">@{{ $user->username ?? strtolower(str_replace(' ', '', $user->name)) }}</div>
+                                    @if($user->id === auth()->id())
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        <i class="fas fa-star mr-1"></i>You
+                                    </span>
+                                    @endif
                                 </div>
                             </div>
                         </td>
@@ -202,14 +295,17 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex items-center justify-center space-x-2">
-                                <button @click="editUser({{ $user->toJson() }})" class="text-blue-600 hover:text-blue-900" title="Edit User">
-                                    <i class="fas fa-edit"></i>
-                                </button>
                                 <button @click="viewUser({{ $user->toJson() }})" class="text-green-600 hover:text-green-900" title="View User">
                                     <i class="fas fa-eye"></i>
                                 </button>
+                                <button @click="editUser({{ $user->toJson() }})" class="text-blue-600 hover:text-blue-900" title="Edit User">
+                                    <i class="fas fa-edit"></i>
+                                </button>
                                 <button @click="resetPassword({{ $user->toJson() }})" class="text-orange-600 hover:text-orange-900" title="Reset Password">
                                     <i class="fas fa-key"></i>
+                                </button>
+                                <button @click="toggleUserStatus({{ $user->toJson() }})" class="text-purple-600 hover:text-purple-900" title="Toggle Status">
+                                    <i class="fas fa-toggle-on"></i>
                                 </button>
                                 @if($user->id !== auth()->id())
                                 <button @click="deleteUser({{ $user->toJson() }})" class="text-red-600 hover:text-red-900" title="Delete User">
@@ -221,7 +317,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-12 text-center">
+                        <td colspan="7" class="px-6 py-12 text-center">
                             <div class="text-center">
                                 <i class="fas fa-users text-gray-400 text-5xl mb-4"></i>
                                 <p class="text-gray-500 text-lg">No users found</p>
@@ -287,9 +383,15 @@
                                 <span x-text="editingUser ? 'Edit User' : 'Add New User'"></span>
                             </h3>
                             <div class="mt-4 space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">Full Name</label>
-                                    <input type="text" x-model="userForm.name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">First Name</label>
+                                        <input type="text" x-model="userForm.first_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                        <input type="text" x-model="userForm.last_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    </div>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Email Address</label>
@@ -298,6 +400,10 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Phone Number</label>
                                     <input type="tel" x-model="userForm.phone" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                                    <input type="text" x-model="userForm.username" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Role</label>
@@ -316,6 +422,16 @@
                                         <option value="suspended">Suspended</option>
                                     </select>
                                 </div>
+                                @if(!$editingUser)
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                                    <input type="password" x-model="userForm.password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                                    <input type="password" x-model="userForm.password_confirmation" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -331,6 +447,76 @@
             </div>
         </div>
     </div>
+
+    <!-- View User Modal -->
+    <div x-show="showViewModal" x-transition class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="view-modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showViewModal = false"></div>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+                    <div class="sm:flex sm:items-start">
+                        <div class="w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="view-modal-title">User Details</h3>
+                            <div class="mt-4">
+                                <div class="flex items-center mb-6">
+                                    <div class="h-16 w-16 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center mr-4">
+                                        <span class="text-white font-bold text-xl" x-text="viewUser.name ? viewUser.name.charAt(0).toUpperCase() : ''"></span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-medium text-gray-900" x-text="viewUser.name"></h4>
+                                        <p class="text-sm text-gray-500" x-text="'@' + (viewUser.username || '')"></p>
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                            <i class="fas fa-circle mr-1" x-text="viewUser.status === 'active' ? 'fas fa-circle' : 'fas fa-circle'"></i>
+                                            <span x-text="viewUser.status ? viewUser.status.charAt(0).toUpperCase() + viewUser.status.slice(1) : 'Active'"></span>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <h5 class="text-sm font-medium text-gray-900 mb-3">Contact Information</h5>
+                                        <dl class="space-y-2">
+                                            <div class="flex justify-between">
+                                                <dt class="text-sm text-gray-500">Email</dt>
+                                                <dd class="text-sm text-gray-900" x-text="viewUser.email"></dd>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <dt class="text-sm text-gray-500">Phone</dt>
+                                                <dd class="text-sm text-gray-900" x-text="viewUser.phone || 'Not provided'"></dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                    
+                                    <div>
+                                        <h5 class="text-sm font-medium text-gray-900 mb-3">Account Details</h5>
+                                        <dl class="space-y-2">
+                                            <div class="flex justify-between">
+                                                <dt class="text-sm text-gray-500">Role</dt>
+                                                <dd class="text-sm text-gray-900" x-text="viewUser.role ? viewUser.role.charAt(0).toUpperCase() + viewUser.role.slice(1) : ''"></dd>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <dt class="text-sm text-gray-500">Member Since</dt>
+                                                <dd class="text-sm text-gray-900" x-text="viewUser.created_at ? new Date(viewUser.created_at).toLocaleDateString() : ''"></dd>
+                                            </div>
+                                            <div class="flex justify-between">
+                                                <dt class="text-sm text-gray-500">Last Login</dt>
+                                                <dd class="text-sm text-gray-900" x-text="viewUser.last_login_at ? new Date(viewUser.last_login_at).toLocaleString() : 'Never'"></dd>
+                                            </div>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" @click="showViewModal = false" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:w-auto sm:text-sm">
+                        Close
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -339,14 +525,26 @@ function userManagement() {
         search: '',
         roleFilter: '',
         statusFilter: '',
+        dateFilter: '',
         showUserModal: false,
+        showViewModal: false,
         editingUser: null,
+        viewUser: {},
+        selectedUsers: [],
         userForm: {
-            name: '',
+            first_name: '',
+            last_name: '',
             email: '',
             phone: '',
+            username: '',
             role: 'cashier',
-            status: 'active'
+            status: 'active',
+            password: '',
+            password_confirmation: ''
+        },
+        
+        init() {
+            // Initialize component
         },
         
         filterUsers() {
@@ -354,7 +552,8 @@ function userManagement() {
             console.log('Filtering users...', {
                 search: this.search,
                 role: this.roleFilter,
-                status: this.statusFilter
+                status: this.statusFilter,
+                date: this.dateFilter
             });
         },
         
@@ -372,50 +571,285 @@ function userManagement() {
         showAddUserModal() {
             this.editingUser = null;
             this.userForm = {
-                name: '',
+                first_name: '',
+                last_name: '',
                 email: '',
                 phone: '',
+                username: '',
                 role: 'cashier',
-                status: 'active'
+                status: 'active',
+                password: '',
+                password_confirmation: ''
             };
             this.showUserModal = true;
         },
         
         editUser(user) {
             this.editingUser = user;
-            this.userForm = { ...user };
+            this.userForm = { 
+                ...user,
+                password: '',
+                password_confirmation: ''
+            };
             this.showUserModal = true;
         },
         
         viewUser(user) {
-            alert(`View user: ${user.name}`);
+            this.viewUser = user;
+            this.showViewModal = true;
         },
         
         saveUser() {
+            // Validate form
+            if (!this.userForm.first_name || !this.userForm.last_name || !this.userForm.email) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            if (!this.editingUser && (!this.userForm.password || this.userForm.password !== this.userForm.password_confirmation)) {
+                alert('Password and confirmation must match');
+                return;
+            }
+            
+            // Combine first and last name
+            this.userForm.name = this.userForm.first_name + ' ' + this.userForm.last_name;
+            
             // Save user logic would be implemented here
             console.log('Saving user...', this.userForm);
+            
+            // Show success message
+            alert(this.editingUser ? 'User updated successfully!' : 'User created successfully!');
             this.showUserModal = false;
+            
+            // In a real application, you would submit the form to the server
+            if (!this.editingUser) {
+                // For new users, submit the form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("settings.users.store") }}';
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Add form fields
+                Object.keys(this.userForm).forEach(key => {
+                    if (this.userForm[key]) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = this.userForm[key];
+                        form.appendChild(input);
+                    }
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                // For existing users, submit update form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route("settings.users.update") }}`.replace(':id', this.editingUser.id);
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Add method override for PUT
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PUT';
+                form.appendChild(methodInput);
+                
+                // Add form fields
+                Object.keys(this.userForm).forEach(key => {
+                    if (key !== 'password' || this.userForm[key]) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = key;
+                        input.value = this.userForm[key];
+                        form.appendChild(input);
+                    }
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
         },
         
         resetPassword(user) {
-            if (confirm(`Are you sure you want to reset password for ${user.name}?`)) {
-                alert(`Password reset link would be sent to: ${user.email}`);
+            if (confirm(`Are you sure you want to reset password for ${user.name}? A reset link will be sent to their email.`)) {
+                // Submit password reset form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route("settings.users.reset-password") }}`.replace(':id', user.id);
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        },
+        
+        toggleUserStatus(user) {
+            const newStatus = user.status === 'active' ? 'inactive' : 'active';
+            if (confirm(`Are you sure you want to ${newStatus} ${user.name}?`)) {
+                // Submit status toggle form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route("settings.users.toggle-status") }}`.replace(':id', user.id);
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         },
         
         deleteUser(user) {
             if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
-                alert(`User ${user.name} would be deleted`);
+                // Submit delete form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `{{ route("settings.users.destroy") }}`.replace(':id', user.id);
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Add method override for DELETE
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         },
         
+        toggleSelectAll() {
+            // Toggle all user selection
+            const checkboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !checkbox.checked;
+                const userId = parseInt(checkbox.value);
+                if (checkbox.checked) {
+                    if (!this.selectedUsers.includes(userId)) {
+                        this.selectedUsers.push(userId);
+                    }
+                } else {
+                    this.selectedUsers = this.selectedUsers.filter(id => id !== userId);
+                }
+            });
+        },
+        
+        toggleUserSelection(userId) {
+            if (this.selectedUsers.includes(userId)) {
+                this.selectedUsers = this.selectedUsers.filter(id => id !== userId);
+            } else {
+                this.selectedUsers.push(userId);
+            }
+        },
+        
+        bulkDelete() {
+            if (confirm(`Are you sure you want to delete ${this.selectedUsers.length} selected users? This action cannot be undone.`)) {
+                // Submit bulk delete form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '{{ route("settings.users.bulk-delete") }}';
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Add selected users
+                this.selectedUsers.forEach(userId => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'users[]';
+                    input.value = userId;
+                    form.appendChild(input);
+                });
+                
+                document.body.appendChild(form);
+                form.submit();
+            }
+        },
+        
+        bulkActivate() {
+            if (confirm('Are you sure you want to activate all selected users?')) {
+                alert('Bulk activation would be processed here');
+            }
+        },
+        
+        bulkDeactivate() {
+            if (confirm('Are you sure you want to deactivate all selected users?')) {
+                alert('Bulk deactivation would be processed here');
+            }
+        },
+        
+        sendBulkEmail() {
+            const subject = prompt('Enter email subject:');
+            const message = prompt('Enter email message:');
+            
+            if (subject && message) {
+                alert(`Bulk email would be sent:\n\nSubject: ${subject}\nMessage: ${message}\n\nTo all active users`);
+            }
+        },
+        
+        viewActivityLog() {
+            alert('Activity log would show:\n\n• User login/logout times\n• Password changes\n• Role modifications\n• Profile updates\n• System access attempts');
+        },
+        
+        importUsers() {
+            alert('User import functionality would:\n\n• Accept CSV/Excel files\n• Validate data format\n• Create user accounts\n• Send welcome emails\n• Report import results');
+        },
+        
         exportUsers() {
-            // For now, just show an alert - export route would need to be created
-            alert('User export functionality would be implemented here');
+            // Submit export form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("settings.users.export") }}';
+            
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            document.body.appendChild(form);
+            form.submit();
         },
         
         sortBy(field) {
             console.log('Sorting by:', field);
+            // In a real application, this would update the sorting and refresh the table
         }
     }
 }
