@@ -637,7 +637,7 @@ class SettingsController extends Controller
             // Send SMS based on schedule time
             if ($scheduleTime === 'now') {
                 // Send immediately
-                $result = $messagingService->sendMultipleSMS([
+                $result = $messagingService->sendMultipleSms([
                     'from' => $configData['username'] ?? 'ShopSmart',
                     'messages' => array_map(function($recipient) use ($message, $configData, $referenceId) {
                         return [
@@ -649,7 +649,7 @@ class SettingsController extends Controller
                 ]);
             } else {
                 // Schedule SMS (for demo purposes, we'll send immediately with a note)
-                $result = $messagingService->sendMultipleSMS([
+                $result = $messagingService->sendMultipleSms([
                     'from' => $configData['username'] ?? 'ShopSmart',
                     'messages' => array_map(function($recipient) use ($message, $configData, $referenceId, $scheduleTime) {
                         return [
@@ -661,26 +661,30 @@ class SettingsController extends Controller
                 ]);
             }
             
-            if ($result['success']) {
+            // Ensure result has proper format
+            if (!isset($result['error'])) {
+                // Success case
                 return response()->json([
                     'success' => true,
                     'message' => 'Test SMS sent successfully',
                     'details' => [
                         'recipients' => $recipients,
-                        'message_count' => count($result['messages'] ?? []),
+                        'message_count' => count($recipients),
                         'total_cost' => $result['total_cost'] ?? 0,
                         'currency' => 'TZS',
                         'reference_id' => $referenceId,
-                        'schedule_time' => $scheduleTime
+                        'schedule_time' => $scheduleTime,
+                        'api_response' => $result
                     ]
                 ]);
             } else {
+                // Error case
                 return response()->json([
                     'success' => false,
-                    'message' => $result['message'] ?? 'Failed to send test SMS',
+                    'message' => $result['error'] ?? 'Failed to send test SMS',
                     'debug' => [
                         'result' => $result,
-                        'details' => $result['details'] ?? []
+                        'details' => $result['status'] ?? 'unknown'
                     ]
                 ], 500);
             }

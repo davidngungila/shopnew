@@ -224,6 +224,11 @@ class MessagingService
                 'messages' => $messages
             ];
 
+            Log::info('Sending multiple SMS', [
+                'payload' => $payload,
+                'count' => count($messages)
+            ]);
+
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->bearerToken,
@@ -231,6 +236,12 @@ class MessagingService
                     'Accept' => 'application/json'
                 ])
                 ->post($this->baseUrl . '/text/multi', $payload);
+
+            Log::info('SMS API response', [
+                'status' => $response->status(),
+                'successful' => $response->successful(),
+                'body' => $response->body()
+            ]);
 
             if ($response->successful()) {
                 $data = $response->json();
@@ -240,7 +251,14 @@ class MessagingService
                     'response' => $data
                 ]);
                 
-                return $data;
+                // Ensure success format
+                return [
+                    'success' => true,
+                    'messages' => $data['messages'] ?? [],
+                    'total_cost' => $data['total_cost'] ?? 0,
+                    'currency' => $data['currency'] ?? 'TZS',
+                    'api_response' => $data
+                ];
             } else {
                 Log::error('Failed to send multiple SMS', [
                     'count' => count($messages),
@@ -249,18 +267,21 @@ class MessagingService
                 ]);
                 
                 return [
+                    'success' => false,
                     'error' => 'Failed to send multiple SMS',
-                    'status' => $response->status()
+                    'status' => $response->status(),
+                    'response' => $response->body()
                 ];
             }
         } catch (\Exception $e) {
             Log::error('Exception sending multiple SMS', [
                 'count' => count($messages),
-                    'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
             
             return [
+                'success' => false,
                 'error' => 'Failed to send multiple SMS: ' . $e->getMessage()
             ];
         }
