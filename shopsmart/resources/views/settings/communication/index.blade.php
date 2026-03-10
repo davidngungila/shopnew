@@ -232,16 +232,75 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex items-center justify-end space-x-2">
-                                    <button @click="testConfig('email', {{ $config->id }})" class="text-blue-600 hover:text-blue-900" title="Test Configuration">
-                                        <i class="fas fa-vial"></i>
+                                <div class="flex items-center justify-end space-x-1">
+                                    <!-- Test Button -->
+                                    <button @click="testConfig('email', {{ $config->id }})" 
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" 
+                                            title="Test Email Configuration">
+                                        <i class="fas fa-vial mr-1"></i>
+                                        Test
                                     </button>
-                                    <a href="#" @click="editConfig('email', {{ $config->id }})" class="text-indigo-600 hover:text-indigo-900" title="Edit">
-                                        <i class="fas fa-edit"></i>
+                                    
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('settings.communication.email.edit', $config->id) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" 
+                                       title="Edit Configuration">
+                                        <i class="fas fa-edit mr-1"></i>
+                                        Edit
                                     </a>
-                                    <button @click="deleteConfig('email', {{ $config->id }})" class="text-red-600 hover:text-red-900" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    
+                                    <!-- More Actions Dropdown -->
+                                    <div class="relative inline-block text-left">
+                                        <button @click="toggleDropdown('email-{{ $config->id }}')" 
+                                                class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+                                                title="More Actions">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        
+                                        <div x-show="dropdowns['email-{{ $config->id }}']" 
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="opacity-0 transform scale-95"
+                                             x-transition:enter-end="opacity-100 transform scale-100"
+                                             x-transition:leave="transition ease-in duration-75"
+                                             x-transition:leave-start="opacity-100 transform scale-100"
+                                             x-transition:leave-end="opacity-0 transform scale-95"
+                                             @click.away="closeDropdown('email-{{ $config->id }}')"
+                                             class="absolute right-0 z-10 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 focus:outline-none"
+                                             style="display: none;">
+                                            
+                                            <div class="py-1">
+                                                <!-- View Details -->
+                                                <button @click="viewDetails('email', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-eye mr-2 text-gray-400"></i>
+                                                    View Details
+                                                </button>
+                                                
+                                                <!-- Duplicate -->
+                                                <button @click="duplicateConfig('email', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-copy mr-2 text-gray-400"></i>
+                                                    Duplicate
+                                                </button>
+                                                
+                                                <!-- Export -->
+                                                <button @click="exportConfig('email', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-download mr-2 text-gray-400"></i>
+                                                    Export
+                                                </button>
+                                                
+                                                <div class="border-t border-gray-100"></div>
+                                                
+                                                <!-- Delete -->
+                                                <button @click="deleteConfig('email', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                    <i class="fas fa-trash mr-2"></i>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -344,16 +403,82 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <div class="flex items-center justify-end space-x-2">
-                                    <button @click="testConfig('sms', {{ $config->id }})" class="text-green-600 hover:text-green-900" title="Test Configuration">
-                                        <i class="fas fa-vial"></i>
+                                <div class="flex items-center justify-end space-x-1">
+                                    <!-- Test Button -->
+                                    <button @click="testConfig('sms', {{ $config->id }})" 
+                                            class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-green-50 text-green-600 hover:bg-green-100 transition-colors" 
+                                            title="Test SMS Configuration">
+                                        <i class="fas fa-vial mr-1"></i>
+                                        Test
                                     </button>
-                                    <a href="#" @click="editConfig('sms', {{ $config->id }})" class="text-indigo-600 hover:text-indigo-900" title="Edit">
-                                        <i class="fas fa-edit"></i>
+                                    
+                                    <!-- Edit Button -->
+                                    <a href="{{ route('settings.communication.sms.edit', $config->id) }}" 
+                                       class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-colors" 
+                                       title="Edit Configuration">
+                                        <i class="fas fa-edit mr-1"></i>
+                                        Edit
                                     </a>
-                                    <button @click="deleteConfig('sms', {{ $config->id }})" class="text-red-600 hover:text-red-900" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    
+                                    <!-- More Actions Dropdown -->
+                                    <div class="relative inline-block text-left">
+                                        <button @click="toggleDropdown('sms-{{ $config->id }}')" 
+                                                class="inline-flex items-center px-2 py-1 text-xs font-medium rounded bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
+                                                title="More Actions">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        
+                                        <div x-show="dropdowns['sms-{{ $config->id }}']" 
+                                             x-transition:enter="transition ease-out duration-100"
+                                             x-transition:enter-start="opacity-0 transform scale-95"
+                                             x-transition:enter-end="opacity-100 transform scale-100"
+                                             x-transition:leave="transition ease-in duration-75"
+                                             x-transition:leave-start="opacity-100 transform scale-100"
+                                             x-transition:leave-end="opacity-0 transform scale-95"
+                                             @click.away="closeDropdown('sms-{{ $config->id }}')"
+                                             class="absolute right-0 z-10 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 focus:outline-none"
+                                             style="display: none;">
+                                            
+                                            <div class="py-1">
+                                                <!-- View Details -->
+                                                <button @click="viewDetails('sms', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-eye mr-2 text-gray-400"></i>
+                                                    View Details
+                                                </button>
+                                                
+                                                <!-- Send Test SMS -->
+                                                <button @click="sendTestSms({{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-paper-plane mr-2 text-gray-400"></i>
+                                                    Send Test SMS
+                                                </button>
+                                                
+                                                <!-- Duplicate -->
+                                                <button @click="duplicateConfig('sms', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-copy mr-2 text-gray-400"></i>
+                                                    Duplicate
+                                                </button>
+                                                
+                                                <!-- Export -->
+                                                <button @click="exportConfig('sms', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center">
+                                                    <i class="fas fa-download mr-2 text-gray-400"></i>
+                                                    Export
+                                                </button>
+                                                
+                                                <div class="border-t border-gray-100"></div>
+                                                
+                                                <!-- Delete -->
+                                                <button @click="deleteConfig('sms', {{ $config->id }})" 
+                                                        class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center">
+                                                    <i class="fas fa-trash mr-2"></i>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </td>
                         </tr>
@@ -441,6 +566,7 @@ function communicationSettings() {
     return {
         activeConfigsCount: 0,
         testStatus: 'Ready',
+        dropdowns: {},
         
         init() {
             this.updateActiveConfigsCount();
@@ -449,6 +575,22 @@ function communicationSettings() {
         updateActiveConfigsCount() {
             // Count active configurations (would be calculated from actual data)
             this.activeConfigsCount = {{ $emailConfigs->where('is_active', true)->count() + $smsConfigs->where('is_active', true)->count() }};
+        },
+        
+        toggleDropdown(id) {
+            // Close all other dropdowns
+            Object.keys(this.dropdowns).forEach(key => {
+                if (key !== id) {
+                    this.dropdowns[key] = false;
+                }
+            });
+            
+            // Toggle current dropdown
+            this.dropdowns[id] = !this.dropdowns[id];
+        },
+        
+        closeDropdown(id) {
+            this.dropdowns[id] = false;
         },
         
         testAllConfigs() {
@@ -489,10 +631,155 @@ function communicationSettings() {
         editConfig(type, configId) {
             // Navigate to edit page
             if (type === 'email') {
-                window.location.href = '/settings/communication/email/create';
+                window.location.href = `/settings/communication/email/edit/${configId}`;
             } else if (type === 'sms') {
-                window.location.href = '/settings/communication/sms/create';
+                window.location.href = `/settings/communication/sms/edit/${configId}`;
             }
+        },
+        
+        viewDetails(type, configId) {
+            // View configuration details
+            fetch(`/settings/communication/${type}/${configId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const details = data.config;
+                        let detailsHtml = `<div class="space-y-3">
+                            <h4 class="font-semibold text-gray-900">${details.name}</h4>
+                            <p class="text-sm text-gray-600">${details.description || 'No description'}</p>
+                            <div class="bg-gray-50 p-3 rounded">
+                                <h5 class="font-medium text-gray-900 mb-2">Configuration Details:</h5>`;
+                        
+                        if (type === 'email') {
+                            const config = details.config || {};
+                            detailsHtml += `
+                                <p><strong>Host:</strong> ${config.mail_host || 'N/A'}</p>
+                                <p><strong>Port:</strong> ${config.mail_port || 'N/A'}</p>
+                                <p><strong>Username:</strong> ${config.mail_username || 'N/A'}</p>
+                                <p><strong>Encryption:</strong> ${config.mail_encryption || 'N/A'}</p>
+                                <p><strong>From Email:</strong> ${config.mail_from_address || 'N/A'}</p>
+                                <p><strong>From Name:</strong> ${config.mail_from_name || 'N/A'}</p>`;
+                        } else if (type === 'sms') {
+                            const config = details.config || {};
+                            detailsHtml += `
+                                <p><strong>Provider:</strong> ${config.provider || 'N/A'}</p>
+                                <p><strong>From Number:</strong> ${config.from_number || 'N/A'}</p>
+                                <p><strong>API URL:</strong> ${config.api_url || 'N/A'}</p>
+                                <p><strong>Username:</strong> ${config.username || 'N/A'}</p>`;
+                        }
+                        
+                        detailsHtml += `</div></div>`;
+                        
+                        // Show modal with details
+                        this.showModal('Configuration Details', detailsHtml);
+                    } else {
+                        alert('Failed to load configuration details');
+                    }
+                })
+                .catch(error => {
+                    alert('Error loading configuration details: ' + error.message);
+                });
+        },
+        
+        duplicateConfig(type, configId) {
+            if (confirm(`Duplicate this ${type} configuration? This will create a copy with the same settings.`)) {
+                fetch(`/settings/communication/${type}/${configId}/duplicate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(`${type.charAt(0).toUpperCase() + type.slice(1)} configuration duplicated successfully!`);
+                        location.reload();
+                    } else {
+                        alert('Failed to duplicate configuration: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error duplicating configuration: ' + error.message);
+                });
+            }
+        },
+        
+        exportConfig(type, configId) {
+            fetch(`/settings/communication/${type}/${configId}/export`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Create and download JSON file
+                        const configData = JSON.stringify(data.config, null, 2);
+                        const blob = new Blob([configData], { type: 'application/json' });
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `${type}-config-${configId}.json`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(url);
+                    } else {
+                        alert('Failed to export configuration');
+                    }
+                })
+                .catch(error => {
+                    alert('Error exporting configuration: ' + error.message);
+                });
+        },
+        
+        sendTestSms(configId) {
+            const phone = prompt('Enter phone number to send test SMS:', '255712345678');
+            if (phone) {
+                const message = prompt('Enter test message:', 'This is a test SMS from ShopSmart');
+                if (message) {
+                    fetch('/settings/communication/test-sms', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        body: JSON.stringify({
+                            phone: phone,
+                            message: message,
+                            config_id: configId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('✅ Test SMS sent successfully to ' + phone);
+                        } else {
+                            alert('❌ Failed to send test SMS: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        alert('Error sending test SMS: ' + error.message);
+                    });
+                }
+            }
+        },
+        
+        showModal(title, content) {
+            // Simple modal implementation
+            const modalHtml = `
+                <div id="configModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: block;">
+                    <div class="flex items-center justify-center min-h-screen px-4">
+                        <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900">${title}</h3>
+                                <button onclick="this.closest('#configModal').remove()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div>${content}</div>
+                        </div>
+                    </div>
+                </div>`;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         },
         
         deleteConfig(type, configId) {
