@@ -725,56 +725,81 @@ class SettingsController extends Controller
             }
             
             // Send SMS based on schedule time
-            if ($scheduleTime === 'now') {
-                // Send immediately
-                $result = $messagingService->sendMultipleSms([
-                    'from' => $configData['username'] ?? 'ShopSmart',
-                    'messages' => array_map(function($recipient) use ($message, $configData, $referenceId) {
-                        return [
-                            'to' => $recipient,
-                            'text' => $message,
-                            'reference' => $referenceId
-                        ];
-                    }, $recipients)
+            try {
+                if ($scheduleTime === 'now') {
+                    // Send immediately with timeout
+                    $result = $messagingService->sendMultipleSms([
+                        'from' => $configData['username'] ?? 'ShopSmart',
+                        'messages' => array_map(function($recipient) use ($message, $configData, $referenceId) {
+                            return [
+                                'to' => $recipient,
+                                'text' => $message,
+                                'reference' => $referenceId
+                            ];
+                        }, $recipients)
+                    ]);
+                } else {
+                    // Schedule SMS (for demo purposes, we'll send immediately with a note)
+                    $result = $messagingService->sendMultipleSms([
+                        'from' => $configData['username'] ?? 'ShopSmart',
+                        'messages' => array_map(function($recipient) use ($message, $configData, $referenceId, $scheduleTime) {
+                            return [
+                                'to' => $recipient,
+                                'text' => $message . " (Scheduled: $scheduleTime)",
+                                'reference' => $referenceId
+                            ];
+                        }, $recipients)
+                    ]);
+                }
+                
+                // Debug: Log the result
+                Log::info('SMS Send Result', [
+                    'result' => $result,
+                    'has_error' => isset($result['error']),
+                    'success' => !isset($result['error'])
                 ]);
-            } else {
-                // Schedule SMS (for demo purposes, we'll send immediately with a note)
-                $result = $messagingService->sendMultipleSms([
-                    'from' => $configData['username'] ?? 'ShopSmart',
-                    'messages' => array_map(function($recipient) use ($message, $configData, $referenceId, $scheduleTime) {
-                        return [
-                            'to' => $recipient,
-                            'text' => $message . " (Scheduled: $scheduleTime)",
-                            'reference' => $referenceId
-                        ];
-                    }, $recipients)
-                ]);
-            }
-            
-            // Ensure result has proper format
-            if (!isset($result['error'])) {
-                // Success case
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Test SMS sent successfully',
-                    'details' => [
-                        'recipients' => $recipients,
-                        'message_count' => count($recipients),
-                        'total_cost' => $result['total_cost'] ?? 0,
-                        'currency' => 'TZS',
-                        'reference_id' => $referenceId,
-                        'schedule_time' => $scheduleTime,
-                        'api_response' => $result
-                    ]
-                ]);
-            } else {
-                // Error case
+                
+                // Ensure result has proper format
+                if (!isset($result['error'])) {
+                    // Success case
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Test SMS sent successfully',
+                        'details' => [
+                            'recipients' => $recipients,
+                            'message_count' => count($recipients),
+                            'total_cost' => $result['total_cost'] ?? 0,
+                            'currency' => 'TZS',
+                            'reference_id' => $referenceId,
+                            'schedule_time' => $scheduleTime,
+                            'api_response' => $result
+                        ]
+                    ]);
+                } else {
+                    // Error case
+                    return response()->json([
+                        'success' => false,
+                        'message' => $result['error'] ?? 'Failed to send test SMS',
+                        'debug' => [
+                            'result' => $result,
+                            'details' => $result['status'] ?? 'unknown',
+                            'error_type' => 'messaging_service_error'
+                        ]
+                    ], 500);
+                }
+                
+            } catch (\Exception $e) {
+                Log::error('SMS sending exception: ' . $e->getMessage());
+                
                 return response()->json([
                     'success' => false,
-                    'message' => $result['error'] ?? 'Failed to send test SMS',
+                    'message' => 'SMS sending failed: ' . $e->getMessage(),
                     'debug' => [
-                        'result' => $result,
-                        'details' => $result['status'] ?? 'unknown'
+                        'error_type' => get_class($e),
+                        'error_message' => $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine(),
+                        'trace' => collect($e->getTrace())->take(3)->toArray()
                     ]
                 ], 500);
             }

@@ -229,7 +229,8 @@ class MessagingService
                 'count' => count($messages)
             ]);
 
-            $response = Http::timeout(30)
+            // Use shorter timeout to prevent hanging
+            $response = Http::timeout(15)  // Reduced from 30 to 15 seconds
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->bearerToken,
                     'Content-Type' => 'application/json',
@@ -240,7 +241,8 @@ class MessagingService
             Log::info('SMS API response', [
                 'status' => $response->status(),
                 'successful' => $response->successful(),
-                'body' => $response->body()
+                'body' => $response->body(),
+                'timeout' => !$response->successful() && $response->clientError()
             ]);
 
             if ($response->successful()) {
@@ -263,16 +265,32 @@ class MessagingService
                 Log::error('Failed to send multiple SMS', [
                     'count' => count($messages),
                     'status' => $response->status(),
-                    'response' => $response->body()
+                    'response' => $response->body(),
+                    'is_timeout' => $response->clientError(),
+                    'is_server_error' => $response->serverError()
                 ]);
                 
+                // Return error immediately to prevent hanging
                 return [
                     'success' => false,
                     'error' => 'Failed to send multiple SMS',
                     'status' => $response->status(),
-                    'response' => $response->body()
+                    'response' => $response->body(),
+                    'is_timeout' => $response->clientError()
                 ];
             }
+        } catch (\Illuminate\Http\Client\ConnectionException $e) {
+            Log::error('Connection timeout sending multiple SMS', [
+                'count' => count($messages),
+                'error' => $e->getMessage(),
+                'is_timeout' => true
+            ]);
+            
+            return [
+                'success' => false,
+                'error' => 'Connection timeout: Failed to send multiple SMS',
+                'is_timeout' => true
+            ];
         } catch (\Exception $e) {
             Log::error('Exception sending multiple SMS', [
                 'count' => count($messages),
@@ -282,7 +300,8 @@ class MessagingService
             
             return [
                 'success' => false,
-                'error' => 'Failed to send multiple SMS: ' . $e->getMessage()
+                'error' => 'Failed to send multiple SMS: ' . $e->getMessage(),
+                'is_exception' => true
             ];
         }
     }
