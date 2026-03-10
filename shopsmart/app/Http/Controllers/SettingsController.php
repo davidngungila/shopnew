@@ -775,23 +775,9 @@ class SettingsController extends Controller
                             'error_type' => 'messaging_service_error',
                             'phone' => $phone,
                             'message' => $message,
-                            'reference_id' => $referenceId
-                        ]
-                    ], 500);
-                }
-                
-            } catch (\Exception $e) {
-                Log::error('SMS sending exception: ' . $e->getMessage());
-                
-                return response()->json([
-                    'success' => false,
-                    'message' => 'SMS sending failed: ' . $e->getMessage(),
-                    'debug' => [
-                        'error_type' => get_class($e),
-                        'error_message' => $e->getMessage(),
-                        'file' => $e->getFile(),
-                        'line' => $e->getLine(),
-                        'trace' => collect($e->getTrace())->take(3)->toArray()
+                            'reference_id' => $referenceId,
+                            'line' => $e->getLine(),
+                            'trace' => collect($e->getTrace())->take(3)->toArray()
                     ]
                 ], 500);
             }
@@ -865,6 +851,72 @@ class SettingsController extends Controller
         } catch (\Exception $e) {
             Log::error('Email configuration save failed: ' . $e->getMessage());
             return back()->with('error', 'Failed to save email configuration: ' . $e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Get SMS balance
+     */
+    public function getSmsBalance()
+    {
+        try {
+            // Use Messaging Service to get balance
+            $messagingService = new \App\Services\MessagingService();
+            $balance = $messagingService->getSmsBalance();
+            
+            if ($balance) {
+                return response()->json([
+                    'success' => true,
+                    'balance' => $balance
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to retrieve SMS balance'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception getting SMS balance: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve SMS balance: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get SMS logs
+     */
+    public function getSmsLogs()
+    {
+        try {
+            // Use Messaging Service to get logs
+            $messagingService = new \App\Services\MessagingService();
+            $logs = $messagingService->getSmsLogs([
+                'from' => 'TANZANIATIP',
+                'limit' => 10,
+                'offset' => 0
+            ]);
+            
+            if ($logs) {
+                return response()->json([
+                    'success' => true,
+                    'logs' => $logs['logs'] ?? []
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to retrieve SMS logs'
+                ], 500);
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception getting SMS logs: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve SMS logs: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

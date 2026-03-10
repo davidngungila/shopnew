@@ -228,6 +228,8 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::post('/sms/store', [SettingsController::class, 'smsStore'])->name('sms.store');
         Route::get('/sms/provider', [SettingsController::class, 'smsProvider'])->name('sms.provider');
         Route::post('/test-sms', [SettingsController::class, 'testSMS'])->name('test-sms');
+        Route::get('/balance', [SettingsController::class, 'getSmsBalance'])->name('balance');
+        Route::get('/logs', [SettingsController::class, 'getSmsLogs'])->name('logs');
         Route::delete('/{id}', [SettingsController::class, 'destroy'])->name('destroy');
         Route::post('/email/store', [SettingsController::class, 'emailStore'])->name('email.store');
         Route::post('/email/test', [SettingsController::class, 'testEmail'])->name('email.test');

@@ -95,6 +95,100 @@
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div class="flex items-center justify-between">
                 <div>
+                    <p class="text-sm font-medium text-gray-500">SMS Balance</p>
+                    <p class="text-2xl font-bold text-orange-600" x-text="smsBalance">Loading...</p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        <i class="fas fa-coins text-orange-500"></i> 
+                        Available credits
+                    </p>
+                </div>
+                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <i class="fas fa-coins text-orange-600"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SMS Logs Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- SMS Balance Details -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="fas fa-coins text-orange-600 mr-2"></i>
+                SMS Balance Details
+            </h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Current Balance</span>
+                    <span class="text-lg font-bold text-orange-600" x-text="smsBalanceDetails.balance">Loading...</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Currency</span>
+                    <span class="text-sm text-gray-900" x-text="smsBalanceDetails.currency">TZS</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                    <span class="text-sm font-medium text-gray-700">Last Updated</span>
+                    <span class="text-sm text-gray-900" x-text="smsBalanceDetails.lastUpdated">Just now</span>
+                </div>
+                <button @click="refreshSmsBalance()" class="w-full px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center justify-center">
+                    <i class="fas fa-sync-alt mr-2"></i>
+                    Refresh Balance
+                </button>
+            </div>
+        </div>
+
+        <!-- Recent SMS Logs -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center justify-between">
+                <span>
+                    <i class="fas fa-history text-green-600 mr-2"></i>
+                    Recent SMS Logs
+                </span>
+                <button @click="refreshSmsLogs()" class="text-sm px-3 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
+                    <i class="fas fa-sync-alt mr-1"></i>
+                    Refresh
+                </button>
+            </h3>
+            <div class="space-y-3">
+                <template x-if="smsLogs.length > 0">
+                    <template x-for="log in smsLogs" :key="log.id">
+                        <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="flex justify-between items-start mb-2">
+                                <div class="flex-1">
+                                    <p class="text-sm font-medium text-gray-900" x-text="log.to || 'Unknown'"></p>
+                                    <p class="text-xs text-gray-500" x-text="log.date || 'Unknown date'"></p>
+                                </div>
+                                <div class="flex items-center space-x-2">
+                                    <span class="px-2 py-1 text-xs rounded-full"
+                                          :class="{
+                                              'bg-green-100 text-green-800': log.status === 'delivered',
+                                              'bg-yellow-100 text-yellow-800': log.status === 'pending',
+                                              'bg-red-100 text-red-800': log.status === 'failed'
+                                          }"
+                                          x-text="log.status || 'unknown'"></span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-600 truncate" x-text="log.message || 'No message content'"></p>
+                            <div class="flex justify-between items-center mt-2">
+                                <span class="text-xs text-gray-500" x-text="log.cost ? 'Cost: ' + log.cost : ''"></span>
+                                <span class="text-xs text-gray-500" x-text="log.reference ? 'Ref: ' + log.reference : ''"></span>
+                            </div>
+                        </div>
+                    </template>
+                </template>
+                <template x:else>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-inbox text-4xl mb-3 text-gray-300"></i>
+                        <p class="text-sm">No SMS logs available</p>
+                        <p class="text-xs text-gray-400 mt-1">SMS activity will appear here</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between">
+                <div>
                     <p class="text-sm font-medium text-gray-500">Test Status</p>
                     <p class="text-2xl font-bold text-orange-600" x-text="testStatus">Ready</p>
                     <p class="text-xs text-gray-500 mt-1">
@@ -566,11 +660,88 @@ function communicationSettings() {
     return {
         activeConfigsCount: 0,
         testStatus: 'Ready',
-        dropdowns: {},
+        smsBalance: 'Loading...',
+        smsBalanceDetails: {
+            balance: 'Loading...',
+            currency: 'TZS',
+            lastUpdated: 'Just now'
+        },
+        smsLogs: [],
         
         init() {
-            this.updateActiveConfigsCount();
+            this.loadSmsBalance();
+            this.loadSmsLogs();
         },
+        
+        loadSmsBalance() {
+            fetch('/api/sms/balance', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.balance) {
+                    this.smsBalance = data.balance.sms_balance || '0';
+                    this.smsBalanceDetails.balance = data.balance.sms_balance || '0';
+                    this.smsBalanceDetails.currency = data.balance.currency || 'TZS';
+                    this.smsBalanceDetails.lastUpdated = new Date().toLocaleString();
+                } else {
+                    this.smsBalance = 'Error';
+                    this.smsBalanceDetails.balance = 'Error';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading SMS balance:', error);
+                this.smsBalance = 'Error';
+                this.smsBalanceDetails.balance = 'Error';
+            });
+        },
+        
+        loadSmsLogs() {
+            fetch('/api/sms/logs', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.logs) {
+                    this.smsLogs = data.logs.slice(0, 5).map(log => ({
+                        id: log.id || Math.random(),
+                        to: log.to || log.recipient || 'Unknown',
+                        message: log.message || log.text || 'No message content',
+                        status: log.status || 'unknown',
+                        date: log.date || log.created_at || new Date().toLocaleString(),
+                        cost: log.cost || (log.total_cost ? log.total_cost + ' TZS' : ''),
+                        reference: log.reference || log.reference_id || ''
+                    }));
+                } else {
+                    this.smsLogs = [];
+                }
+            })
+            .catch(error => {
+                console.error('Error loading SMS logs:', error);
+                this.smsLogs = [];
+            });
+        },
+        
+        refreshSmsBalance() {
+            this.smsBalance = 'Loading...';
+            this.smsBalanceDetails.balance = 'Loading...';
+            this.loadSmsBalance();
+        },
+        
+        refreshSmsLogs() {
+            this.smsLogs = [];
+            this.loadSmsLogs();
+        },
+        
+        dropdowns: {},
         
         updateActiveConfigsCount() {
             // Count active configurations (would be calculated from actual data)
