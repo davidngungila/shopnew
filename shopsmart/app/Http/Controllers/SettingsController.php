@@ -301,52 +301,6 @@ class SettingsController extends Controller
         return view('settings.communication.sms-provider', compact('smsProvider'));
     }
 
-    // Email Configuration - Edit
-    public function emailEdit($id)
-    {
-        $config = CommunicationConfig::findOrFail($id);
-        if ($config->type !== 'email') {
-            return redirect()->route('settings.communication.index')->with('error', 'Invalid configuration type.');
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'is_active' => 'boolean',
-            'mail_mailer' => 'nullable|in:smtp,sendmail,mailgun,ses,postmark,resend,log,array',
-            'mail_from_address' => 'required|email|max:255',
-            'mail_from_name' => 'nullable|string|max:255',
-            'mail_host' => 'nullable|string|max:255',
-            'mail_port' => 'nullable|integer|min:1|max:65535',
-            'mail_encryption' => 'nullable|in:tls,ssl,',
-            'mail_username' => 'nullable|string|max:255',
-            'mail_password' => 'nullable|string|max:255',
-        ]);
-
-        $configData = $config->config;
-        $configData['mail_mailer'] = $validated['mail_mailer'] ?? $configData['mail_mailer'] ?? 'smtp';
-        $configData['mail_from_address'] = $validated['mail_from_address'];
-        $configData['mail_from_name'] = $validated['mail_from_name'] ?? $configData['mail_from_name'] ?? '';
-        $configData['mail_host'] = $validated['mail_host'] ?? $configData['mail_host'] ?? '';
-        $configData['mail_port'] = $validated['mail_port'] ?? $configData['mail_port'] ?? '';
-        $configData['mail_encryption'] = $validated['mail_encryption'] ?? $configData['mail_encryption'] ?? 'tls';
-        $configData['mail_username'] = $validated['mail_username'] ?? $configData['mail_username'] ?? '';
-        
-        // Only update password if provided
-        if (!empty($validated['mail_password'])) {
-            $configData['mail_password'] = $validated['mail_password'];
-        }
-
-        $config->update([
-            'name' => $validated['name'],
-            'description' => $validated['description'] ?? null,
-            'is_active' => $validated['is_active'] ?? true,
-            'config' => $configData,
-        ]);
-
-        return redirect()->route('settings.communication.index')->with('success', 'Email configuration updated successfully.');
-    }
-
     // SMS Configuration - Create
     public function smsCreate()
     {
