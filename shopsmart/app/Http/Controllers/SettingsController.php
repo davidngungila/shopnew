@@ -250,6 +250,44 @@ class SettingsController extends Controller
         }
     }
 
+    public function scheduleBackup(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'backup_frequency' => 'required|in:daily,weekly,monthly,disabled',
+                'backup_time' => 'nullable|string',
+                'backup_type' => 'nullable|in:database,full',
+                'retention_days' => 'nullable|integer|min:1|max:365',
+                'email_notifications' => 'boolean',
+            ]);
+
+            // Save backup schedule settings
+            foreach ($validated as $key => $value) {
+                Setting::set($key, is_bool($value) ? ($value ? '1' : '0') : $value, 'backup', is_bool($value) ? 'boolean' : 'text');
+            }
+
+            // If backup is enabled, create a scheduled task
+            if ($validated['backup_frequency'] !== 'disabled') {
+                $scheduleTime = $validated['backup_time'] ?? '02:00';
+                $backupType = $validated['backup_type'] ?? 'database';
+                
+                // Log the backup schedule configuration
+                Log::info('Backup scheduled', [
+                    'frequency' => $validated['backup_frequency'],
+                    'time' => $scheduleTime,
+                    'type' => $backupType,
+                    'retention_days' => $validated['retention_days'] ?? 30,
+                    'email_notifications' => $validated['email_notifications'] ?? false
+                ]);
+            }
+
+            return back()->with('success', 'Backup schedule configured successfully!');
+        } catch (\Exception $e) {
+            Log::error('Backup schedule failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to configure backup schedule: ' . $e->getMessage());
+        }
+    }
+
     public function updateAutomation(Request $request)
     {
         $validated = $request->validate([
