@@ -387,24 +387,54 @@
             </button>
         </div>
         
-        <div class="space-y-4" x-data="activities" x-init="[
-            { icon: 'fa-envelope', color: 'blue', title: 'Email configuration tested', description: 'Gmail SMTP - Just now', status: 'Success', statusColor: 'green' },
-            { icon: 'fa-sms', color: 'green', title: 'SMS configuration created', description: 'Messaging Service - 1 hour ago', status: 'Created', statusColor: 'blue' },
-            { icon: 'fa-star', color: 'orange', title: 'Primary configuration changed', description: 'Email - 3 hours ago', status: 'Updated', statusColor: 'orange' },
-            { icon: 'fa-paper-plane', color: 'purple', title: 'Test message sent', description: 'Email & SMS - 5 hours ago', status: 'Sent', statusColor: 'purple' }
-        ]">
-            <template x-for="activity in activities">
-                <div class="flex items-center p-4 bg-gray-50 rounded-lg">
-                    <div class="w-8 h-8 bg-{{ activity.color }}-100 rounded-full flex items-center justify-center mr-4">
-                        <i class="fas {{ activity.icon }} text-{{ activity.color }}-600 text-sm"></i>
-                    </div>
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
-                        <p class="text-xs text-gray-500">{{ activity.description }}</p>
-                    </div>
-                    <span class="text-xs font-medium" :class="'text-' + activity.statusColor + '-600'">{{ activity.status }}</span>
+        <div class="space-y-4">
+            <!-- Email configuration tested -->
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-envelope text-blue-600 text-sm"></i>
                 </div>
-            </template>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">Email configuration tested</p>
+                    <p class="text-xs text-gray-500">Gmail SMTP - Just now</p>
+                </div>
+                <span class="text-xs font-medium text-green-600">Success</span>
+            </div>
+            
+            <!-- SMS configuration created -->
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-sms text-green-600 text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">SMS configuration created</p>
+                    <p class="text-xs text-gray-500">Messaging Service - 1 hour ago</p>
+                </div>
+                <span class="text-xs font-medium text-blue-600">Created</span>
+            </div>
+            
+            <!-- Primary configuration changed -->
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-star text-orange-600 text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">Primary configuration changed</p>
+                    <p class="text-xs text-gray-500">Email - 3 hours ago</p>
+                </div>
+                <span class="text-xs font-medium text-orange-600">Updated</span>
+            </div>
+            
+            <!-- Test message sent -->
+            <div class="flex items-center p-4 bg-gray-50 rounded-lg">
+                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-paper-plane text-purple-600 text-sm"></i>
+                </div>
+                <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900">Test message sent</p>
+                    <p class="text-xs text-gray-500">Email & SMS - 5 hours ago</p>
+                </div>
+                <span class="text-xs font-medium text-purple-600">Sent</span>
+            </div>
         </div>
     </div>
 </div>
