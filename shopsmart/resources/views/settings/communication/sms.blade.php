@@ -4,6 +4,14 @@
 
 @section('content')
 <div class="space-y-4 sm:space-y-6">
+    <!-- Debug Information -->
+    @if(isset($config))
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
+            <h3 class="text-sm font-medium text-yellow-800">Debug Information</h3>
+            <pre class="text-xs text-yellow-700 mt-2">{{ json_encode($config, JSON_PRETTY_PRINT) }}</pre>
+        </div>
+    @endif
+    
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
