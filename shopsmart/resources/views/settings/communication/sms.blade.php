@@ -4,14 +4,6 @@
 
 @section('content')
 <div class="space-y-4 sm:space-y-6">
-    <!-- Debug Information -->
-    @if(isset($config))
-        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-            <h3 class="text-sm font-medium text-yellow-800">Debug Information</h3>
-            <pre class="text-xs text-yellow-700 mt-2">{{ json_encode($config, JSON_PRETTY_PRINT) }}</pre>
-        </div>
-    @endif
-    
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
@@ -49,7 +41,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Configuration Name <span class="text-red-500">*</span></label>
                         <input type="text" name="name" value="{{ old('name', $config->name ?? '') }}" required
                             class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="e.g., Primary Twilio, Backup SMS">
+                            placeholder="e.g., Primary SMS, Business SMS">
                     </div>
                     <div>
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Status <span class="text-gray-400">(Optional)</span></label>
@@ -77,57 +69,31 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">SMS Provider <span class="text-gray-400">(Optional)</span></label>
-                        <select name="sms_provider" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]">
-                            <option value="twilio" {{ old('sms_provider', $config->config['sms_provider'] ?? 'twilio') == 'twilio' ? 'selected' : '' }}>Twilio</option>
-                            <option value="nexmo" {{ old('sms_provider', $config->config['sms_provider'] ?? 'nexmo') == 'nexmo' ? 'selected' : '' }}>Vonage (Nexmo)</option>
-                            <option value="aws_sns" {{ old('sms_provider', $config->config['sms_provider'] ?? 'aws_sns') == 'aws_sns' ? 'selected' : '' }}>AWS SNS</option>
-                            <option value="messagebird" {{ old('sms_provider', $config->config['sms_provider'] ?? 'messagebird') == 'messagebird' ? 'selected' : '' }}>MessageBird</option>
-                            <option value="plivo" {{ old('sms_provider', $config->config['sms_provider'] ?? 'plivo') == 'plivo' ? 'selected' : '' }}>Plivo</option>
-                            <option value="custom" {{ old('sms_provider', $config->config['sms_provider'] ?? 'custom') == 'custom' ? 'selected' : '' }}>Custom API</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">API Key / Account SID <span class="text-gray-400">(Optional)</span></label>
-                        <input type="text" name="sms_api_key" value="{{ old('sms_api_key', $config->config['sms_api_key'] ?? '') }}"
-                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">API Secret / Auth Token <span class="text-gray-400">(Optional)</span></label>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">API Secret / Auth Token <span class="text-red-500">*</span></label>
                         <input type="password" name="sms_api_secret" value="{{ old('sms_api_secret', $config->config['sms_api_secret'] ?? '') }}"
                             class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="{{ isset($config->config['sms_api_secret']) && $config->config['sms_api_secret'] ? '•••••••• (leave blank to keep current)' : '••••••••' }}">
+                            placeholder="cedcce9becad866f59beac1fd5a235bc"
+                            required>
                     </div>
 
                     <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">From Number / Sender ID <span class="text-gray-400">(Optional)</span></label>
-                        <input type="text" name="sms_from" value="{{ old('sms_from', $config->config['sms_from'] ?? '') }}"
+                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">From Number / Sender ID <span class="text-red-500">*</span></label>
+                        <input type="text" name="sms_from" value="{{ old('sms_from', $config->config['sms_from'] ?? 'TANZANIATIP') }}"
                             class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="+1234567890 or SenderID">
+                            placeholder="TANZANIATIP"
+                            required>
                     </div>
+                </div>
 
-                    <div class="sm:col-span-2">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">API URL (Custom Provider Only) <span class="text-gray-400">(Optional)</span></label>
-                        <input type="url" name="sms_api_url" value="{{ old('sms_api_url', $config->config['sms_api_url'] ?? '') }}"
-                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="https://api.example.com/send">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Region (Optional)</label>
-                        <input type="text" name="sms_region" value="{{ old('sms_region', $config->config['sms_region'] ?? '') }}"
-                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="us-east-1">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Default Country Code <span class="text-gray-400">(Optional)</span></label>
-                        <input type="text" name="sms_country_code" value="{{ old('sms_country_code', $config->config['sms_country_code'] ?? '+1') }}"
-                            class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="+1">
+                <!-- API Configuration Info -->
+                <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <h3 class="text-sm font-medium text-blue-800 mb-2">API Configuration (Hardcoded)</h3>
+                    <div class="text-xs text-blue-700 space-y-1">
+                        <p><strong>Provider:</strong> Messaging Service (messaging-service.co.tz)</p>
+                        <p><strong>API URL:</strong> https://messaging-service.co.tz/api/sms/v2/text/single</p>
+                        <p><strong>Method:</strong> POST</p>
+                        <p><strong>Content-Type:</strong> application/json</p>
+                        <p><strong>Authorization:</strong> Bearer [Your Token]</p>
                     </div>
                 </div>
             </div>
@@ -144,7 +110,7 @@
                     <div class="flex-1">
                         <label class="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Test Phone Number</label>
                         <input type="tel" id="test_phone" class="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#009245]"
-                            placeholder="+1234567890">
+                            placeholder="255716718040">
                     </div>
                     <div class="flex items-end">
                         <button type="button" onclick="testSMS()" class="w-full sm:w-auto px-4 sm:px-6 py-2 bg-[#009245] text-white rounded-lg hover:bg-[#007a38] text-sm sm:text-base font-semibold transition-colors flex items-center justify-center space-x-2">

@@ -14,9 +14,10 @@ class MessagingService
 
     public function __construct()
     {
-        $this->bearerToken = 'f9a89f439206e27169ead766463ca92c';
-        $this->baseUrl = 'https://messaging-service.co.tz/api/v2';
-        $this->fromNumber = 'ShopSmart';
+        // Hardcoded API configuration for messaging-service.co.tz
+        $this->bearerToken = 'cedcce9becad866f59beac1fd5a235bc';
+        $this->baseUrl = 'https://messaging-service.co.tz/api/sms/v2';
+        $this->fromNumber = 'TANZANIATIP';
     }
 
     /**
@@ -51,10 +52,7 @@ class MessagingService
                     'response' => $response->body()
                 ]);
                 
-                return [
-                    'error' => 'Failed to retrieve SMS balance',
-                    'status' => $response->status()
-                ];
+                return null;
             }
         } catch (\Exception $e) {
             Log::error('Exception getting SMS balance', [
@@ -62,9 +60,7 @@ class MessagingService
                 'trace' => $e->getTraceAsString()
             ]);
             
-            return [
-                'error' => 'Failed to retrieve SMS balance: ' . $e->getMessage()
-            ];
+            return null;
         }
     }
 
@@ -88,27 +84,9 @@ class MessagingService
                     $queryParams['to'] = $filters['to'];
                 }
                 
-                if (isset($filters['sentSince'])) {
-                    $queryParams['sentSince'] = $filters['sentSince'];
-                }
-                
-                if (isset($filters['sentUntil'])) {
-                    $queryParams['sentUntil'] = $filters['sentUntil'];
-                }
-                
-                if (isset($filters['limit'])) {
-                    $queryParams['limit'] = min($filters['limit'], 500); // Max 500
-                }
-                
-                if (isset($filters['offset'])) {
-                    $queryParams['offset'] = $filters['offset'];
-                }
-                
-                if (!empty($queryParams)) {
-                    $url .= '?' . http_build_query($queryParams);
-                }
+                $url .= '?' . http_build_query($queryParams);
             }
-
+            
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->bearerToken,
@@ -121,8 +99,7 @@ class MessagingService
                 $data = $response->json();
                 
                 Log::info('SMS logs retrieved successfully', [
-                    'filters' => $filters,
-                    'count' => count($data['results'] ?? []),
+                    'logs' => $data['logs'] ?? [],
                     'response' => $data
                 ]);
                 
@@ -151,7 +128,7 @@ class MessagingService
     }
 
     /**
-     * Send single SMS message
+     * Send SMS message
      */
     public function sendSms($to, $message, $reference = null)
     {
@@ -160,12 +137,13 @@ class MessagingService
                 'from' => $this->fromNumber,
                 'to' => $to,
                 'text' => $message,
-                'flash' => 0
+                'flash' => 0,
+                'reference' => $reference ?? uniqid('sms_')
             ];
-            
-            if ($reference) {
-                $payload['reference'] = $reference;
-            }
+
+            Log::info('Sending SMS', [
+                'payload' => $payload
+            ]);
 
             $response = Http::timeout(30)
                 ->withHeaders([
@@ -175,13 +153,18 @@ class MessagingService
                 ])
                 ->post($this->baseUrl . '/text/single', $payload);
 
+            Log::info('SMS API response', [
+                'status' => $response->status(),
+                'successful' => $response->successful(),
+                'body' => $response->body()
+            ]);
+
             if ($response->successful()) {
                 $data = $response->json();
                 
                 Log::info('SMS sent successfully', [
                     'to' => $to,
-                    'message' => $message,
-                    'reference' => $reference,
+                    'reference' => $payload['reference'],
                     'response' => $data
                 ]);
                 
@@ -189,20 +172,19 @@ class MessagingService
             } else {
                 Log::error('Failed to send SMS', [
                     'to' => $to,
-                    'message' => $message,
                     'status' => $response->status(),
                     'response' => $response->body()
                 ]);
                 
                 return [
                     'error' => 'Failed to send SMS',
-                    'status' => $response->status()
+                    'status' => $response->status(),
+                    'response' => $response->body()
                 ];
             }
         } catch (\Exception $e) {
             Log::error('Exception sending SMS', [
                 'to' => $to,
-                'message' => $message,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -219,18 +201,25 @@ class MessagingService
     public function sendMultipleSms($messages)
     {
         try {
-            $payload = [
-                'from' => $this->fromNumber,
-                'messages' => $messages
-            ];
+            // Handle both single message and array of messages
+            if (isset($messages['from']) && isset($messages['messages'])) {
+                // Already in correct format
+                $payload = $messages;
+            } else {
+                // Convert to expected format
+                $payload = [
+                    'from' => $this->fromNumber,
+                    'messages' => is_array($messages) ? $messages : [$messages]
+                ];
+            }
 
             Log::info('Sending multiple SMS', [
                 'payload' => $payload,
-                'count' => count($messages)
+                'count' => count($payload['messages'] ?? [])
             ]);
 
             // Use shorter timeout to prevent hanging
-            $response = Http::timeout(15)  // Reduced from 30 to 15 seconds
+            $response = Http::timeout(15)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->bearerToken,
                     'Content-Type' => 'application/json',
@@ -249,7 +238,7 @@ class MessagingService
                 $data = $response->json();
                 
                 Log::info('Multiple SMS sent successfully', [
-                    'count' => count($messages),
+                    'count' => count($payload['messages'] ?? []),
                     'response' => $data
                 ]);
                 
@@ -263,7 +252,7 @@ class MessagingService
                 ];
             } else {
                 Log::error('Failed to send multiple SMS', [
-                    'count' => count($messages),
+                    'count' => count($payload['messages'] ?? []),
                     'status' => $response->status(),
                     'response' => $response->body(),
                     'is_timeout' => $response->clientError(),
@@ -316,14 +305,15 @@ class MessagingService
                 'from' => $this->fromNumber,
                 'to' => $to,
                 'text' => $message,
-                'date' => $date,
-                'time' => $time,
-                'flash' => 0
+                'schedule_date' => $date,
+                'schedule_time' => $time,
+                'flash' => 0,
+                'reference' => $reference ?? uniqid('sms_')
             ];
-            
-            if ($reference) {
-                $payload['reference'] = $reference;
-            }
+
+            Log::info('Scheduling SMS', [
+                'payload' => $payload
+            ]);
 
             $response = Http::timeout(30)
                 ->withHeaders([
@@ -331,17 +321,22 @@ class MessagingService
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json'
                 ])
-                ->post($this->baseUrl . '/text/single', $payload);
+                ->post($this->baseUrl . '/schedule', $payload);
+
+            Log::info('SMS Schedule response', [
+                'status' => $response->status(),
+                'successful' => $response->successful(),
+                'body' => $response->body()
+            ]);
 
             if ($response->successful()) {
                 $data = $response->json();
                 
                 Log::info('SMS scheduled successfully', [
                     'to' => $to,
-                    'message' => $message,
-                    'date' => $date,
-                    'time' => $time,
-                    'reference' => $reference,
+                    'reference' => $payload['reference'],
+                    'schedule_date' => $date,
+                    'schedule_time' => $time,
                     'response' => $data
                 ]);
                 
@@ -349,24 +344,19 @@ class MessagingService
             } else {
                 Log::error('Failed to schedule SMS', [
                     'to' => $to,
-                    'message' => $message,
-                    'date' => $date,
-                    'time' => $time,
                     'status' => $response->status(),
                     'response' => $response->body()
                 ]);
                 
                 return [
                     'error' => 'Failed to schedule SMS',
-                    'status' => $response->status()
+                    'status' => $response->status(),
+                    'response' => $response->body()
                 ];
             }
         } catch (\Exception $e) {
             Log::error('Exception scheduling SMS', [
                 'to' => $to,
-                'message' => $message,
-                'date' => $date,
-                'time' => $time,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -378,67 +368,45 @@ class MessagingService
     }
 
     /**
-     * Get delivery reports
+     * Get SMS delivery status
      */
-    public function getDeliveryReports($sentSince = null, $sentUntil = null)
+    public function getSmsStatus($reference)
     {
         try {
-            $url = $this->baseUrl . '/reports';
-            
-            if ($sentSince || $sentUntil) {
-                $queryParams = [];
-                
-                if ($sentSince) {
-                    $queryParams['sentSince'] = $sentSince;
-                }
-                
-                if ($sentUntil) {
-                    $queryParams['sentUntil'] = $sentUntil;
-                }
-                
-                $url .= '?' . http_build_query($queryParams);
-            }
-
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Authorization' => 'Bearer ' . $this->bearerToken,
                     'Content-Type' => 'application/json',
                     'Accept' => 'application/json'
                 ])
-                ->get($url);
+                ->get($this->baseUrl . '/status/' . $reference);
 
             if ($response->successful()) {
                 $data = $response->json();
                 
-                Log::info('Delivery reports retrieved successfully', [
-                    'sentSince' => $sentSince,
-                    'sentUntil' => $sentUntil,
-                    'count' => count($data['results'] ?? []),
+                Log::info('SMS status retrieved successfully', [
+                    'reference' => $reference,
                     'response' => $data
                 ]);
                 
                 return $data;
             } else {
-                Log::error('Failed to get delivery reports', [
-                    'sentSince' => $sentSince,
-                    'sentUntil' => $sentUntil,
+                Log::error('Failed to get SMS status', [
+                    'reference' => $reference,
                     'status' => $response->status(),
                     'response' => $response->body()
                 ]);
                 
-                return [
-                    'error' => 'Failed to retrieve delivery reports',
-                    'status' => $response->status()
-                ];
+                return null;
             }
         } catch (\Exception $e) {
-            Log::error('Exception getting delivery reports', [
-                'sentSince' => $sentSince,
-                'sentUntil' => $sentUntil,
+            Log::error('Exception getting SMS status', [
+                'reference' => $reference,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
             
+            return null;
             return [
                 'error' => 'Failed to retrieve delivery reports: ' . $e->getMessage()
             ];
