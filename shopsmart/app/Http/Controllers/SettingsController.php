@@ -706,11 +706,19 @@ class SettingsController extends Controller
             }
 
             // Validate configuration has required fields
+            Log::info('SMS Configuration Validation', [
+                'config_data' => $configData,
+                'has_sms_api_secret' => !empty($configData['sms_api_secret']),
+                'has_sms_from' => !empty($configData['sms_from']),
+                'config_keys' => array_keys($configData)
+            ]);
+            
             if (empty($configData['sms_api_secret'])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'SMS configuration incomplete. Missing API Secret.',
                     'debug' => [
+                        'config_data' => $configData,
                         'has_sms_api_secret' => !empty($configData['sms_api_secret']),
                         'has_sms_from' => !empty($configData['sms_from']),
                         'config_keys' => array_keys($configData)
@@ -721,17 +729,12 @@ class SettingsController extends Controller
             // Use Messaging Service for actual SMS sending
             $messagingService = new \App\Services\MessagingService();
             
-            // Prepare recipients
-            $recipients = [$phone];
-            if (!empty($multipleNumbers)) {
-                $additionalNumbers = array_map('trim', explode(',', $multipleNumbers));
-                foreach ($additionalNumbers as $number) {
-                    $cleanNumber = preg_replace('/\D/', '', $number);
-                    if (preg_match('/^255\d{9}$/', $cleanNumber)) {
-                        $recipients[] = $cleanNumber;
-                    }
-                }
-            }
+            // For testing, let's try with hardcoded values first
+            Log::info('Attempting SMS send with hardcoded values', [
+                'phone' => $phone,
+                'message' => $message,
+                'reference_id' => $referenceId
+            ]);
             
             // Send SMS based on schedule time
             try {
@@ -766,7 +769,10 @@ class SettingsController extends Controller
                         'debug' => [
                             'result' => $result,
                             'details' => $result['status'] ?? 'unknown',
-                            'error_type' => 'messaging_service_error'
+                            'error_type' => 'messaging_service_error',
+                            'phone' => $phone,
+                            'message' => $message,
+                            'reference_id' => $referenceId
                         ]
                     ], 500);
                 }
