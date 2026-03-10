@@ -39,6 +39,236 @@
     </div>
     @endif
 
+    <!-- Advanced Configuration Options -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-sliders-h mr-2 text-indigo-500"></i>
+            Advanced Configuration Options
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Message Templates -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-file-alt mr-1 text-blue-500"></i>Message Templates
+                </label>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="enable_templates" value="1" 
+                                   class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                                   x-model="config.enable_templates">
+                            <label for="enable_templates" class="ml-2 text-sm font-medium text-gray-700">
+                                Enable Message Templates
+                            </label>
+                        </div>
+                        <button @click="showTemplates()" class="text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-list mr-1"></i>Manage Templates
+                        </button>
+                    </div>
+                    
+                    <div x-show="config.enable_templates" class="mt-3">
+                        <select name="default_template" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                x-model="config.default_template">
+                            <option value="">Select default template</option>
+                            <option value="welcome">Welcome Message</option>
+                            <option value="verification">Verification Code</option>
+                            <option value="appointment">Appointment Reminder</option>
+                            <option value="payment">Payment Confirmation</option>
+                            <option value="promotion">Promotional Message</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scheduling Options -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    <i class="fas fa-clock mr-1 text-green-500"></i>Scheduling Options
+                </label>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                        <div class="flex items-center">
+                            <input type="checkbox" name="enable_scheduling" value="1" 
+                                   class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                   x-model="config.enable_scheduling">
+                            <label for="enable_scheduling" class="ml-2 text-sm font-medium text-gray-700">
+                                Enable Message Scheduling
+                            </label>
+                        </div>
+                        <button @click="showSchedulePreview()" class="text-green-600 hover:text-green-800 text-sm">
+                            <i class="fas fa-calendar mr-1"></i>Preview Schedule
+                        </button>
+                    </div>
+                    
+                    <div x-show="config.enable_scheduling" class="mt-3 space-y-3">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Default Send Time</label>
+                            <input type="time" name="default_send_time" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                   value="09:00" 
+                                   x-model="config.default_send_time">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Time Zone</label>
+                            <select name="timezone" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    x-model="config.timezone">
+                                <option value="UTC">UTC</option>
+                                <option value="Africa/Nairobi">Africa/Nairobi (EAT)</option>
+                                <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam (EAT)</option>
+                                <option value="Africa/Kampala">Africa/Kampala (EAT)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rate Limiting & Analytics -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-chart-line mr-2 text-orange-500"></i>
+            Rate Limiting & Analytics
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Messages Per Hour</label>
+                <input type="number" name="rate_limit_hour" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                       placeholder="100" 
+                       x-model="config.rate_limit_hour">
+                <p class="text-xs text-gray-500 mt-1">Maximum messages per hour</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Messages Per Day</label>
+                <input type="number" name="rate_limit_day" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                       placeholder="1000" 
+                       x-model="config.rate_limit_day">
+                <p class="text-xs text-gray-500 mt-1">Maximum messages per day</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Analytics Tracking</label>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="track_delivery" value="1" 
+                               class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                               x-model="config.track_delivery">
+                        <label for="track_delivery" class="ml-2 text-sm font-medium text-gray-700">
+                            Track Delivery Status
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" name="track_clicks" value="1" 
+                               class="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                               x-model="config.track_clicks">
+                        <label for="track_clicks" class="ml-2 text-sm font-medium text-gray-700">
+                            Track Link Clicks
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security & Compliance -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-shield-alt mr-2 text-red-500"></i>
+            Security & Compliance
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Content Filtering</label>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="filter_spam" value="1" 
+                               class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                               x-model="config.filter_spam">
+                        <label for="filter_spam" class="ml-2 text-sm font-medium text-gray-700">
+                            Enable Spam Filtering
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" name="filter_profanity" value="1" 
+                               class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                               x-model="config.filter_profanity">
+                        <label for="filter_profanity" class="ml-2 text-sm font-medium text-gray-700">
+                            Enable Profanity Filter
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Compliance Settings</label>
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <input type="checkbox" name="gdpr_compliance" value="1" 
+                               class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                               x-model="config.gdpr_compliance">
+                        <label for="gdpr_compliance" class="ml-2 text-sm font-medium text-gray-700">
+                            GDPR Compliance Mode
+                        </label>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <input type="checkbox" name="opt_out_required" value="1" 
+                               class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                               x-model="config.opt_out_required">
+                        <label for="opt_out_required" class="ml-2 text-sm font-medium text-gray-700">
+                            Require Opt-in Confirmation
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Webhook Configuration -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="fas fa-link mr-2 text-purple-500"></i>
+            Webhook Configuration
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Delivery Report URL</label>
+                <input type="url" name="delivery_webhook" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                       placeholder="https://yourapp.com/webhook/delivery" 
+                       x-model="config.delivery_webhook">
+                <p class="text-xs text-gray-500 mt-1">URL to receive delivery status updates</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Reply Webhook URL</label>
+                <input type="url" name="reply_webhook" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                       placeholder="https://yourapp.com/webhook/reply" 
+                       x-model="config.reply_webhook">
+                <p class="text-xs text-gray-500 mt-1">URL to receive message replies</p>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <button @click="testWebhooks()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+                <i class="fas fa-plug mr-2"></i>Test Webhook Configuration
+            </button>
+        </div>
+    </div>
+
     <!-- SMS Service Types -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -524,7 +754,23 @@ function smsConfig() {
             api_base_url: 'https://messaging-service.co.tz',
             api_token: '',
             is_primary: false,
-            enable_test_mode: false
+            enable_test_mode: false,
+            // Advanced options
+            enable_templates: false,
+            default_template: '',
+            enable_scheduling: false,
+            default_send_time: '09:00',
+            timezone: 'Africa/Nairobi',
+            rate_limit_hour: 100,
+            rate_limit_day: 1000,
+            track_delivery: true,
+            track_clicks: false,
+            filter_spam: true,
+            filter_profanity: false,
+            gdpr_compliance: false,
+            opt_out_required: false,
+            delivery_webhook: '',
+            reply_webhook: ''
         },
         testPhone: '+255716718040',
         testMessage: 'This is a test SMS to verify your SMS configuration.',
@@ -616,6 +862,80 @@ function smsConfig() {
             .catch(error => {
                 alert('❌ Test SMS failed!\n\nError: ' + error.message);
             });
+        },
+        
+        showTemplates() {
+            alert('Message Templates Manager\n\nAvailable templates:\n• Welcome Message\n• Verification Code\n• Appointment Reminder\n• Payment Confirmation\n• Promotional Message\n\nThis would open a template management interface.');
+        },
+        
+        showSchedulePreview() {
+            if (!this.config.enable_scheduling) {
+                alert('Please enable message scheduling first.');
+                return;
+            }
+            
+            alert('Schedule Preview\n\nDefault Send Time: ' + this.config.default_send_time + '\nTime Zone: ' + this.config.timezone + '\n\nMessages will be sent at the specified time in the selected timezone.');
+        },
+        
+        testWebhooks() {
+            if (!this.config.delivery_webhook && !this.config.reply_webhook) {
+                alert('Please configure at least one webhook URL first.');
+                return;
+            }
+            
+            alert('Testing webhook configuration...\n\nDelivery Webhook: ' + (this.config.delivery_webhook || 'Not configured') + '\nReply Webhook: ' + (this.config.reply_webhook || 'Not configured') + '\n\nThis would send test webhook payloads to your configured URLs.');
+        },
+        
+        validateConfiguration() {
+            const errors = [];
+            
+            // Validate rate limits
+            if (this.config.rate_limit_hour > 1000) {
+                errors.push('Hourly rate limit should not exceed 1000 messages');
+            }
+            
+            if (this.config.rate_limit_day > 24000) {
+                errors.push('Daily rate limit should not exceed 24,000 messages');
+            }
+            
+            // Validate webhook URLs
+            if (this.config.delivery_webhook && !this.isValidUrl(this.config.delivery_webhook)) {
+                errors.push('Delivery webhook URL is not valid');
+            }
+            
+            if (this.config.reply_webhook && !this.isValidUrl(this.config.reply_webhook)) {
+                errors.push('Reply webhook URL is not valid');
+            }
+            
+            // Validate compliance settings
+            if (this.config.gdpr_compliance && !this.config.opt_out_required) {
+                errors.push('GDPR compliance requires opt-in confirmation');
+            }
+            
+            if (errors.length > 0) {
+                alert('Configuration Validation Errors:\n\n' + errors.join('\n'));
+                return false;
+            }
+            
+            return true;
+        },
+        
+        isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        },
+        
+        generateWebhookSecret() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let result = '';
+            for (let i = 0; i < 32; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
         }
     }
 }
