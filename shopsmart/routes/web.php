@@ -219,29 +219,15 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     // Communication Configurations
     Route::prefix('communication')->name('communication.')->group(function () {
         Route::get('/', [SettingsController::class, 'communicationIndex'])->name('index');
+        Route::get('/email/create', [SettingsController::class, 'emailCreate'])->name('email.create');
+        Route::post('/email', [SettingsController::class, 'emailStore'])->name('email.store');
+        Route::get('/sms/create', [SettingsController::class, 'smsCreate'])->name('sms.create');
+        Route::post('/sms', [SettingsController::class, 'smsStore'])->name('sms.store');
         Route::post('/{id}/set-primary', [SettingsController::class, 'setPrimary'])->name('set-primary');
         Route::delete('/{id}', [SettingsController::class, 'destroy'])->name('destroy');
-        
-        // Email Configurations
-        Route::prefix('email')->name('email.')->group(function () {
-            Route::get('/create', [SettingsController::class, 'emailCreate'])->name('create');
-            Route::post('/store', [SettingsController::class, 'emailStore'])->name('store');
-            Route::get('/{id}/edit', [SettingsController::class, 'emailEdit'])->name('edit');
-            Route::put('/{id}', [SettingsController::class, 'emailUpdate'])->name('update');
-        });
-        
-        // SMS Configurations
-        Route::prefix('sms')->name('sms.')->group(function () {
-            Route::get('/create', [SettingsController::class, 'smsCreate'])->name('create');
-            Route::post('/store', [SettingsController::class, 'smsStore'])->name('store');
-            Route::get('/{id}/edit', [SettingsController::class, 'smsEdit'])->name('edit');
-            Route::put('/{id}', [SettingsController::class, 'smsUpdate'])->name('update');
-        });
-        
-        // Test endpoints
-        Route::post('/test-email', [SettingsController::class, 'testEmail'])->name('test-email');
-        Route::post('/test-sms', [SettingsController::class, 'testSMS'])->name('test-sms');
     });
+    
+    // Test endpoints
     
     Route::get('/backup', [SettingsController::class, 'backup'])->name('backup');
     Route::post('/backup/create', [SettingsController::class, 'createBackup'])->name('backup.create');

@@ -8,18 +8,17 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Communication Settings</h1>
-            <p class="text-gray-600 mt-1">Manage email, SMS, and notification configurations</p>
+            <p class="text-gray-600 mt-1">Manage email and SMS configurations</p>
         </div>
         <div class="flex gap-2">
-            <button @click="testAllConfigs()" class="px-4 py-2 text-white rounded-lg flex items-center space-x-2 hover:bg-blue-700 transition-colors" style="background-color: #009245;">
-                <i class="fas fa-vial"></i>
-                <span>Test All</span>
-            </button>
-            <button @click="exportConfigs()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
-                <i class="fas fa-download mr-2"></i>Export
-            </button>
+            <a href="{{ route('settings.communication.email.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>New Email Config
+            </a>
+            <a href="{{ route('settings.communication.sms.create') }}" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>New SMS Config
+            </a>
             <a href="{{ route('settings.index') }}" class="px-4 py-2 text-white rounded-lg hover:bg-gray-700 transition-colors" style="background-color: #6b7280;">
-                <i class="fas fa-arrow-left mr-2"></i>Back
+                <i class="fas fa-arrow-left mr-2"></i>Back to Settings
             </a>
         </div>
     </div>
