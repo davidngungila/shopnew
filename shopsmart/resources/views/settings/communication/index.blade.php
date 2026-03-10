@@ -459,10 +459,10 @@ function communicationSettings() {
         
         deleteConfig(type, configId) {
             if (confirm(`Are you sure you want to delete this ${type} configuration? This action cannot be undone.`)) {
-                // Submit delete form
+                // Submit delete form using proper URL construction
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = `{{ route('settings.communication.destroy') }}`.replace(':id', configId);
+                form.action = `/settings/communication/${configId}`;
                 
                 // Add CSRF token
                 const csrfToken = document.createElement('input');
