@@ -260,4 +260,13 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::get('/activity', [ProfileController::class, 'activity'])->name('activity');
         Route::get('/security', [ProfileController::class, 'security'])->name('security');
     });
+
+    // SMS Logs Routes
+    Route::prefix('admin/sms')->name('admin.sms.')->group(function () {
+        Route::get('/logs', [App\Http\Controllers\Admin\SmsLogsController::class, 'index'])->name('logs.index');
+        Route::post('/logs/sync', [App\Http\Controllers\Admin\SmsLogsController::class, 'syncFromApi'])->name('logs.sync');
+        Route::get('/logs/{smsLog}', [App\Http\Controllers\Admin\SmsLogsController::class, 'show'])->name('logs.show');
+        Route::get('/logs/export/pdf', [App\Http\Controllers\Admin\SmsLogsController::class, 'exportPdf'])->name('logs.export.pdf');
+        Route::get('/logs/export/excel', [App\Http\Controllers\Admin\SmsLogsController::class, 'exportExcel'])->name('logs.export.excel');
+    });
 });
