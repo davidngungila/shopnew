@@ -399,10 +399,10 @@
                         <i class="fas {{ activity.icon }} text-{{ activity.color }}-600 text-sm"></i>
                     </div>
                     <div class="flex-1">
-                        <p class="text-sm font-medium text-gray-900" x-text="activity.title"></p>
-                        <p class="text-xs text-gray-500" x-text="activity.description"></p>
+                        <p class="text-sm font-medium text-gray-900">{{ activity.title }}</p>
+                        <p class="text-xs text-gray-500">{{ activity.description }}</p>
                     </div>
-                    <span class="text-xs font-medium" :class="`text-${activity.statusColor}-600`" x-text="activity.status"></span>
+                    <span class="text-xs font-medium" :class="'text-' + activity.statusColor + '-600'">{{ activity.status }}</span>
                 </div>
             </template>
         </div>
