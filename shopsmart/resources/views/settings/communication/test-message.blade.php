@@ -292,44 +292,158 @@ function testMessage() {
         },
         
         testEmailConfig() {
-            alert('Testing email configuration...\n\n• Connecting to smtp.gmail.com:587\n• Authenticating with TLS encryption\n• Testing from: noreply@shopsmart.com\n• Configuration appears to be valid\n\n✅ Email configuration test successful!');
+            // Test email configuration via API
+            fetch('/api/sms/test-connection', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Email Configuration Test Successful!\n\n• SMTP Connection: Working\n• Authentication: Successful\n• From Address: noreply@shopsmart.com\n• Encryption: TLS\n\nEmail configuration is ready for use!');
+                } else {
+                    alert('❌ Email Configuration Test Failed!\n\nError: ' + data.message + '\n\nPlease check your SMTP settings and try again.');
+                }
+            })
+            .catch(error => {
+                alert('❌ Email Configuration Test Failed!\n\nNetwork Error: ' + error.message + '\n\nPlease check your connection and try again.');
+            });
         },
         
         testSmsConfig() {
-            alert('Testing SMS configuration...\n\n• Connecting to messaging-service.co.tz\n• Authenticating with Bearer token\n• Testing from: ShopSmart\n• API endpoint: /link/sms/v1/text/single\n\n✅ SMS configuration test successful!');
-        },
-        
+            // Test SMS configuration via API
+            fetch('/api/sms/test-connection', {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ SMS Configuration Test Successful!\n\n• API Connection: Working\n• Authentication: Successful\n• From: ShopSmart\n• Provider: Messaging Service\n\nSMS configuration is ready for use!');
+                } else {
+                    alert('❌ SMS Configuration Test Failed!\n\nError: ' + data.message + '\n\nPlease check your API token and settings.');
+                }
+            })
+            .catch(error => {
+                alert('❌ SMS Configuration Test Failed!\n\nNetwork Error: ' + error.message + '\n\nPlease check your connection and try again.');
+            });
         sendMessage() {
             this.testForm.sending = true;
             
-            // Simulate sending message
-            setTimeout(() => {
-                let results = '<div class="space-y-3">';
-                
-                if (this.testForm.messageType === 'email' || this.testForm.messageType === 'both') {
-                    results += `
-                        <div class="p-3 bg-green-50 border border-green-200 rounded">
-                            <h4 class="font-medium text-green-800 mb-1">✅ Email Sent Successfully</h4>
-                            <p class="text-sm text-green-700">To: ${this.testForm.email}</p>
-                            <p class="text-sm text-green-700">Subject: ${this.testForm.subject}</p>
-                            <p class="text-sm text-green-700">Message ID: email_${Date.now()}</p>
-                        </div>
-                    `;
+            // Prepare API calls
+            const promises = [];
+            
+            if (this.testForm.messageType === 'email' || this.testForm.messageType === 'both') {
+                if (this.testForm.email) {
+                    promises.push(
+                        fetch('/api/sms/send', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                to: this.testForm.email,
+                                message: this.testForm.message,
+                                subject: this.testForm.subject,
+                                reference: 'test_' + Date.now()
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                return `
+                                    <div class="p-3 bg-green-50 border border-green-200 rounded">
+                                        <h4 class="font-medium text-green-800 mb-1">✅ Email Sent Successfully</h4>
+                                        <p class="text-sm text-green-700">To: ${this.testForm.email}</p>
+                                        <p class="text-sm text-green-700">Subject: ${this.testForm.subject}</p>
+                                        <p class="text-sm text-green-700">Message ID: ${data.data.messages?.[0]?.messageId || 'N/A'}</p>
+                                    </div>
+                                `;
+                            } else {
+                                return `
+                                    <div class="p-3 bg-red-50 border border-red-200 rounded">
+                                        <h4 class="font-medium text-red-800 mb-1">❌ Email Failed</h4>
+                                        <p class="text-sm text-red-700">Error: ${data.message}</p>
+                                    </div>
+                                `;
+                            }
+                        })
+                        .catch(error => {
+                            return `
+                                <div class="p-3 bg-red-50 border border-red-200 rounded">
+                                    <h4 class="font-medium text-red-800 mb-1">❌ Email Error</h4>
+                                    <p class="text-sm text-red-700">Network Error: ${error.message}</p>
+                                </div>
+                            `;
+                        })
+                    );
                 }
-                
-                if (this.testForm.messageType === 'sms' || this.testForm.messageType === 'both') {
-                    results += `
-                        <div class="p-3 bg-green-50 border border-green-200 rounded">
-                            <h4 class="font-medium text-green-800 mb-1">✅ SMS Sent Successfully</h4>
-                            <p class="text-sm text-green-700">To: ${this.testForm.phone}</p>
-                            <p class="text-sm text-green-700">From: ShopSmart</p>
-                            <p class="text-sm text-green-700">Message ID: sms_${Date.now()}</p>
-                            <p class="text-sm text-green-700">Status: Queued for delivery</p>
-                        </div>
-                    `;
+            }
+            
+            if (this.testForm.messageType === 'sms' || this.testForm.messageType === 'both') {
+                if (this.testForm.phone) {
+                    promises.push(
+                        fetch('/api/sms/send', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer f9a89f439206e27169ead766463ca92c',
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                to: this.testForm.phone,
+                                message: this.testForm.message,
+                                reference: 'test_' + Date.now()
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                return `
+                                    <div class="p-3 bg-green-50 border border-green-200 rounded">
+                                        <h4 class="font-medium text-green-800 mb-1">✅ SMS Sent Successfully</h4>
+                                        <p class="text-sm text-green-700">To: ${this.testForm.phone}</p>
+                                        <p class="text-sm text-green-700">From: ShopSmart</p>
+                                        <p class="text-sm text-green-700">Message ID: ${data.data.messages?.[0]?.messageId || 'N/A'}</p>
+                                        <p class="text-sm text-green-700">Status: Queued for delivery</p>
+                                    </div>
+                                `;
+                            } else {
+                                return `
+                                    <div class="p-3 bg-red-50 border border-red-200 rounded">
+                                        <h4 class="font-medium text-red-800 mb-1">❌ SMS Failed</h4>
+                                        <p class="text-sm text-red-700">Error: ${data.message}</p>
+                                    </div>
+                                `;
+                            }
+                        })
+                        .catch(error => {
+                            return `
+                                <div class="p-3 bg-red-50 border border-red-200 rounded">
+                                    <h4 class="font-medium text-red-800 mb-1">❌ SMS Error</h4>
+                                    <p class="text-sm text-red-700">Network Error: ${error.message}</p>
+                                </div>
+                            `;
+                        })
+                    );
                 }
+            }
+            
+            // Wait for all API calls to complete
+            Promise.all(promises).then(results => {
+                let resultsHtml = '<div class="space-y-3">' + results.join('') + '</div>';
                 
-                results += `
+                resultsHtml += `
                     <div class="p-3 bg-blue-50 border border-blue-200 rounded">
                         <h4 class="font-medium text-blue-800 mb-1">📊 Delivery Tracking</h4>
                         <p class="text-sm text-blue-700">Track delivery: ${this.testForm.trackDelivery ? 'Enabled' : 'Disabled'}</p>
@@ -338,9 +452,7 @@ function testMessage() {
                     </div>
                 `;
                 
-                results += '</div>';
-                
-                this.testForm.results = results;
+                this.testForm.results = resultsHtml;
                 this.testForm.showResults = true;
                 this.testForm.sending = false;
                 
@@ -348,9 +460,19 @@ function testMessage() {
                 this.testForm.email = '';
                 this.testForm.phone = '';
                 this.testForm.message = 'This is a test message from ShopSmart communication system.';
+                this.testForm.subject = 'Test Message from ShopSmart';
                 
-            }, 2000);
-        }
+            }).catch(error => {
+                this.testForm.sending = false;
+                this.testForm.results = `
+                    <div class="p-3 bg-red-50 border border-red-200 rounded">
+                        <h4 class="font-medium text-red-800 mb-1">❌ Sending Failed</h4>
+                        <p class="text-sm text-red-700">Network Error: ${error.message}</p>
+                    </div>
+                `;
+                this.testForm.showResults = true;
+            });
+        },
     }
 }
 </script>

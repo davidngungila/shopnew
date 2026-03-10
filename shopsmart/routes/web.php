@@ -268,4 +268,15 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::get('/logs/export/pdf', [App\Http\Controllers\Admin\SmsLogsController::class, 'exportPdf'])->name('logs.export.pdf');
         Route::get('/logs/export/excel', [App\Http\Controllers\Admin\SmsLogsController::class, 'exportExcel'])->name('logs.export.excel');
     });
+
+    // API Routes for Messaging Service
+    Route::prefix('api/sms')->name('api.sms.')->group(function () {
+        Route::get('/balance', [App\Http\Controllers\Api\SmsController::class, 'balance'])->name('balance');
+        Route::get('/logs', [App\Http\Controllers\Api\SmsController::class, 'logs'])->name('logs');
+        Route::post('/send', [App\Http\Controllers\Api\SmsController::class, 'send'])->name('send');
+        Route::post('/send-multiple', [App\Http\Controllers\Api\SmsController::class, 'sendMultiple'])->name('sendMultiple');
+        Route::post('/schedule', [App\Http\Controllers\Api\SmsController::class, 'schedule'])->name('schedule');
+        Route::get('/delivery-reports', [App\Http\Controllers\Api\SmsController::class, 'deliveryReports'])->name('deliveryReports');
+        Route::get('/test-connection', [App\Http\Controllers\Api\SmsController::class, 'testConnection'])->name('testConnection');
+    });
 });
