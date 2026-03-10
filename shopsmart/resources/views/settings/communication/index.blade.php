@@ -954,6 +954,9 @@ function communicationSettings() {
                 ...options
             };
             
+            // Show detailed loading stages
+            this.showSendingStages(type, recipient, options);
+            
             // Send test message
             fetch(`/settings/communication/test-${type}`, {
                 method: 'POST',
@@ -970,6 +973,75 @@ function communicationSettings() {
             .catch(error => {
                 this.showTestError(type, error);
             });
+        },
+        
+        showSendingStages(type, recipient, options) {
+            const inputSection = document.getElementById('inputSection');
+            const stages = type === 'email' ? [
+                { icon: 'fa-cog', text: 'Preparing email configuration...', duration: 800 },
+                { icon: 'fa-plug', text: 'Connecting to SMTP server...', duration: 1200 },
+                { icon: 'fa-lock', text: 'Authenticating with server...', duration: 1000 },
+                { icon: 'fa-envelope', text: 'Preparing email message...', duration: 600 },
+                { icon: 'fa-paper-plane', text: 'Sending email...', duration: 1500 },
+                { icon: 'fa-check-circle', text: 'Verifying delivery...', duration: 800 }
+            ] : [
+                { icon: 'fa-cog', text: 'Preparing SMS configuration...', duration: 800 },
+                { icon: 'fa-plug', text: 'Connecting to SMS gateway...', duration: 1200 },
+                { icon: 'fa-lock', text: 'Authenticating with API...', duration: 1000 },
+                { icon: 'fa-mobile-alt', text: 'Processing phone numbers...', duration: 600 },
+                { icon: 'fa-paper-plane', text: 'Sending SMS messages...', duration: 1500 },
+                { icon: 'fa-check-circle', text: 'Verifying delivery status...', duration: 800 }
+            ];
+            
+            let currentStage = 0;
+            
+            function updateStage() {
+                if (currentStage < stages.length) {
+                    const stage = stages[currentStage];
+                    const recipientCount = options.multipleNumbers ? 
+                        options.multipleNumbers.split(',').filter(n => n.trim()).length + 1 : 1;
+                    
+                    inputSection.innerHTML = `
+                        <div class="text-center py-6">
+                            <div class="mb-4">
+                                <div class="inline-flex items-center justify-center w-12 h-12 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mb-3">
+                                    <i class="fas ${stage.icon} text-blue-600"></i>
+                                </div>
+                                <p class="text-sm font-medium text-gray-900">${stage.text}</p>
+                                <div class="mt-2 text-xs text-gray-500">
+                                    ${type === 'sms' && recipientCount > 1 ? `Sending to ${recipientCount} recipients` : `Sending to: ${recipient}`}
+                                    ${options.scheduleTime !== 'now' && type === 'sms' ? ` • Scheduled: ${options.scheduleTime}` : ''}
+                                    ${options.priority && type === 'email' ? ` • Priority: ${options.priority}` : ''}
+                                </div>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: ${((currentStage + 1) / stages.length) * 100}%"></div>
+                            </div>
+                            <div class="mt-2 text-xs text-gray-500">
+                                Step ${currentStage + 1} of ${stages.length}
+                            </div>
+                        </div>
+                    `;
+                    
+                    currentStage++;
+                    setTimeout(updateStage, stage.duration);
+                } else {
+                    // Show final loading state
+                    inputSection.innerHTML = `
+                        <div class="text-center py-6">
+                            <div class="inline-flex items-center justify-center w-12 h-12 border-2 border-green-600 border-t-transparent rounded-full animate-spin mb-3">
+                                <i class="fas fa-check text-green-600"></i>
+                            </div>
+                            <p class="text-sm font-medium text-gray-900">Finalizing ${type} delivery...</p>
+                            <div class="mt-2 text-xs text-gray-500">
+                                Almost done, please wait...
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            updateStage();
         },
         
         showTestResult(type, recipient, data) {
