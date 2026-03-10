@@ -11,15 +11,6 @@
             <p class="text-gray-600 mt-1">Manage email and SMS configurations</p>
         </div>
         <div class="flex gap-2">
-            <button @click="emailTestModal.show = true" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <i class="fas fa-envelope mr-2"></i>Test Email
-            </button>
-            <button @click="smsTestModal.show = true" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                <i class="fas fa-sms mr-2"></i>Test SMS
-            </button>
-            <a href="{{ route('settings.communication.test-message') }}" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                <i class="fas fa-paper-plane mr-2"></i>Advanced Test
-            </a>
             <a href="{{ route('settings.communication.email.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <i class="fas fa-plus mr-2"></i>New Email Config
             </a>
@@ -444,9 +435,6 @@
         </div>
     </div>
 </div>
-
-<!-- Include Test Modals -->
-@include('components.test-modals')
 
 <script>
 function communicationSettings() {
