@@ -295,20 +295,20 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex items-center justify-center space-x-2">
-                                <button @click="viewUser({{ $user->toJson() }})" class="text-green-600 hover:text-green-900" title="View User">
+                                <button @click="viewUser(@json($user))" class="text-green-600 hover:text-green-900" title="View User">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button @click="editUser({{ $user->toJson() }})" class="text-blue-600 hover:text-blue-900" title="Edit User">
+                                <button @click="editUser(@json($user))" class="text-blue-600 hover:text-blue-900" title="Edit User">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button @click="resetPassword({{ $user->toJson() }})" class="text-orange-600 hover:text-orange-900" title="Reset Password">
+                                <button @click="resetPassword(@json($user))" class="text-orange-600 hover:text-orange-900" title="Reset Password">
                                     <i class="fas fa-key"></i>
                                 </button>
-                                <button @click="toggleUserStatus({{ $user->toJson() }})" class="text-purple-600 hover:text-purple-900" title="Toggle Status">
+                                <button @click="toggleUserStatus(@json($user))" class="text-purple-600 hover:text-purple-900" title="Toggle Status">
                                     <i class="fas fa-toggle-on"></i>
                                 </button>
                                 @if($user->id !== auth()->id())
-                                <button @click="deleteUser({{ $user->toJson() }})" class="text-red-600 hover:text-red-900" title="Delete User">
+                                <button @click="deleteUser(@json($user))" class="text-red-600 hover:text-red-900" title="Delete User">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 @endif
