@@ -28,6 +28,7 @@ use App\Http\Controllers\BankReconciliationController;
 use App\Http\Controllers\DeliveryNoteController;
 use App\Http\Controllers\FinancialStatementController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\CustomReportController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\LandingController;
@@ -196,6 +197,10 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     Route::get('/reports/suppliers/{supplier}/statement', [ReportController::class, 'supplierStatement'])->name('reports.supplier-statement');
     Route::get('/reports/suppliers/{supplier}/statement/pdf', [ReportController::class, 'supplierStatementPdf'])->name('reports.supplier-statement.pdf');
     Route::get('/reports/profit-loss', [FinancialStatementController::class, 'profitLoss'])->name('reports.profit-loss');
+
+    // Custom Report Builder
+    Route::get('/reports/custom-builder', [CustomReportController::class, 'index'])->name('reports.custom-builder');
+    Route::post('/reports/custom-builder/generate', [CustomReportController::class, 'generate'])->name('reports.custom-builder.generate');
 
     // Settings
     Route::prefix('settings')->name('settings.')->group(function () {

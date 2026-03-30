@@ -49,8 +49,8 @@ class FinancialController extends Controller
         $accountsPayable = Purchase::where('payment_status', '!=', 'paid')
             ->sum('total');
             
-        $totalLoans = Liability::where('liability_type', 'Loan')
-            ->sum('amount');
+        $totalLoans = Liability::where('type', 'loan')
+            ->sum('outstanding_balance');
             
         $totalLiabilities = $accountsPayable + $totalLoans;
         

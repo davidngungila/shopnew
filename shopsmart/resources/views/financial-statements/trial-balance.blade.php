@@ -206,7 +206,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    @foreach($accounts ?? [] as $account)
+                    @forelse($accounts ?? [] as $account)
                     <tr class="hover:bg-gray-50 transition-colors" x-show="!search || {{ $account['name'] }}.toLowerCase().includes(search.toLowerCase())">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $account['code'] }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -262,7 +262,11 @@
                             </div>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No accounts found</td>
+                    </tr>
+                    @endforelse
                 </tbody>
                 <tfoot class="bg-gray-50">
                     <tr>
@@ -432,24 +436,6 @@ function trialBalance() {
     }
 }
 </script>
-@endsection
-                    @empty
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No accounts found</td>
-                    </tr>
-                    @endforelse
-                    @if(isset($accounts) && $accounts->count() > 0)
-                    <tr class="bg-gray-50 font-bold">
-                        <td colspan="3" class="px-6 py-4 text-sm text-gray-900">Total</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">TSh {{ number_format($totalDebit ?? 0, 0) }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right">TSh {{ number_format($totalCredit ?? 0, 0) }}</td>
-                    </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 @endsection
 
 
