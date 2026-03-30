@@ -259,12 +259,9 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'index'])->name('index');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
-        Route::put('/update', [ProfileController::class, 'update'])->name('update');
-        Route::post('/update', [ProfileController::class, 'update'])->name('update');
-        Route::put('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
-        Route::post('/password', [ProfileController::class, 'updatePassword'])->name('password.update');
-        Route::put('/preferences', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
-        Route::post('/preferences', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
+        Route::match(['put', 'post'], '/update', [ProfileController::class, 'update'])->name('update');
+        Route::match(['put', 'post'], '/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+        Route::match(['put', 'post'], '/preferences', [ProfileController::class, 'updatePreferences'])->name('preferences.update');
         Route::get('/activity', [ProfileController::class, 'activity'])->name('activity');
         Route::get('/security', [ProfileController::class, 'security'])->name('security');
     });
