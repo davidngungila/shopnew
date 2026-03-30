@@ -208,6 +208,7 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     Route::get('/general', [SettingsController::class, 'general'])->name('general');
     Route::post('/general', [SettingsController::class, 'updateGeneral'])->name('general.update');
     Route::get('/users', [SettingsController::class, 'users'])->name('users');
+        Route::get('/users/create', [SettingsController::class, 'createUser'])->name('users.create');
         Route::post('/users', [SettingsController::class, 'storeUser'])->name('users.store');
         Route::put('/users/{user}', [SettingsController::class, 'updateUser'])->name('users.update');
         Route::delete('/users/{user}', [SettingsController::class, 'deleteUser'])->name('users.delete');

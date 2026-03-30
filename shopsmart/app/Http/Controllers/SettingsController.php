@@ -94,6 +94,11 @@ class SettingsController extends Controller
         return view('settings.users', compact('users'));
     }
 
+    public function createUser()
+    {
+        return view('settings.users.create');
+    }
+
     public function storeUser(Request $request)
     {
         $request->validate([
