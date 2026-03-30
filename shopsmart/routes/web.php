@@ -207,7 +207,7 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
     Route::get('/', [SettingsController::class, 'index'])->name('index');
     Route::get('/general', [SettingsController::class, 'general'])->name('general');
     Route::post('/general', [SettingsController::class, 'updateGeneral'])->name('general.update');
-    Route::get('/users', [SettingsController::class, 'users'])->name('settings.users');
+    Route::get('/users', [SettingsController::class, 'users'])->name('users');
     Route::get('/activity-log', [SettingsController::class, 'activityLog'])->name('activity-log');
     Route::get('/roles', [SettingsController::class, 'roles'])->name('roles');
     Route::get('/system', [SettingsController::class, 'system'])->name('system');
