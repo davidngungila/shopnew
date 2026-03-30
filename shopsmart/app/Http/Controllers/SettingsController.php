@@ -96,7 +96,7 @@ class SettingsController extends Controller
 
     public function createUser()
     {
-        return view('settings.users.create');
+        return view('settings.users-create');
     }
 
     public function storeUser(Request $request)

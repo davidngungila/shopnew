@@ -11,11 +11,8 @@
             <p class="text-gray-600 mt-1">Manage system users, roles, and permissions</p>
         </div>
         <div class="flex gap-2">
-            <button @click="showAddUserModal()" class="px-4 py-2 text-white rounded-lg hover:bg-green-700 transition-colors" style="background-color: #009245;">
+            <a href="{{ route('settings.users.create') }}" class="px-4 py-2 text-white rounded-lg hover:bg-green-700 transition-colors" style="background-color: #009245;">
                 <i class="fas fa-user-plus mr-2"></i>Add User
-            </button>
-            <a href="{{ route('settings.users.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                <i class="fas fa-plus-circle mr-2"></i>Create User Page
             </a>
             <button @click="importUsers()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                 <i class="fas fa-file-import mr-2"></i>Import
