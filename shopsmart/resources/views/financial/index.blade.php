@@ -467,8 +467,8 @@
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice #</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Due Date</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Overdue</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sale Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Ago</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
@@ -479,10 +479,10 @@
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ $payment->id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $payment->customer->name ?? 'N/A' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment->due_date->format('M d, Y') }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment->created_at->format('M d, Y') }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $payment->due_date->diffInDays(now()) > 30 ? 'bg-red-100 text-red-800' : ($payment->due_date->diffInDays(now()) > 7 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800') }}">
-                                {{ $payment->due_date->diffInDays(now()) }} days
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $payment->created_at->diffInDays(now()) > 30 ? 'bg-red-100 text-red-800' : ($payment->created_at->diffInDays(now()) > 7 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800') }}">
+                                {{ $payment->created_at->diffInDays(now()) }} days
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-right text-orange-600">${{ number_format($payment->total, 2) }}</td>
