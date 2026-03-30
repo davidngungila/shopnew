@@ -295,20 +295,20 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                             <div class="flex items-center justify-center space-x-2">
-                                <button @click="viewUser(@json($user))" class="text-green-600 hover:text-green-900" title="View User">
+                                <button @click="viewUser($user->id)" class="text-green-600 hover:text-green-900" title="View User" :data-user="@json($user)">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button @click="editUser(@json($user))" class="text-blue-600 hover:text-blue-900" title="Edit User">
+                                <button @click="editUser($user->id)" class="text-blue-600 hover:text-blue-900" title="Edit User" :data-user="@json($user)">
                                     <i class="fas fa-edit"></i>
                                 </button>
-                                <button @click="resetPassword(@json($user))" class="text-orange-600 hover:text-orange-900" title="Reset Password">
+                                <button @click="resetPassword($user->id)" class="text-orange-600 hover:text-orange-900" title="Reset Password" :data-user="@json($user)">
                                     <i class="fas fa-key"></i>
                                 </button>
-                                <button @click="toggleUserStatus(@json($user))" class="text-purple-600 hover:text-purple-900" title="Toggle Status">
+                                <button @click="toggleUserStatus($user->id)" class="text-purple-600 hover:text-purple-900" title="Toggle Status" :data-user="@json($user)">
                                     <i class="fas fa-toggle-on"></i>
                                 </button>
                                 @if($user->id !== auth()->id())
-                                <button @click="deleteUser(@json($user))" class="text-red-600 hover:text-red-900" title="Delete User">
+                                <button @click="deleteUser($user->id)" class="text-red-600 hover:text-red-900" title="Delete User" :data-user="@json($user)">
                                     <i class="fas fa-trash"></i>
                                 </button>
                                 @endif
@@ -529,6 +529,7 @@ function userManagement() {
         editingUser: null,
         viewUser: {},
         selectedUsers: [],
+        users: @json($users->items()),
         userForm: {
             first_name: '',
             last_name: '',
@@ -632,58 +633,74 @@ function userManagement() {
                 methodInput.value = 'PUT';
                 form.appendChild(methodInput);
             }
-            
-            // Add form fields
-            Object.keys(this.userForm).forEach(key => {
-                if (this.userForm[key] !== null && this.userForm[key] !== '') {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = key;
-                    input.value = this.userForm[key];
-                    form.appendChild(input);
+        },
+        
+        viewUser(userId) {
+            const user = this.users.find(u => u.id === userId);
+            if (user) {
+                this.viewUser = user;
+                this.showViewModal = true;
+            }
+        },
+        
+        editUser(userId) {
+            const user = this.users.find(u => u.id === userId);
+            if (user) {
+                this.editingUser = user;
+                this.userForm = { 
+                    ...user,
+                    password: '',
+                    password_confirmation: ''
+                };
+                this.showUserModal = true;
+            }
+        },
+        
+        resetPassword(userId) {
+            const user = this.users.find(u => u.id === userId);
+            if (user) {
+                if (confirm(`Are you sure you want to reset password for ${user.name}? A reset link would be sent to their email.`)) {
+                    alert(`Password reset link would be sent to: ${user.email}\n\nThis functionality requires backend route implementation.`);
                 }
-            });
-            
-            document.body.appendChild(form);
-            form.submit();
-        },
-        
-        resetPassword(user) {
-            if (confirm(`Are you sure you want to reset password for ${user.name}? A reset link will be sent to their email.`)) {
-                alert(`Password reset link would be sent to: ${user.email}\n\nThis functionality requires backend route implementation.`);
             }
         },
         
-        toggleUserStatus(user) {
-            const newStatus = user.status === 'active' ? 'inactive' : 'active';
-            if (confirm(`Are you sure you want to ${newStatus} ${user.name}?`)) {
-                alert(`User status would be changed to: ${newStatus}\n\nThis functionality requires backend route implementation.`);
+        toggleUserStatus(userId) {
+            const user = this.users.find(u => u.id === userId);
+            if (user) {
+                const newStatus = user.status === 'active' ? 'inactive' : 'active';
+                if (confirm(`Are you sure you want to ${newStatus} ${user.name}?`)) {
+                    alert(`User status would be changed to: ${newStatus}\n\nThis functionality requires backend route implementation.`);
+                }
             }
         },
         
-        deleteUser(user) {
-            if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
-                // Submit delete form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/settings/users/${user.id}`;
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Add method override for DELETE
-                const methodInput = document.createElement('input');
-                methodInput.type = 'hidden';
-                methodInput.name = '_method';
-                methodInput.value = 'DELETE';
-                form.appendChild(methodInput);
-                
-                document.body.appendChild(form);
-                form.submit();
+        deleteUser(userId) {
+            const user = this.users.find(u => u.id === userId);
+            if (user) {
+                if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
+                    // Submit delete form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/settings/users/${user.id}`;
+                    
+                    // Add CSRF token
+                    const csrfToken = document.createElement('input');
+                    csrfToken.type = 'hidden';
+                    csrfToken.name = '_token';
+                    csrfToken.value = '{{ csrf_token() }}';
+                    form.appendChild(csrfToken);
+                    
+                    // Add method override for DELETE
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = '_method';
+                    methodInput.value = 'DELETE';
+                    form.appendChild(methodInput);
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
             }
         },
         
