@@ -612,74 +612,40 @@ function userManagement() {
             // Combine first and last name
             this.userForm.name = this.userForm.first_name + ' ' + this.userForm.last_name;
             
-            // Save user logic would be implemented here
-            console.log('Saving user...', this.userForm);
+            // Submit form to server
+            const form = document.createElement('form');
+            form.method = this.editingUser ? 'POST' : 'POST';
+            form.action = this.editingUser ? `/settings/users/${this.editingUser.id}` : '/settings/users';
             
-            // Show success message
-            alert(this.editingUser ? 'User updated successfully!' : 'User created successfully!');
-            this.showUserModal = false;
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
             
-            // In a real application, you would submit the form to the server
-            if (!this.editingUser) {
-                // For new users, submit the form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = '/settings/users';
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Add form fields
-                Object.keys(this.userForm).forEach(key => {
-                    if (this.userForm[key]) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = this.userForm[key];
-                        form.appendChild(input);
-                    }
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
-            } else {
-                // For existing users, submit update form
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/settings/users/${this.editingUser.id}`;
-                
-                // Add CSRF token
-                const csrfToken = document.createElement('input');
-                csrfToken.type = 'hidden';
-                csrfToken.name = '_token';
-                csrfToken.value = '{{ csrf_token() }}';
-                form.appendChild(csrfToken);
-                
-                // Add method override for PUT
+            // Add method override for PUT requests
+            if (this.editingUser) {
                 const methodInput = document.createElement('input');
                 methodInput.type = 'hidden';
                 methodInput.name = '_method';
                 methodInput.value = 'PUT';
                 form.appendChild(methodInput);
-                
-                // Add form fields
-                Object.keys(this.userForm).forEach(key => {
-                    if (key !== 'password' || this.userForm[key]) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = this.userForm[key];
-                        form.appendChild(input);
-                    }
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
             }
+            
+            // Add form fields
+            Object.keys(this.userForm).forEach(key => {
+                if (this.userForm[key] !== null && this.userForm[key] !== '') {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = this.userForm[key];
+                    form.appendChild(input);
+                }
+            });
+            
+            document.body.appendChild(form);
+            form.submit();
         },
         
         resetPassword(user) {
@@ -697,7 +663,27 @@ function userManagement() {
         
         deleteUser(user) {
             if (confirm(`Are you sure you want to delete ${user.name}? This action cannot be undone.`)) {
-                alert(`User ${user.name} would be deleted.\n\nThis functionality requires backend route implementation.`);
+                // Submit delete form
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/settings/users/${user.id}`;
+                
+                // Add CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+                
+                // Add method override for DELETE
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'DELETE';
+                form.appendChild(methodInput);
+                
+                document.body.appendChild(form);
+                form.submit();
             }
         },
         

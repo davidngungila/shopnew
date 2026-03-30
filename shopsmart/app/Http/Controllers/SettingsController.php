@@ -94,6 +94,68 @@ class SettingsController extends Controller
         return view('settings.users', compact('users'));
     }
 
+    public function storeUser(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'phone' => 'nullable|string|max:20',
+            'username' => 'required|string|unique:users,username|max:255',
+            'role' => 'required|in:admin,manager,sales,cashier',
+            'status' => 'required|in:active,inactive',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = User::create([
+            'name' => $request->first_name . ' ' . $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'username' => $request->username,
+            'role' => $request->role,
+            'status' => $request->status,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return redirect()->route('settings.users')->with('success', 'User created successfully!');
+    }
+
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'username' => 'required|string|unique:users,username,' . $user->id . '|max:255',
+            'role' => 'required|in:admin,manager,sales,cashier',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        $user->update([
+            'name' => $request->first_name . ' ' . $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'username' => $request->username,
+            'role' => $request->role,
+            'status' => $request->status,
+        ]);
+
+        if ($request->filled('password')) {
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+        }
+
+        return redirect()->route('settings.users')->with('success', 'User updated successfully!');
+    }
+
+    public function deleteUser(User $user)
+    {
+        $user->delete();
+        return redirect()->route('settings.users')->with('success', 'User deleted successfully!');
+    }
+
     public function roles()
     {
         return view('settings.roles');
