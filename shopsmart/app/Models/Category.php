@@ -4,15 +4,59 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'slug', 'description', 'image', 'is_active'];
+    protected $fillable = ['name', 'slug', 'description', 'image', 'is_active', 'parent_id'];
 
     protected $casts = ['is_active' => 'boolean'];
 
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(Category::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(Category::class, 'parent_id');
+    }
+
+    public function descendants()
+    {
+        return $this->children()->with('descendants');
+    }
+
+    public function ancestors()
+    {
+        return $this->parent()->with('ancestors');
+    }
+
+    public function getParentPath()
+    {
+        if (!$this->parent) {
+            return null;
+        }
+        
+        $path = [];
+        $current = $this->parent;
+        
+        while ($current) {
+            array_unshift($path, $current->name);
+            $current = $current->parent;
+        }
+        
+        return implode(' / ', $path);
+    }
+
+    public function getFullPathAttribute()
+    {
+        $parentPath = $this->getParentPath();
+        return $parentPath ? $parentPath . ' / ' . $this->name : $this->name;
     }
 }

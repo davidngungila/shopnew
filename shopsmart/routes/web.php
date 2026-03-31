@@ -68,12 +68,19 @@ Route::middleware(['auth'])->group(function () {
     // Global Search
     Route::get('/search', [SearchController::class, 'search'])->name('search');
 
-    // Products/Inventory
-    Route::resource('products', ProductController::class);
-Route::resource('categories', CategoryController::class);
-Route::resource('warehouses', WarehouseController::class);
-Route::resource('stock-movements', StockMovementController::class);
-    Route::get('/inventory/low-stock', [ProductController::class, 'lowStock'])->name('products.low-stock');
+    // Category custom routes (must come before resource route)
+    Route::get('categories/bulk-organize', [CategoryController::class, 'bulkOrganizePage'])->name('categories.bulk-organize-page');
+    Route::post('categories/bulk-organize', [CategoryController::class, 'bulkOrganize'])->name('categories.bulk-organize');
+    Route::get('categories/hierarchy', [CategoryController::class, 'hierarchyPage'])->name('categories.hierarchy-page');
+    Route::get('categories/manage-hierarchy', [CategoryController::class, 'manageHierarchy'])->name('categories.manage-hierarchy');
+    Route::post('categories/update-hierarchy', [CategoryController::class, 'updateHierarchy'])->name('categories.update-hierarchy');
+    Route::get('categories/import', [CategoryController::class, 'importPage'])->name('categories.import-page');
+    Route::post('categories/import', [CategoryController::class, 'importCategories'])->name('categories.import');
+    Route::get('categories/export', [CategoryController::class, 'exportCategories'])->name('categories.export');
+    
+    Route::resource('categories', CategoryController::class);
+    Route::resource('stock-movements', StockMovementController::class);
+    Route::get('/inventory/low-stock', [ProductController::class, 'lowStock'])->name('inventory.low-stock');
 
     // Sales - Specific routes must come before resource routes
     Route::get('/sales/invoices', [SaleController::class, 'invoices'])->name('sales.invoices');
@@ -84,7 +91,41 @@ Route::resource('stock-movements', StockMovementController::class);
     Route::resource('sales', SaleController::class);
     Route::get('/pos', [POSController::class, 'index'])->name('pos.index');
     Route::post('/pos/complete', [POSController::class, 'complete'])->name('pos.complete');
-    
+});
+
+// Product custom routes (must come before resource route) - TEMPORARILY OUTSIDE AUTH FOR TESTING
+Route::get('products/bulk-operations', [ProductController::class, 'bulkOperationsPage'])->name('products.bulk-operations-page');
+Route::post('products/bulk-operations', [ProductController::class, 'bulkOperations'])->name('products.bulk-operations');
+Route::get('products/stock-movements', [ProductController::class, 'stockMovementsPage'])->name('products.stock-movements-page');
+Route::get('products/low-stock', [ProductController::class, 'lowStockPage'])->name('products.low-stock-page');
+Route::get('products/import', [ProductController::class, 'importPage'])->name('products.import-page');
+Route::post('products/import', [ProductController::class, 'importProducts'])->name('products.import');
+Route::get('products/sample-excel', [ProductController::class, 'downloadSampleExcel'])->name('products.sample-excel');
+Route::get('products/export', [ProductController::class, 'exportProducts'])->name('products.export');
+
+// Warehouse custom routes (must come before resource route) - TEMPORARILY OUTSIDE AUTH FOR TESTING
+Route::get('warehouses', [WarehouseController::class, 'index'])->name('warehouses.index');
+Route::get('warehouses/transfer-stock', [WarehouseController::class, 'transferStockPage'])->name('warehouses.transfer-stock');
+Route::post('warehouses/transfer-stock', [WarehouseController::class, 'transferStock'])->name('warehouses.transfer-stock.post');
+Route::get('warehouses/capacity-report', [WarehouseController::class, 'capacityReportPage'])->name('warehouses.capacity-report');
+Route::get('warehouses/manage-locations', [WarehouseController::class, 'manageLocationsPage'])->name('warehouses.manage-locations');
+Route::post('warehouses/manage-locations', [WarehouseController::class, 'manageLocations'])->name('warehouses.manage-locations.post');
+Route::get('warehouses/create', [WarehouseController::class, 'create'])->name('warehouses.create');
+Route::post('warehouses', [WarehouseController::class, 'store'])->name('warehouses.store');
+Route::get('warehouses/{warehouse}', [WarehouseController::class, 'show'])->name('warehouses.show');
+Route::get('warehouses/{warehouse}/edit', [WarehouseController::class, 'edit'])->name('warehouses.edit');
+Route::put('warehouses/{warehouse}', [WarehouseController::class, 'update'])->name('warehouses.update');
+Route::delete('warehouses/{warehouse}', [WarehouseController::class, 'destroy'])->name('warehouses.destroy');
+
+// Stock Movements routes
+Route::get('stock-movements', [StockMovementController::class, 'index'])->name('stock-movements.index');
+Route::post('stock-movements/add', [StockMovementController::class, 'addMovement'])->name('stock-movements.add');
+Route::get('stock-movements/export', [StockMovementController::class, 'export'])->name('stock-movements.export');
+
+// Inventory routes
+Route::get('inventory/low-stock', [ProductController::class, 'lowStock'])->name('inventory.low-stock');
+
+Route::resource('products', ProductController::class);    
     // API Routes for POS
     Route::get('/api/sales/today', function() {
         $total = \App\Models\Sale::whereDate('created_at', today())
@@ -289,4 +330,3 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::get('/delivery-reports', [App\Http\Controllers\Api\SmsController::class, 'deliveryReports'])->name('deliveryReports');
         Route::get('/test-connection', [App\Http\Controllers\Api\SmsController::class, 'testConnection'])->name('testConnection');
     });
-});

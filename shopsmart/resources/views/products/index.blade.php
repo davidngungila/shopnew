@@ -11,18 +11,18 @@
             <p class="text-gray-600 mt-1">Advanced inventory management system</p>
         </div>
         <div class="flex flex-wrap items-center gap-3">
-            <button @click="exportData()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+            <a href="{{ url('products/export') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
                 <span>Export</span>
-            </button>
-            <button @click="importData()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+            </a>
+            <a href="{{ route('products.import-page') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l3 3m-3-3v12"></path>
                 </svg>
                 <span>Import</span>
-            </button>
+            </a>
             <a href="{{ route('products.create') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -112,6 +112,39 @@
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662.662 0 00-.224 1.48 4.667 4.667 0 001.266 2.226 1.514 1.514 0 01-.213.294c-.133.13-.313.23-.527.31v1.09a3.37 3.37 0 001.562-.352c.386-.196.724-.47.99-.828.266-.357.448-.77.548-1.221.1-.45.15-.943.15-1.473V5a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676-.662.662.662 0 00-.224 1.48 4.667 4.667 0 001.266 2.226C.046.05.098.1.151.144v.093z" clip-rule="evenodd"></path>
                     </svg>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ url('products/bulk-operations') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    <span>Bulk Operations</span>
+                </a>
+                <a href="{{ url('products/stock-movements') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                    </svg>
+                    <span>Stock Movements</span>
+                </a>
+                <a href="{{ url('products/low-stock') }}" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <span>Low Stock Alerts</span>
+                </a>
+                <a href="{{ url('products/import') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <span>Import Products</span>
+                </a>
             </div>
         </div>
     </div>
@@ -229,18 +262,24 @@
                         </div>
                         <div class="flex items-center justify-between">
                             <div>
-                                <span class="text-lg font-bold text-gray-900">${{ number_format($product->selling_price, 2) }}</span>
+                                <span class="text-lg font-bold text-gray-900">TZS {{ number_format($product->selling_price, 2) }}</span>
                                 <div class="text-sm {{ $product->stock_quantity <= $product->low_stock_alert ? 'text-red-600' : 'text-green-600' }}">
                                     Stock: {{ $product->stock_quantity }} {{ $product->unit }}
                                 </div>
                             </div>
                             <div class="flex space-x-1">
-                                <button @click="quickEdit({{ $product->id }})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                                <a href="{{ route('products.show', $product) }}" class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors" title="View">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                </a>
+                                <a href="{{ route('products.edit', $product) }}" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-1.414a2 2 0 010-2.828L12.828 3H14a2 2 0 012 2v2m-2 0h-2"></path>
                                     </svg>
-                                </button>
-                                <button @click="quickDelete({{ $product->id }})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                </a>
+                                <button onclick="deleteProduct({{ $product->id }}, '{{ $product->name }}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                     </svg>
@@ -322,13 +361,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex items-center justify-end space-x-2">
-                                <!-- Preview Button -->
-                                <button @click="showProductPreview({{ $product->id }})" class="text-purple-600 hover:text-purple-900" title="Preview">
+                                <!-- View Button -->
+                                <a href="{{ route('products.show', $product) }}" class="text-purple-600 hover:text-purple-900" title="View">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                     </svg>
-                                </button>
+                                </a>
                                 <!-- Edit Button -->
                                 <a href="{{ route('products.edit', $product) }}" class="text-blue-600 hover:text-blue-900" title="Edit">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -336,15 +375,11 @@
                                     </svg>
                                 </a>
                                 <!-- Delete Button -->
-                                <form method="POST" action="{{ route('products.destroy', $product) }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this product?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
-                                </form>
+                                <button onclick="deleteProduct({{ $product->id }}, '{{ $product->name }}')" class="text-red-600 hover:text-red-900" title="Delete">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -548,6 +583,45 @@ function productsComponent() {
             console.log('Import products');
         }
     }
+}
+</script>
+
+<script>
+function deleteProduct(productId, productName) {
+    Swal.fire({
+        title: 'Delete Product',
+        html: `Are you sure you want to delete <strong>${productName}</strong>?<br><br>This action cannot be undone.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#EF4444',
+        cancelButtonColor: '#6B7280',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Create form and submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/products/${productId}`;
+            
+            // Add CSRF token
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            form.appendChild(csrfToken);
+            
+            // Add DELETE method
+            const methodToken = document.createElement('input');
+            methodToken.type = 'hidden';
+            methodToken.name = '_method';
+            methodToken.value = 'DELETE';
+            form.appendChild(methodToken);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    });
 }
 </script>
 @endsection

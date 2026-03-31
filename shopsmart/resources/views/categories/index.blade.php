@@ -95,24 +95,24 @@
         <div class="flex flex-wrap items-center justify-between gap-4">
             <h2 class="text-lg font-semibold text-gray-900">Quick Actions</h2>
             <div class="flex flex-wrap items-center gap-3">
-                <button @click="bulkOrganize()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                <a href="{{ url('categories/bulk-organize') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                     </svg>
                     <span>Bulk Organize</span>
-                </button>
-                <button @click="manageHierarchy()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                </a>
+                <a href="{{ url('categories/hierarchy') }}" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6h18M7 12h10m-7 6h4"></path>
                     </svg>
                     <span>Manage Hierarchy</span>
-                </button>
-                <button @click="importCategories()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
+                </a>
+                <a href="{{ url('categories/import') }}" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                     </svg>
                     <span>Import Categories</span>
-                </button>
+                </a>
             </div>
         </div>
     </div>
@@ -205,6 +205,11 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-6 py-3 text-left">
+                            <input type="checkbox" 
+                                   @change="selectAllCategories()" 
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        </th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100" @click="sortBy('name')">
                             Name <span x-text="getSortIcon('name')"></span>
                         </th>
@@ -227,6 +232,13 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($categories ?? [] as $category)
                     <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <input type="checkbox" 
+                                   :value="{{ $category->id }}"
+                                   @change="toggleCategorySelection({{ $category->id }})"
+                                   :checked="selectedCategories.includes({{ $category->id }})"
+                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
@@ -360,6 +372,178 @@
     </div>
 </div>
 
+<!-- Bulk Organize Modal -->
+<div x-show="showBulkOrganizeModal" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+     style="display: none;">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Bulk Organize Categories</h3>
+            <button @click="showBulkOrganizeModal = false" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p class="text-sm text-yellow-800">
+                    <strong>Tip:</strong> Select categories from the table using the checkboxes first, then choose an action below.
+                </p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select Action</label>
+                <div class="space-y-2">
+                    <button @click="performBulkAction('activate')" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Activate Selected
+                    </button>
+                    <button @click="performBulkAction('deactivate')" 
+                            class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Deactivate Selected
+                    </button>
+                    <button @click="performBulkAction('delete')" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+                        Delete Selected
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">
+                <p><strong>Selected Categories:</strong> <span x-text="selectedCategories.length" class="font-semibold">0</span></p>
+                <p x-show="selectedCategories.length === 0" class="text-orange-600 mt-1">⚠️ No categories selected. Please select categories from the table.</p>
+                <p x-show="selectedCategories.length > 0" class="text-green-600 mt-1">✓ Ready to perform action on <span x-text="selectedCategories.length"></span> categor<span x-text="selectedCategories.length === 1 ? 'y' : 'ies'"></span>.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hierarchy Management Modal -->
+<div x-show="showHierarchyModal" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+     style="display: none;">
+    <div class="relative top-10 mx-auto p-5 border w-4/5 max-w-4xl shadow-lg rounded-lg bg-white max-h-screen overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Manage Category Hierarchy</h3>
+            <button @click="showHierarchyModal = false" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <p class="text-sm text-blue-800">
+                    Drag and drop categories to reorganize the hierarchy. You can create parent-child relationships by nesting categories.
+                </p>
+            </div>
+            
+            <!-- Loading State -->
+            <div x-show="hierarchyCategories.length === 0" class="text-center py-8">
+                <div class="inline-flex items-center justify-center w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <p class="mt-2 text-sm text-gray-600">Loading categories...</p>
+            </div>
+            
+            <div x-show="hierarchyCategories.length > 0" class="space-y-2">
+                <template x-for="category in hierarchyCategories" :key="category.id">
+                    <div class="border border-gray-200 rounded-lg p-3 hover:bg-gray-50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-5 h-5 text-gray-400 cursor-move" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                                <span class="font-medium" x-text="category.name"></span>
+                                <span class="text-sm text-gray-500" x-text="category.parent ? 'Child of ' + category.parent.name : 'Root Category'"></span>
+                            </div>
+                            <select x-model="category.parent_id" class="px-3 py-1 border border-gray-300 rounded-lg text-sm">
+                                <option value="">Root Level</option>
+                                <template x-for="cat in hierarchyCategories" :key="cat.id">
+                                    <option :value="cat.id" x-show="cat.id !== category.id" x-text="cat.name"></option>
+                                </template>
+                            </select>
+                        </div>
+                    </div>
+                </template>
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button @click="showHierarchyModal = false" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button @click="saveHierarchy()" 
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                    Save Hierarchy
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Categories Modal -->
+<div x-show="showImportModal" 
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+     style="display: none;">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Import Categories</h3>
+            <button @click="showImportModal = false" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div class="space-y-4">
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 class="font-medium text-blue-900 mb-2">CSV Format:</h4>
+                <p class="text-sm text-blue-800">Name, Description, Status (true/false)</p>
+                <p class="text-xs text-blue-600 mt-1">Example: "Electronics, Electronic devices, true"</p>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Select CSV File</label>
+                <input type="file" 
+                       @change="handleFileUpload($event)"
+                       accept=".csv"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex justify-end space-x-3">
+                <button @click="showImportModal = false" 
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                    Cancel
+                </button>
+                <button @click="performImport()" 
+                        class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors">
+                    Import
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
 function categoriesComponent() {
     return {
@@ -374,6 +558,17 @@ function categoriesComponent() {
         },
         sortField: 'name',
         sortDirection: 'asc',
+        
+        // Quick Actions modals
+        showBulkOrganizeModal: false,
+        showHierarchyModal: false,
+        showImportModal: false,
+        
+        // Data for modals
+        selectedCategories: [],
+        hierarchyCategories: [],
+        importFile: null,
+        filteredCategories: @json($categories ?? []),
         
         init() {
             console.log('Categories component initialized');
@@ -418,23 +613,176 @@ function categoriesComponent() {
         },
         
         viewDetails(id) {
-            alert(`View details for category ${id}`);
+            window.location.href = '{{ url("categories") }}/' + id;
         },
         
         exportData() {
-            alert('Export category data to CSV/Excel');
+            window.location.href = '{{ url("categories/export") }}';
         },
         
         bulkOrganize() {
-            alert('Open bulk organization interface');
+            this.showBulkOrganizeModal = true;
         },
         
         manageHierarchy() {
-            alert('Open category hierarchy management');
+            this.showHierarchyModal = true;
+            this.loadHierarchy();
         },
         
         importCategories() {
-            alert('Import categories from file');
+            this.showImportModal = true;
+        },
+
+        // Bulk organize functions
+        performBulkAction(action) {
+            if (this.selectedCategories.length === 0) {
+                this.showNotification('Please select at least one category', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('action', action);
+            this.selectedCategories.forEach(id => formData.append('categories[]', id));
+
+            fetch('{{ url("categories/bulk-organize") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showNotification(data.message, 'success');
+                    this.showBulkOrganizeModal = false;
+                    this.selectedCategories = [];
+                    location.reload();
+                } else {
+                    this.showNotification(data.error || 'Action failed', 'error');
+                }
+            })
+            .catch(error => {
+                this.showNotification('An error occurred', 'error');
+            });
+        },
+
+        // Hierarchy management functions
+        loadHierarchy() {
+            fetch('{{ url("categories/manage-hierarchy") }}')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.hierarchyCategories = data.categories || [];
+                })
+                .catch(error => {
+                    console.error('Error loading hierarchy:', error);
+                    this.showNotification('Failed to load hierarchy. Please try again.', 'error');
+                    this.showHierarchyModal = false;
+                });
+        },
+
+        saveHierarchy() {
+            fetch('{{ url("categories/update-hierarchy") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    hierarchy: this.hierarchyCategories
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showNotification(data.message, 'success');
+                    this.showHierarchyModal = false;
+                    location.reload();
+                } else {
+                    this.showNotification('Failed to update hierarchy', 'error');
+                }
+            })
+            .catch(error => {
+                this.showNotification('An error occurred', 'error');
+            });
+        },
+
+        // Import functions
+        handleFileUpload(event) {
+            this.importFile = event.target.files[0];
+        },
+
+        performImport() {
+            if (!this.importFile) {
+                this.showNotification('Please select a file', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', this.importFile);
+
+            fetch('{{ url("categories/import") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.showNotification(data.message, 'success');
+                    if (data.errors && data.errors.length > 0) {
+                        this.showNotification('Some rows had errors: ' + data.errors.join(', '), 'warning');
+                    }
+                    this.showImportModal = false;
+                    location.reload();
+                } else {
+                    this.showNotification(data.error || 'Import failed', 'error');
+                }
+            })
+            .catch(error => {
+                this.showNotification('An error occurred', 'error');
+            });
+        },
+
+        // Utility functions
+        showNotification(message, type = 'info') {
+            // Simple notification system
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 
+                type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        },
+
+        toggleCategorySelection(categoryId) {
+            const index = this.selectedCategories.indexOf(categoryId);
+            if (index > -1) {
+                this.selectedCategories.splice(index, 1);
+            } else {
+                this.selectedCategories.push(categoryId);
+            }
+        },
+
+        selectAllCategories() {
+            this.selectedCategories = this.filteredCategories.map(cat => cat.id);
+        },
+
+        clearSelection() {
+            this.selectedCategories = [];
         }
     }
 }

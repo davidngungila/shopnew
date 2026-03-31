@@ -103,4 +103,88 @@ class StockMovementController extends Controller
         $stockMovement->delete();
         return redirect()->route('stock-movements.index')->with('success', 'Stock movement deleted successfully.');
     }
+
+    public function addMovement(Request $request)
+    {
+        $validated = $request->validate([
+            'movement_type' => 'required|in:in,out,transfer,adjustment',
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'warehouse_id' => 'nullable|exists:warehouses,id',
+            'from_warehouse_id' => 'nullable|exists:warehouses,id',
+            'to_warehouse_id' => 'nullable|exists:warehouses,id',
+            'notes' => 'nullable|string',
+            'reason' => 'nullable|string'
+        ]);
+
+        try {
+            $product = Product::findOrFail($validated['product_id']);
+            
+            // Create stock movement record
+            $movement = StockMovement::create([
+                'movement_type' => $validated['movement_type'],
+                'product_id' => $validated['product_id'],
+                'quantity' => $validated['quantity'],
+                'warehouse_id' => $validated['warehouse_id'] ?? $product->warehouse_id,
+                'from_warehouse_id' => $validated['from_warehouse_id'] ?? null,
+                'to_warehouse_id' => $validated['to_warehouse_id'] ?? null,
+                'notes' => $validated['notes'] ?? null,
+                'reason' => $validated['reason'] ?? null,
+                'user_id' => auth()->id(),
+                'reference_type' => 'manual',
+                'reference_id' => 0
+            ]);
+
+            // Update product stock
+            if ($validated['movement_type'] === 'in') {
+                $product->increment('stock_quantity', $validated['quantity']);
+            } elseif ($validated['movement_type'] === 'out') {
+                $product->decrement('stock_quantity', $validated['quantity']);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Stock movement recorded successfully.',
+                'movement' => $movement
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Failed to record stock movement: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function export()
+    {
+        $movements = StockMovement::with(['product', 'warehouse', 'user'])->get();
+        
+        $filename = "stock_movements_" . date('Y-m-d') . ".csv";
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$filename\"",
+        ];
+
+        $callback = function() use ($movements) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Date', 'Product', 'Type', 'Quantity', 'Warehouse', 'Reference', 'Notes', 'User']);
+            
+            foreach ($movements as $movement) {
+                fputcsv($file, [
+                    $movement->created_at->format('Y-m-d H:i:s'),
+                    $movement->product->name,
+                    $movement->movement_type,
+                    $movement->quantity,
+                    $movement->warehouse->name ?? 'N/A',
+                    ($movement->reference_type ?? 'manual') . ' #' . ($movement->reference_id ?? 0),
+                    $movement->notes ?? '',
+                    $movement->user->name ?? 'System'
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }
