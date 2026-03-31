@@ -292,6 +292,43 @@
                             <div class="text-xs sm:text-sm font-medium text-gray-900">#{{ $sale->invoice_number ?? str_pad($sale->id, 6, '0', STR_PAD_LEFT) }}</div>
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div class="text-xs sm:text-sm font-medium text-gray-900">{{ $sale->customer->name ?? 'Walk-in Customer' }}</div>
+                            @if($sale->customer && $sale->customer->phone)
+                            <div class="text-xs text-gray-500">{{ $sale->customer->phone }}</div>
+                            @endif
+                        </td>
+                        <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div class="text-xs sm:text-sm text-gray-900">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}</div>
+                            <div class="text-xs text-gray-500">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('h:i A') }}</div>
+                        </td>
+                        <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div class="text-xs sm:text-sm text-gray-900">{{ $sale->items->count() }} items</div>
+                            @if($sale->items->count() > 0)
+                            <div class="text-xs text-gray-500">{{ $sale->items->first()->product->name ?? 'Unknown' }} @if($sale->items->count() > 1) +{{ $sale->items->count() - 1 }} @endif</div>
+                            @endif
+                        </td>
+                        <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
+                            <div class="flex items-center space-x-2">
+                                @php
+                                    $paymentIcons = [
+                                        'cash' => '💵',
+                                        'card' => '💳',
+                                        'mobile_money' => '📱',
+                                        'bank_transfer' => '🏦',
+                                        'credit' => '📋'
+                                    ];
+                                    $icon = $paymentIcons[$sale->payment_method] ?? '💵';
+                                @endphp
+                                <span class="text-lg">{{ $icon }}</span>
+                                <div>
+                                    <div class="text-xs sm:text-sm font-medium text-gray-900 capitalize">{{ str_replace('_', ' ', $sale->payment_method) }}</div>
+                                    @if($sale->payment_method === 'card' && $sale->card_last_four)
+                                    <div class="text-xs text-gray-500">**** {{ $sale->card_last_four }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
                             @php
                                 $statusColors = [
                                     'completed' => 'bg-green-100 text-green-800',
@@ -305,10 +342,6 @@
                                 {{ $sale->status ?? 'pending' }}
                             </span>
                         </td>
-                        <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap">
-                            <div class="text-xs sm:text-sm text-gray-900">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('M d, Y') }}</div>
-                            <div class="text-xs text-gray-500">{{ $sale->created_at->setTimezone('Africa/Dar_es_Salaam')->format('h:i A') }}</div>
-                        </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right">
                             <div class="text-xs sm:text-sm font-semibold text-gray-900">TZS {{ number_format($sale->total, 0) }}</div>
                             @if($sale->discount > 0)
@@ -316,12 +349,12 @@
                             @endif
                         </td>
                         <td class="px-3 sm:px-4 md:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
-                            @php
-                                $sale->load('payments');
-                                $totalPaid = $sale->payments->sum('amount');
-                                $balance = $sale->total - $totalPaid;
-                            @endphp
                             <div class="flex items-center justify-end space-x-2" x-data="{ open: false }">
+                                @php
+                                    $sale->load('payments');
+                                    $totalPaid = $sale->payments->sum('amount');
+                                    $balance = $sale->total - $totalPaid;
+                                @endphp
                                 @if($sale->payment_method === 'credit' && $balance > 0)
                                 <button onclick="openPaymentModal({{ $sale->id }}, {{ $sale->total }}, {{ $totalPaid }}, {{ $balance }})" class="px-3 py-1.5 text-xs text-white rounded flex items-center space-x-1" style="background-color: #009245;" onmouseover="this.style.backgroundColor='#007a38'" onmouseout="this.style.backgroundColor='#009245'">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -332,7 +365,7 @@
                                 @endif
                                 <!-- Actions Dropdown -->
                                 <div class="relative">
-                                    <button @click="open = !open" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" title="More Actions">
+                                    <button @click="open = !open" class="p-2 text-gray-600 hover:text-gray-900">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
                                         </svg>
@@ -349,7 +382,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                                             </svg>
-                                            <span>Payment Receipt</span>
+                                            <span>Download PDF</span>
                                         </a>
                                         <a href="{{ route('sales.pdf', $sale) }}" target="_blank" class="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

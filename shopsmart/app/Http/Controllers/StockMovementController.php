@@ -12,7 +12,62 @@ class StockMovementController extends Controller
     public function index()
     {
         $movements = StockMovement::with(['product', 'warehouse', 'user'])->latest()->paginate(20);
-        return view('stock-movements.index', compact('movements'));
+        $warehouses = Warehouse::where('is_active', true)->get();
+        
+        // Calculate statistics
+        $totalMovements = StockMovement::count();
+        
+        // Last 30 days movements
+        $last30Days = now()->subDays(30);
+        $recentMovements = StockMovement::where('created_at', '>=', $last30Days)->get();
+        
+        // Stock In statistics
+        $stockInCount = StockMovement::whereIn('type', ['in', 'return'])
+            ->where('created_at', '>=', $last30Days)
+            ->count();
+        
+        // Stock Out statistics  
+        $stockOutCount = StockMovement::where('type', 'out')
+            ->where('created_at', '>=', $last30Days)
+            ->count();
+        
+        // Previous month for comparison
+        $previousMonth = now()->subMonth()->startOfMonth()->toDateTimeString();
+        $previousMonthEnd = now()->subMonth()->endOfMonth()->toDateTimeString();
+        
+        $previousStockIn = StockMovement::whereIn('type', ['in', 'return'])
+            ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])
+            ->count();
+        
+        $previousStockOut = StockMovement::where('type', 'out')
+            ->whereBetween('created_at', [$previousMonth, $previousMonthEnd])
+            ->count();
+        
+        // Calculate percentages
+        $stockInPercentage = $previousStockIn > 0 
+            ? round((($stockInCount - $previousStockIn) / $previousStockIn) * 100, 1)
+            : 0;
+            
+        $stockOutPercentage = $previousStockOut > 0 
+            ? round((($stockOutCount - $previousStockOut) / $previousStockOut) * 100, 1)
+            : 0;
+        
+        // Active products with movements
+        $activeProducts = StockMovement::select('product_id')
+            ->where('created_at', '>=', $last30Days)
+            ->distinct()
+            ->count();
+
+        return view('stock-movements.index', compact(
+            'movements', 
+            'warehouses',
+            'totalMovements',
+            'stockInCount', 
+            'stockOutCount',
+            'stockInPercentage',
+            'stockOutPercentage',
+            'activeProducts'
+        ));
     }
 
     public function create()

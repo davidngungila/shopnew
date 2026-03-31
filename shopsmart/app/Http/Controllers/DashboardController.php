@@ -11,6 +11,7 @@ use App\Models\Supplier;
 use App\Models\Quotation;
 use App\Models\Expense;
 use App\Models\Transaction;
+use App\Models\StockMovement;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -140,6 +141,52 @@ class DashboardController extends Controller
             $totalExpenses = Expense::where('created_at', '>=', $thisMonth)->sum('amount') ?? 0;
             $netProfit = $thisMonthSales - $totalExpenses;
 
+            // Stock Movement Statistics
+            $totalMovements = StockMovement::count();
+            
+            // Last 30 days movements
+            $last30Days = $now->copy()->subDays(30);
+            
+            // Stock In statistics
+            $stockInCount = StockMovement::whereIn('type', ['in', 'return'])
+                ->where('created_at', '>=', $last30Days)
+                ->count();
+            
+            // Stock Out statistics  
+            $stockOutCount = StockMovement::where('type', 'out')
+                ->where('created_at', '>=', $last30Days)
+                ->count();
+            
+            // Previous month for comparison
+            $previousMonthStart = $now->copy()->subMonth()->startOfMonth();
+            $previousMonthEnd = $now->copy()->subMonth()->endOfMonth();
+            
+            $previousStockIn = StockMovement::whereIn('type', ['in', 'return'])
+                ->whereBetween('created_at', [$previousMonthStart, $previousMonthEnd])
+                ->count();
+            
+            $previousStockOut = StockMovement::where('type', 'out')
+                ->whereBetween('created_at', [$previousMonthStart, $previousMonthEnd])
+                ->count();
+            
+            // Calculate percentages
+            $stockInPercentage = $previousStockIn > 0 
+                ? round((($stockInCount - $previousStockIn) / $previousStockIn) * 100, 1)
+                : 0;
+                
+            $stockOutPercentage = $previousStockOut > 0 
+                ? round((($stockOutCount - $previousStockOut) / $previousStockOut) * 100, 1)
+                : 0;
+            
+            // Active products with movements
+            $activeProductsMovements = StockMovement::select('product_id')
+                ->where('created_at', '>=', $last30Days)
+                ->distinct()
+                ->count();
+
+            // Calculate total notifications (low stock + out of stock)
+            $totalNotifications = $lowStockCount + $outOfStockCount;
+
             return view('dashboard', compact(
                 'now', 'todaySales', 'salesGrowth', 'todayOrders', 'pendingOrders',
                 'totalCustomers', 'newCustomersToday', 'activeCustomers',
@@ -147,7 +194,10 @@ class DashboardController extends Controller
                 'profit', 'profitMargin', 'totalStockValue', 'avgOrderValue',
                 'pendingQuotations', 'quotationValue',
                 'topProducts', 'topCustomers', 'recentSales',
-                'conversionRate', 'returnsCount', 'totalExpenses', 'netProfit'
+                'conversionRate', 'returnsCount', 'totalExpenses', 'netProfit',
+                'totalMovements', 'stockInCount', 'stockOutCount', 
+                'stockInPercentage', 'stockOutPercentage', 'activeProductsMovements',
+                'totalNotifications'
             ));
         } catch (\Exception $e) {
             \Log::error('Dashboard error: ' . $e->getMessage());
@@ -160,7 +210,10 @@ class DashboardController extends Controller
                 'profit' => 0, 'profitMargin' => 0, 'totalStockValue' => 0, 'avgOrderValue' => 0,
                 'pendingQuotations' => 0, 'quotationValue' => 0,
                 'topProducts' => [], 'topCustomers' => [], 'recentSales' => [],
-                'conversionRate' => 0, 'returnsCount' => 0, 'totalExpenses' => 0, 'netProfit' => 0
+                'conversionRate' => 0, 'returnsCount' => 0, 'totalExpenses' => 0, 'netProfit' => 0,
+                'totalMovements' => 0, 'stockInCount' => 0, 'stockOutCount' => 0,
+                'stockInPercentage' => 0, 'stockOutPercentage' => 0, 'activeProductsMovements' => 0,
+                'totalNotifications' => 0
             ]);
         }
     }

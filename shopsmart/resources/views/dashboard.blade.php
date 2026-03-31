@@ -216,6 +216,48 @@
         </div>
     </div>
 
+    <!-- Stock Movements Statistics -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">Stock Movements</h2>
+            <a href="{{ route('stock-movements.index') }}" class="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+                View All
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Movements -->
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                <div class="text-2xl font-bold text-blue-600">{{ $totalMovements ?? 0 }}</div>
+                <div class="text-sm text-blue-600 mt-1">Total Movements</div>
+                <div class="text-xs text-gray-500 mt-2">Last 30 days</div>
+            </div>
+            
+            <!-- Stock In -->
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+                <div class="text-2xl font-bold text-green-600">{{ $stockInCount ?? 0 }}</div>
+                <div class="text-sm text-green-600 mt-1">Stock In</div>
+                <div class="text-xs text-gray-500 mt-2">+{{ $stockInPercentage ?? 0 }}% from last month</div>
+            </div>
+            
+            <!-- Stock Out -->
+            <div class="text-center p-4 bg-red-50 rounded-lg">
+                <div class="text-2xl font-bold text-red-600">{{ $stockOutCount ?? 0 }}</div>
+                <div class="text-sm text-red-600 mt-1">Stock Out</div>
+                <div class="text-xs text-gray-500 mt-2">{{ $stockOutPercentage ?? 0 }}% from last month</div>
+            </div>
+            
+            <!-- Active Products with Movements -->
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                <div class="text-2xl font-bold text-purple-600">{{ $activeProductsMovements ?? 0 }}</div>
+                <div class="text-sm text-purple-600 mt-1">Active Products</div>
+                <div class="text-xs text-gray-500 mt-2">With movements</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Charts and Detailed Analytics -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Sales Chart -->

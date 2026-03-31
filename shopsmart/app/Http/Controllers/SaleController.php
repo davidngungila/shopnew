@@ -579,4 +579,85 @@ class SaleController extends Controller
     {
         //
     }
+
+    public function createReturn()
+    {
+        $customers = \App\Models\Customer::orderBy('name')->get();
+        $products = \App\Models\Product::where('is_active', true)->orderBy('name')->get();
+        $sales = \App\Models\Sale::where('status', 'completed')->with(['customer', 'items.product'])->latest()->get();
+        
+        return view('sales.create-return', compact('customers', 'products', 'sales'));
+    }
+
+    public function storeReturn(Request $request)
+    {
+        $request->validate([
+            'return_type' => 'required|in:sale,stock_movement',
+            'sale_id' => 'required_if:return_type,sale|exists:sales,id',
+            'product_id' => 'required_if:return_type,stock_movement|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+            'reason' => 'required|string|max:255',
+            'refund_amount' => 'required|numeric|min:0',
+            'customer_id' => 'nullable|exists:customers,id',
+            'notes' => 'nullable|string|max:1000'
+        ]);
+
+        try {
+            if ($request->return_type === 'sale') {
+                // Handle sale return
+                $sale = \App\Models\Sale::findOrFail($request->sale_id);
+                
+                // Update sale status to refunded
+                $sale->update([
+                    'status' => 'refunded',
+                    'notes' => ($sale->notes ?? '') . "\n\nReturn: " . $request->reason
+                ]);
+
+                // Create stock movement for returned items
+                foreach ($sale->items as $item) {
+                    \App\Models\StockMovement::create([
+                        'product_id' => $item->product_id,
+                        'warehouse_id' => $sale->warehouse_id ?? 1,
+                        'type' => 'return',
+                        'quantity' => $item->quantity,
+                        'reference' => 'Return from Sale #' . $sale->invoice_number,
+                        'user_id' => auth()->id(),
+                        'notes' => $request->reason
+                    ]);
+
+                    // Update product stock
+                    $item->product->increment('stock_quantity', $item->quantity);
+                }
+
+            } else {
+                // Handle stock movement return
+                $product = \App\Models\Product::findOrFail($request->product_id);
+                
+                \App\Models\StockMovement::create([
+                    'product_id' => $request->product_id,
+                    'warehouse_id' => 1, // Default warehouse
+                    'type' => 'return',
+                    'quantity' => $request->quantity,
+                    'reference' => 'Direct Return',
+                    'user_id' => auth()->id(),
+                    'notes' => $request->reason
+                ]);
+
+                // Update product stock
+                $product->increment('stock_quantity', $request->quantity);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Return processed successfully!',
+                'redirect_url' => route('sales.returns')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing return: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

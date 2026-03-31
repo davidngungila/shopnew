@@ -85,6 +85,8 @@ Route::middleware(['auth'])->group(function () {
     // Sales - Specific routes must come before resource routes
     Route::get('/sales/invoices', [SaleController::class, 'invoices'])->name('sales.invoices');
     Route::get('/sales/returns', [SaleController::class, 'returns'])->name('sales.returns');
+    Route::get('/sales/returns/create', [SaleController::class, 'createReturn'])->name('sales.returns.create');
+    Route::post('/sales/returns', [SaleController::class, 'storeReturn'])->name('sales.returns.store');
     Route::get('/sales/{sale}/print', [SaleController::class, 'print'])->name('sales.print');
     Route::get('/sales/{sale}/pdf', [SaleController::class, 'pdf'])->name('sales.pdf');
     Route::post('/sales/{sale}/record-payment', [SaleController::class, 'recordPayment'])->name('sales.record-payment');
