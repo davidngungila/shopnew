@@ -114,7 +114,8 @@ class POSController extends Controller
             'success' => true,
             'sale' => $sale,
             'invoice_number' => $sale->invoice_number,
-            'message' => 'Sale completed successfully',
+            'message' => 'Sale completed successfully!',
+            'redirect_url' => route('pos.index')
         ]);
     }
 }

@@ -801,7 +801,7 @@
                                     </div>
                                     
                                     <!-- Footer -->
-                                    @if($totalNotifications > 0)
+                                    @if(isset($totalNotifications) && $totalNotifications > 0)
                                         <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
                                             <a href="{{ route('products.low-stock') }}" class="text-xs font-medium text-[#009245] hover:text-[#007a38] transition-colors duration-200">
                                                 View all notifications →

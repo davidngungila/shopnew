@@ -124,6 +124,7 @@ Route::get('stock-movements/export', [StockMovementController::class, 'export'])
 
 // Inventory routes
 Route::get('inventory/low-stock', [ProductController::class, 'lowStock'])->name('inventory.low-stock');
+Route::get('products/low-stock', [ProductController::class, 'lowStockPage'])->name('products.low-stock');
 
 Route::resource('products', ProductController::class);    
     // API Routes for POS
