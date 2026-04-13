@@ -4,78 +4,41 @@
     "description": "A comprehensive inventory management system for retail businesses",
     "start_url": "/",
     "display": "standalone",
+    "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
     "background_color": "#ffffff",
     "theme_color": "#3b82f6",
-    "orientation": "portrait",
+    "orientation": "portrait-primary",
     "scope": "/",
-    "icons": [
-        {
-            "src": "/icons/icon-72x72.png",
-            "sizes": "72x72",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-96x96.png",
-            "sizes": "96x96",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-128x128.png",
-            "sizes": "128x128",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-144x144.png",
-            "sizes": "144x144",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-152x152.png",
-            "sizes": "152x152",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-384x384.png",
-            "sizes": "384x384",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "/icons/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable any"
-        }
-    ],
-    "categories": ["business", "productivity", "utilities"],
+    "id": "shopsmart-app",
     "lang": "en",
     "dir": "ltr",
     "prefer_related_applications": false,
-    "screenshots": [
+    "icons": [
         {
-            "src": "/screenshots/desktop-1.png",
-            "sizes": "1280x720",
-            "type": "image/png",
-            "form_factor": "wide",
-            "label": "ShopSmart Dashboard on Desktop"
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9IiMzYjgyZjYiLz4KPHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeD0iNDYiIHk9IjQ2IiB2aWV3Qm94PSIwIDAgMTAwIDEwMCIgZmlsbD0ibm9uZSI+CjxwYXRoIGQ9Ik0yNSA1MEMyNSAyNy41IDI3LjUgMjUgMzAgMjVINzBWNzBIMzBWMjVIMjVaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMzAgNDBIMzVWNTVIMzBWNDBaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNDAgNDBINDVWNTVINDBWNDBaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNNTAgNDBINTVWNTVINDBWNDBaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
         },
         {
-            "src": "/screenshots/mobile-1.png",
-            "sizes": "375x667",
-            "type": "image/png",
-            "form_factor": "narrow",
-            "label": "ShopSmart Dashboard on Mobile"
+            "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9IiMzYjgyZjYiLz4KPHN2ZyB3aWR0aD0iMjYwIiBoZWlnaHQ9IjI2MCIgeD0iMTI2IiB5PSIxMjYiIHZpZXdCb3g9IjAgMCAyNjAgMjYwIiBmaWxsPSJub25lIj4KPHBhdGggZD0iTTY1IDEzMEM2NSA3MS41IDY3LjUgNjUgNzAgNjVIMTcwVjEzMEg3MFY2NUg2NVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik03MCAxMDRINzVWMTI5SDcwVjEwNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik04MCAxMDRIMTBWMTI5SDgwVjEwNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik05MCAxMDRIMTVWMTI5SDkwVjEwNFoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0xMDAgMTA0SDE1VjEyOUgxMDBWMTA0WiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cjwvc3ZnPg==",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "description": "View main dashboard",
+            "url": "/dashboard",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTIiIGZpbGw9IiMzYjgyZjYiLz4KPHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHg9IjIzIiB5PSIyMyIgdmlld0JveD0iMCAwIDUwIDUwIiBmaWxsPSJub25lIj4KPHJlY3Qgd2lkdGg9IjMwIiBoZWlnaHQ9IjMwIiB4PSIxMCIgeT0iMTAiIHJ4PSI0IiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4KPC9zdmc+",
+                    "sizes": "96x96"
+                }
+            ]
         }
     ]
 }

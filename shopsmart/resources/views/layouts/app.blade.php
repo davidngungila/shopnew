@@ -1157,11 +1157,20 @@
     
     <!-- PWA Service Worker Registration -->
     <script>
+        // Register service worker for PWA functionality
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('{{ asset("build/sw.js") }}')
+                // Use the generated service worker from build
+                navigator.serviceWorker.register('{{ asset("build/sw.js") }}', {
+                    scope: '/'
+                })
                     .then(function(registration) {
                         console.log('Service Worker registered successfully:', registration.scope);
+                        
+                        // Ensure the service worker is activated
+                        if (registration.active) {
+                            console.log('Service Worker is active');
+                        }
                         
                         // Check for service worker updates
                         registration.addEventListener('updatefound', () => {

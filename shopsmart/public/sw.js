@@ -1,6 +1,4 @@
-// This will be replaced by the actual manifest during build
-self.__WB_MANIFEST = [];
-
+// Service Worker for ShopSmart PWA
 const CACHE_NAME = 'shopsmart-v1';
 const STATIC_CACHE = 'shopsmart-static-v1';
 const DYNAMIC_CACHE = 'shopsmart-dynamic-v1';
@@ -9,8 +7,8 @@ const STATIC_ASSETS = [
     '/',
     '/dashboard',
     '/manifest.json',
-    '/app.css',
-    '/app.js',
+    '/build/assets/app-CtKWRRj6.css',
+    '/build/assets/app-CWxCsbqF.js',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png'
 ];
