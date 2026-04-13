@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'ShopSmart')</title>
+    <title>@yield('title', 'ShopSmart') - ShopSmart Dashboard</title>
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('logo.png') }}">
@@ -1154,9 +1154,6 @@
     
     <!-- PWA Install Button -->
     <x-pwa-install-button />
-    
-    <!-- Notification Manager -->
-    <x-notification-manager />
     
     <!-- PWA Service Worker Registration -->
     <script>

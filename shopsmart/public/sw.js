@@ -181,145 +181,43 @@ self.addEventListener('sync', (event) => {
     }
 });
 
-// Enhanced Push Notifications
+// Push Notifications
 self.addEventListener('push', (event) => {
-    let notificationData = {};
-    
-    try {
-        if (event.data) {
-            notificationData = event.data.json();
-        }
-    } catch (e) {
-        // Fallback to text if JSON parsing fails
-        notificationData = {
-            title: 'ShopSmart',
-            body: event.data ? event.data.text() : 'New notification',
-            icon: '/icons/icon-192x192.png'
-        };
-    }
-    
-    const defaultOptions = {
-        title: notificationData.title || 'ShopSmart',
-        body: notificationData.body || 'New notification available',
-        icon: notificationData.icon || '/icons/icon-192x192.png',
+    const options = {
+        body: event.data ? event.data.text() : 'ShopSmart: New notification',
+        icon: '/icons/icon-192x192.png',
         badge: '/icons/icon-72x72.png',
-        image: notificationData.image || null,
-        vibrate: notificationData.vibrate || [100, 50, 100],
+        vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
-            primaryKey: notificationData.id || Math.random().toString(36).substr(2, 9),
-            url: notificationData.url || '/',
-            type: notificationData.type || 'general',
-            ...notificationData.data
+            primaryKey: 1
         },
-        actions: notificationData.actions || [
+        actions: [
             {
-                action: 'open',
+                action: 'explore',
                 title: 'Open App',
                 icon: '/icons/icon-96x96.png'
             },
             {
-                action: 'dismiss',
-                title: 'Dismiss',
+                action: 'close',
+                title: 'Close',
                 icon: '/icons/icon-96x96.png'
             }
-        ],
-        requireInteraction: notificationData.requireInteraction || false,
-        silent: notificationData.silent || false,
-        tag: notificationData.tag || 'shopsmart-default',
-        renotify: notificationData.renotify || true,
-        timestamp: Date.now()
+        ]
     };
     
     event.waitUntil(
-        self.registration.showNotification(defaultOptions.title, defaultOptions)
+        self.registration.showNotification('ShopSmart', options)
     );
 });
 
-// Enhanced Notification Click Handler
+// Notification Click Handler
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();
     
-    const notificationData = event.notification.data || {};
-    const action = event.action;
-    
-    if (action === 'dismiss') {
-        return; // Just close the notification
+    if (event.action === 'explore') {
+        event.waitUntil(
+            clients.openWindow('/')
+        );
     }
-    
-    // Handle different actions
-    let urlToOpen = '/';
-    
-    if (notificationData.url) {
-        urlToOpen = notificationData.url;
-    } else if (notificationData.type) {
-        // Route based on notification type
-        switch (notificationData.type) {
-            case 'inventory':
-                urlToOpen = '/inventory';
-                break;
-            case 'sales':
-                urlToOpen = '/sales';
-                break;
-            case 'purchases':
-                urlToOpen = '/purchases';
-                break;
-            case 'reports':
-                urlToOpen = '/reports';
-                break;
-            case 'settings':
-                urlToOpen = '/settings';
-                break;
-            default:
-                urlToOpen = '/dashboard';
-        }
-    }
-    
-    event.waitUntil(
-        clients.matchAll({
-            type: 'window',
-            includeUncontrolled: true
-        }).then((clientList) => {
-            // Focus existing window if available
-            for (const client of clientList) {
-                if (client.url === urlToOpen && 'focus' in client) {
-                    return client.focus();
-                }
-            }
-            
-            // Open new window if no existing window found
-            if (clients.openWindow) {
-                return clients.openWindow(urlToOpen);
-            }
-        })
-    );
-});
-
-// Notification Close Handler
-self.addEventListener('notificationclose', (event) => {
-    const notificationData = event.notification.data || {};
-    
-    // Log notification dismissal for analytics
-    console.log('Notification closed:', {
-        id: notificationData.primaryKey,
-        type: notificationData.type,
-        dismissedAt: Date.now()
-    });
-    
-    // You could send this data to your server for analytics
-    event.waitUntil(
-        fetch('/api/notifications/dismissed', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                notificationId: notificationData.primaryKey,
-                type: notificationData.type,
-                dismissedAt: Date.now()
-            })
-        }).catch(() => {
-            // Silently fail if analytics endpoint is not available
-        })
-    );
 });

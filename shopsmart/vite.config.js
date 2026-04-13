@@ -52,7 +52,7 @@ export default defineConfig({
             },
             includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
             manifest: {
-                name: 'ShopSmart',
+                name: 'ShopSmart - Inventory Management',
                 short_name: 'ShopSmart',
                 description: 'A comprehensive inventory management system for retail businesses',
                 theme_color: '#3b82f6',
