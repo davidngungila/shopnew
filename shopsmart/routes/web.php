@@ -333,3 +333,16 @@ Route::get('/financial/income', [FinancialController::class, 'income'])->name('f
         Route::get('/delivery-reports', [App\Http\Controllers\Api\SmsController::class, 'deliveryReports'])->name('deliveryReports');
         Route::get('/test-connection', [App\Http\Controllers\Api\SmsController::class, 'testConnection'])->name('testConnection');
     });
+
+    // API Routes for Push Notifications
+    Route::prefix('api/notifications')->name('api.notifications.')->group(function () {
+        Route::post('/subscribe', [App\Http\Controllers\NotificationController::class, 'subscribe'])->name('subscribe');
+        Route::delete('/unsubscribe', [App\Http\Controllers\NotificationController::class, 'unsubscribe'])->name('unsubscribe');
+        Route::get('/subscriptions', [App\Http\Controllers\NotificationController::class, 'getSubscriptions'])->name('subscriptions');
+        Route::post('/send', [App\Http\Controllers\NotificationController::class, 'sendNotification'])->name('send');
+        Route::post('/test', [App\Http\Controllers\NotificationController::class, 'sendTestNotification'])->name('test');
+        Route::post('/dismissed', [App\Http\Controllers\NotificationController::class, 'markAsDismissed'])->name('dismissed');
+        Route::get('/history', [App\Http\Controllers\NotificationController::class, 'getNotificationHistory'])->name('history');
+        Route::get('/preferences', [App\Http\Controllers\NotificationController::class, 'getPreferences'])->name('preferences');
+        Route::put('/preferences', [App\Http\Controllers\NotificationController::class, 'updatePreferences'])->name('preferences.update');
+    });
